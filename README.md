@@ -49,6 +49,8 @@ docker --version
 docker-compose version
 ```
 
+![End of the docker installation](docs/images/finish-docker-install.png)
+
 ### b. Go
 
 Hyperledger Fabric required a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from golang.org (https://golang.org/dl/) or use this generics commands that will install Golang 1.8.3 and prepare your environment (generate your GOPATH and add variables):
@@ -68,6 +70,8 @@ To make sure that the installation works, you can logout/login (again) and run:
 ```
 go verison
 ```
+
+![End of the Go installation](docs/images/finish-go-install.png)
 
 ### c. Hyperledger Fabric & CA
 
@@ -120,6 +124,8 @@ cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
 The installation can take a while (depending on your network connection), but at the end you should see Integration tests passed. During this process, a virtual network has been built and some test are made with the SDK in order to check if your system is ready. Now we can work with our first application.
+
+![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
 
 ## 4. Make your first blockchain network
 
