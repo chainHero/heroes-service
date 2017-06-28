@@ -8,13 +8,13 @@ This tutorial won’t explain in detail how Hyperledger Fabric works, I will jus
 
 In the technical part, this tutorial has been made on **Ubuntu 16.04**. The Hyperledger Fabric framework is compatible with Mac OSX and Windows too, but I can’t guarantee that all the stuff can work.
 
-We will use the **Go** language to design a first application, because the Hyperledger Fabric has been build also in Go and the Fabric SDK Go is really simple to use. There is other SDK if you want to, like the Node, Java or Python SDK, the choice is your.
+We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. There are other SDK if you want to, like for NodeJS, Java or Python.
 
-Hyperledger Fabric use **Docker** to easily deployed a blockchain network. In addition, in the v1.0, some component (peers) also deploy docker containers to separate data (channel). So make sure that the platform support this kind of virtualization (we will install Docker in the Installation guide).
+Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, in the v1.0, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization (we will install Docker in the installation part).
 
 ## 2. Introduction to Hyperledger Fabric
 
-*TODO*
+*TODO - Explain Fabric and Fabric CA*
 
 ## 3. Installation guide
 
@@ -22,13 +22,13 @@ This installation guide was made in **Ubuntu 16.04**.
 
 ### a. Docker
 
-The required **version for docker is 1.12 or greater**, this version is already available in the package manager of Ubuntu. Just install it with this command line:
+The required **version for docker is 1.12 or greater**, this version is already available in the package manager on Ubuntu. Just install it with this command line:
 
 ```
 sudo apt install docker.io
 ```
 
-In addition, we need **docker-compose 1.8+** to manage multiple containers at one. You can also use your package manage that hold the right version:
+In addition, we need **docker-compose 1.8+** to manage multiple containers at one. You can also use your package manager that hold the right version:
 
 ```
 sudo apt install docker-compose
@@ -51,7 +51,7 @@ docker-compose version
 
 ### b. Go
 
-Hyperledger Fabric required a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from golang.org (https://golang.org/dl/) or use this generic commands that will install Golang 1.8.3 and prepare your environment (generate your GOPATH and add variables):
+Hyperledger Fabric required a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from golang.org (https://golang.org/dl/) or use this generics commands that will install Golang 1.8.3 and prepare your environment (generate your GOPATH and add variables):
 
 ```
 wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz && \
@@ -71,7 +71,7 @@ go verison
 
 ### c. Hyperledger Fabric & CA
 
-Now we can install the main framework: Hyperledger Fabric. We will fix the commit level to the v1.0.0-rc1 because the Fabric SDK Go is compatible with it. All the code is available in a mirror on github, just checkout (and optionally build binaries):
+Now we can install the main framework: Hyperledger Fabric. We will fix the commit level to the v1.0.0-rc1 because the Fabric SDK Go is compatible with it. All the code is available in a mirror on github, just check out (and optionally build binaries):
 
 ```
 mkdir -p $GOPATH/src/github.com/hyperledger && \
@@ -107,23 +107,25 @@ If you get the following error:
 ../fabric-sdk-go/vendor/github.com/miekg/pkcs11/pkcs11.go:29:18: fatal error: ltdl.h: No such file or directory
 ```
 
-You need to install the package “libltdl-dev” and re-execut previous command (`go get ...`):
+You need to install the package “libltdl-dev” and re-execute previous command (`go get ...`):
 
 ```
 sudo apt install libltdl-dev
 ```
 
-Then you can go inside the new fabric-sdk-go directory in your GOPATH and install dependencies and check out if all is find:
+Then you can go inside the new fabric-sdk-go directory in your GOPATH and install dependencies and check out if all is ok:
 
 ```
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
-The installation can take a while (depending of your network connection), but at the end you should see Integration tests passed. During this process, a virtual network has been build and some test are made by the SDK in order to check if your system is ready. Now we can work to our first application.
+The installation can take a while (depending on your network connection), but at the end you should see Integration tests passed. During this process, a virtual network has been built and some test are made with the SDK in order to check if your system is ready. Now we can work with our first application.
 
 ## 4. Make your first blockchain network
 
-In order to make a blockchain network we will use docker to build virtual computer that will handle different roles. In this tutorial we will stay simple as possible. To do so, we will directly get the network use for testing in the Fabric SDK Go. Hyperledger Fabric need a lot of certificates to ensure encryption in the end to end manner (SSL, TSL …).
+### a. Prepare environment
+
+In order to make a blockchain network we will use docker to build virtual computers that will handle different roles. In this tutorial we will stay simple as possible. To do so, we will directly get the network use of testing in the Fabric SDK Go. Hyperledger Fabric needs a lot of certificates to ensure encryption in the end to end manner (SSL, TSL …).
 
 Make a new directory in source folder of your GOPATH place, we will name it ‘heroes-service’:
 
@@ -138,19 +140,33 @@ Now, we can copy the environment of the Fabric SDK Go placed in the test folder:
 cp -r $GOPATH/src/github.com/hyperledger/fabric-sdk-go/test/fixtures ./
 ```
 
-We can cleanup a little bit to make it more simple. We remove the default chaincode, we will made our later. We also remove some files used by the test script of the SDK:
+We can clean up a little bit to make it more simple. We remove the default chaincode, we will make our later. We also remove some files used by the test script of the SDK:
 
 ```
 rm -rf fixtures/{config,src,.env,latest-env.sh}
 ```
 
-In order to make it work, we have to edit the docker-composer.yaml file. This is the configuration file for docker-compose, it tell what containers need to be created and started and with a custom configuration for each. Take you favorite text editor and copy past content from this repository:
+### b. Built a Docker compose file
+
+In order to make it work, we have to edit the docker-composer.yaml file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
 
 ```
 vi fixtures/docker-composer.yaml
 ```
 
 see [fixtures/docker-composer.yaml](fixtures/docker-compose.yaml)
+
+Now if we use docker-compose we will setup 2 fabric certificate authorities with 1 peer for each. Peers will have all roles: ledger, endorer and commiter. In addition, an orderer is also created with the `solo` ordering (no consensus is made).
+
+In our example, one organisation will be the heroes and the other concern people who made request. So lets say that peer 0 of the organisation 1 is superman and peer 0 of the organisation 2 is John, a normal citizen.
+
+### c. Test
+
+*TODO*
+
+## 5. Build a simple application using SDK
+
+### a. Configuration of the Fabric SDK
 
 Like we remove the config folder, we need to make a new config file:
 
@@ -159,6 +175,3 @@ vi config.yaml
 ```
 
 see [config.yaml](config.yaml)
-
-
-## 5. Build a simple application using SDK
