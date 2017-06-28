@@ -177,6 +177,18 @@ docker-compose up
 
 You will see a lot of logs with different colors (red isn't equal to errors).
 
+Open a new terminal and run:
+
+```
+docker ps
+```
+
+![Docker compose up screenshot](docs/images/docker-ps.png)
+
+You will see the two peers, the orderer and the two CA. To stop the network go back to the previous terminal, and press `Ctrl+C`, wait that all containers are stopped. You have succefully made a new network ready to use with th SDK. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
+
+![Docker compose up screenshot](docs/images/docker-compose-up.png)
+
 ## 5. Build a simple application using SDK
 
 ### a. Configuration of the Fabric SDK
