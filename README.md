@@ -138,17 +138,27 @@ Now, we can copy the environment of the Fabric SDK Go placed in the test folder:
 cp -r $GOPATH/src/github.com/hyperledger/fabric-sdk-go/test/fixtures ./
 ```
 
-We can cleanup a little bit to make it more simple. First, mv the config folder in the root of the project. This folder will contain the whole configuration of your project. Then we remove the default chaincode, we will made our later. We also remove some files used by the test script of the SDK:
+We can cleanup a little bit to make it more simple. We remove the default chaincode, we will made our later. We also remove some files used by the test script of the SDK:
 
 ```
-mv fixtures/config ./ && \
-rm -rf fixtures/{src,.env,latest-env.sh}
+rm -rf fixtures/{config,src,.env,latest-env.sh}
 ```
 
-In order to make it work, we have to edit the docker-composer.yaml file. This is the configuration file for docker-compose, it tell what containers need to be created and started and with a custom configuration for each. Take you favorite text editor and put the following lines in it:
+In order to make it work, we have to edit the docker-composer.yaml file. This is the configuration file for docker-compose, it tell what containers need to be created and started and with a custom configuration for each. Take you favorite text editor and copy past content from this repository:
 
 ```
 vi fixtures/docker-composer.yaml
 ```
+
+see [fixtures/docker-composer.yaml](fixtures/docker-compose.yaml)
+
+Like we remove the config folder, we need to make a new config file:
+
+```
+vi config.yaml
+```
+
+see [config.yaml](config.yaml)
+
 
 ## 5. Build a simple application using SDK
