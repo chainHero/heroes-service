@@ -162,7 +162,14 @@ In our example, one organisation will be the heroes and the other concern people
 
 ### c. Test
 
-*TODO*
+In order to check if the network works, we will use command provide by docker-compose to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service/fixtures && \
+docker-compose up
+```
+
+You will see a lot of logs with different colors (red isn't equal to errors).
 
 ## 5. Build a simple application using SDK
 
