@@ -383,7 +383,7 @@ The full file is available here: [blockchain/setup.go](blockchain/setup.go)
 
 At this stage we only initialize a client that will comunicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
 
-### b. Fabric SDK Go: test
+### c. Fabric SDK Go: test
 
 To make sure thaht the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any amin file. Let's add one:
 
@@ -446,6 +446,75 @@ cd .. && \
 ![Screenshot app started and SDK initialized](docs/images/start-app-initialized.png)
 
 Great! We arrive to initialize the SDK to our network created locally. Next step is to interact with a chaincode.
+
+### d. Fabric SDK Go: clean up and Makefile
+
+The Fabric SDK generate some file, like certificates or temporally files. Put down the network won't fully clean up your environment and when you will start again, this files will be reused to avoid recreation. For development you can keep them to test quicly but for a real test, you need to clean up all and start from the begining.
+
+*How clean up my environment ?*
+
+- Put down your network: `cd $GOPATH/src/github.com/tohero/heroes-service/fixtures && docker-compose down`
+- Remove MSP folder (defined in the [config](config.yaml) file, in the `fabricCA` section): `rm -rf /tmp/msp`
+- Remove enrolment files (defined when we initialize the SDK, in the [setup](blockchain/setup.go) file, when we get the client):  `rm -rf /tmp/enroll_user`
+
+*How to be more productive ?*
+
+We can automatize all these tasks in a single one, same for the build and start. To do so, I propose to use a Makefile. ensure that you have the tool:
+
+```
+sudo apt install make
+```
+
+Then create a file named `Makefile` at the root of the project with this content:
+
+```
+.PHONY: all dev clean build env-up env-down run
+
+all: clean build env-up run
+
+dev: build run
+
+##### BUILD
+build:
+	@echo "Build ..."
+	@govendor sync
+	@go build
+	@echo "Build done"
+
+##### ENV
+env-up:
+	@echo "Start environnement ..."
+	@cd env && docker-compose up --force-recreate -d
+	@echo "Sleep 15 seconds in order to let the environment setup correctly"
+	@sleep 15
+	@echo "Environnement up"
+
+env-down:
+	@echo "Stop environnement ..."
+	@cd env && docker-compose down
+	@echo "Environnement down"
+
+
+##### RUN
+run:
+	@echo "Start app ..."
+	@./heroes-service
+
+##### CLEAN
+clean: env-down
+	@echo "Clean up ..."
+	@rm -rf /tmp/enroll_user /tmp/msp heroes-service
+	@echo "Clean up done"
+```
+
+Now with the task `all`, first there will be a cleanup of the environment, then the compilation phase, then the network up and finally run the app.
+
+To use it, go to the root of the project and use the `make` command:
+
+- Task `all`: `make` or `make all`
+- Task `build`: `make build`
+- Task `env-up`: `make env-up`
+- ...
 
 **TODO - Configuration**
 
