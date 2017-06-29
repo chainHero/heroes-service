@@ -92,5 +92,5 @@ func Initialize() (*FabricSetup, error) {
 
 	setup.Initialized = true
 
-	return setup, nil
+	return &setup, nil
 }
