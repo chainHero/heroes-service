@@ -195,7 +195,7 @@ You will see the two peers, the orderer and the two CA. To stop the network go b
 
 ## 5. Build a simple application using SDK
 
-### a. Configuration of the Fabric SDK
+### a. Configuration
 
 Like we remove the config folder, we need to make a new config file. We will put everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode, that with we just put the blockchain configuration:
 
@@ -258,3 +258,18 @@ client:
 ```
 
 The full configuration file, is available here: [config.yaml](config.yaml)
+
+To manage this file we will use [viper](github.com/spf13/viper), a power tool that handle a lot of file type:
+
+```
+go get -u github.com/spf13/viper
+```
+
+### Blockchain
+
+We add a new folder named `blockchain` thaht will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in thsi folder.
+
+```
+mkdir $GOPATH/src/github.com/tohero/heroes-service/blockchain && \
+cd $GOPATH/src/github.com/tohero/heroes-service/blockchain
+```
