@@ -195,7 +195,7 @@ You will see the two peers, the orderer and the two CA. To stop the network go b
 
 ## 5. Build a simple application using SDK
 
-### a. Configuration
+### a. Fabric SDK Go: configuration
 
 Like we remove the config folder, we need to make a new config file. We will put everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode, that with we just put the blockchain configuration:
 
@@ -257,19 +257,135 @@ client:
   path: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/channel/crypto-config"
 ```
 
-The full configuration file, is available here: [config.yaml](config.yaml)
+The full configuration file is available here: [config.yaml](config.yaml)
+
+### b. Fabric SDK Go: initialize
+
+We add a new folder named `blockchain` that will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in this folder.
+
+```
+mkdir $GOPATH/src/github.com/tohero/heroes-service/blockchain && \
+cd $GOPATH/src/github.com/tohero/heroes-service/blockchain
+```
+
+Now add a new go file named `setup.go` :
+
+```
+vi setup.go
+```
+
+```
+package blockchain
+
+import (
+	api "github.com/hyperledger/fabric-sdk-go/api"
+	fsgConfig "github.com/hyperledger/fabric-sdk-go/pkg/config"
+	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
+	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
+	"fmt"
+)
+
+// FabricSetup implementation
+type FabricSetup struct {
+	Client           api.FabricClient
+	Channel          api.Channel
+	EventHub         api.EventHub
+	Initialized      bool
+	ChannelID        string
+	ChannelConfig    string
+}
+
+// Initialize reads configuration from file and sets up client, chain and event hub
+func Initialize() (*FabricSetup, error) {
+
+	setup := FabricSetup{
+		ChannelID:       "mychannel",
+		ChannelConfig:   "fixtures/channel/mychannel.tx",
+	}
+
+	// Initialize the config
+	// This will read the config.yaml, in order to tell to
+	// the SDK all options and how contact a peer
+	configImpl, err := fsgConfig.InitConfig("config.yaml")
+	if err != nil {
+		return nil, fmt.Errorf("Initialize the config failed: %v", err)
+	}
+
+	// Initialize blockchain cryptographic service provider (BCCSP)
+	// This tool manage certificates and keys
+	err = bccspFactory.InitFactories(configImpl.GetCSPConfig())
+	if err != nil {
+		return nil, fmt.Errorf("Failed getting ephemeral software-based BCCSP [%s]", err)
+	}
+
+	// This will make a user access (here the admin) to interact with the network
+	// To do so, this will contact the Fabric CA to check if the user has access
+	// and give it to him (enrollment)
+	client, err := fcutil.GetClient("admin", "adminpw", "/tmp/enroll_user", configImpl)
+	if err != nil {
+		return nil, fmt.Errorf("Create client failed: %v", err)
+	}
+	setup.Client = client
+
+	// Make a new instance of channel pre-configured with the info we have provided,
+	// but for now we can't use this channel because we need to create and
+	// make some peer join it
+	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelID)
+	if err != nil {
+		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelID, err)
+	}
+	setup.Channel = channel
+
+	// Get an orderer user that will be used to validate an order of proposal
+	// The authentication will be made with local certificates
+	ordererUser, err := fcutil.GetPreEnrolledUser(
+		client,
+		"ordererOrganizations/example.com/users/Admin@example.com/keystore",
+		"ordererOrganizations/example.com/users/Admin@example.com/signcerts",
+		"ordererAdmin",
+	)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to get the orderer user failed: %v", err)
+	}
+
+	// Get an organisation user (admin) that will be used to sign proposal
+	// The authentication will be made with local certificates
+	orgUser, err := fcutil.GetPreEnrolledUser(
+		client,
+		"peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore",
+		"peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts",
+		"peerorg1Admin",
+	)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to get the organisation user failed: %v", err)
+	}
+
+	// Initialize the channel "mychannel" base on the genesis block
+	// locate in fixtures/channel/mychannel.tx and join the peer given
+	// in the configuration file to this channel
+	if err := fcutil.CreateAndJoinChannel(client, ordererUser, orgUser, channel, setup.ChannelConfig); err != nil {
+		return nil, fmt.Errorf("CreateAndJoinChannel return error: %v", err)
+	}
+
+	// Give the organisation user to the client for next proposal
+	client.SetUserContext(orgUser)
+
+	// Tell that the initialization is done
+	setup.Initialized = true
+
+	return &setup, nil
+}
+
+```
+
+The full file is available here: [blockchain/setup.go](blockchain/setup.go)
+
+At this stage we only initialize a client that will comunicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
+
+**TODO - Configuration**
 
 To manage this file we will use [viper](github.com/spf13/viper), a power tool that handle a lot of file type:
 
 ```
 go get -u github.com/spf13/viper
-```
-
-### Blockchain
-
-We add a new folder named `blockchain` thaht will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in thsi folder.
-
-```
-mkdir $GOPATH/src/github.com/tohero/heroes-service/blockchain && \
-cd $GOPATH/src/github.com/tohero/heroes-service/blockchain
 ```
