@@ -50,16 +50,17 @@ func Initialize() (*FabricSetup, error) {
 	}
 	setup.Client = client
 
-	// Get channel
-	// TODO
+	// Make a new instance of channel pre-configured with the info we have provided,
+	// but for now we can't use this channel because we need to create and
+	// make some peer join it
 	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelID)
 	if err != nil {
 		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelID, err)
 	}
 	setup.Channel = channel
 
-	// Get orderer user
-	// TODO
+	// Get an orderer user that will be used to validate an order of proposal
+	// The authentication will be made with local certificates
 	ordererUser, err := fcutil.GetPreEnrolledUser(
 		client,
 		"ordererOrganizations/example.com/users/Admin@example.com/keystore",
@@ -70,8 +71,8 @@ func Initialize() (*FabricSetup, error) {
 		return nil, fmt.Errorf("Unable to get the orderer user failed: %v", err)
 	}
 
-	// Get organisation user
-	// TODO
+	// Get an organisation user (admin) that will be used to sign proposal
+	// The authentication will be made with local certificates
 	orgUser, err := fcutil.GetPreEnrolledUser(
 		client,
 		"peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore",
@@ -82,14 +83,17 @@ func Initialize() (*FabricSetup, error) {
 		return nil, fmt.Errorf("Unable to get the organisation user failed: %v", err)
 	}
 
-	// Create and join channel
-	// TODO
+	// Initialize the channel "mychannel" base on the genesis block
+	// locate in fixtures/channel/mychannel.tx and join the peer given
+	// in the configuration file to this channel
 	if err := fcutil.CreateAndJoinChannel(client, ordererUser, orgUser, channel, setup.ChannelConfig); err != nil {
 		return nil, fmt.Errorf("CreateAndJoinChannel return error: %v", err)
 	}
 
+	// Give the organisation user to the client for next proposal
 	client.SetUserContext(orgUser)
 
+	// Tell that the initialization is done
 	setup.Initialized = true
 
 	return &setup, nil
