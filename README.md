@@ -484,16 +484,15 @@ build:
 ##### ENV
 env-up:
 	@echo "Start environnement ..."
-	@cd env && docker-compose up --force-recreate -d
+	@cd fixtures && docker-compose up --force-recreate -d
 	@echo "Sleep 15 seconds in order to let the environment setup correctly"
 	@sleep 15
 	@echo "Environnement up"
 
 env-down:
 	@echo "Stop environnement ..."
-	@cd env && docker-compose down
+	@cd fixtures && docker-compose down
 	@echo "Environnement down"
-
 
 ##### RUN
 run:
@@ -506,6 +505,8 @@ clean: env-down
 	@rm -rf /tmp/enroll_user /tmp/msp heroes-service
 	@echo "Clean up done"
 ```
+
+The full file is available here: [Makefile](Makefile)
 
 Now with the task `all`, first there will be a cleanup of the environment, then the compilation phase, then the network up and finally run the app.
 
