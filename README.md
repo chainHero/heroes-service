@@ -154,13 +154,13 @@ rm -rf fixtures/{config,src,.env,latest-env.sh}
 
 ### b. Built a Docker compose file
 
-In order to make it work, we have to edit the docker-composer.yaml file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
+In order to make it work, we have to edit the `docker-compose.yaml` file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
 
 ```
-vi fixtures/docker-composer.yaml
+vi fixtures/docker-compose.yaml
 ```
 
-see [fixtures/docker-composer.yaml](fixtures/docker-compose.yaml)
+see [fixtures/docker-compose.yaml](fixtures/docker-compose.yaml)
 
 Now if we use docker-compose we will setup 2 fabric certificate authorities with 1 peer for each. Peers will have all roles: ledger, endorer and commiter. In addition, an orderer is also created with the `solo` ordering (no consensus is made).
 
@@ -188,6 +188,10 @@ docker ps
 You will see the two peers, the orderer and the two CA. To stop the network go back to the previous terminal, and press `Ctrl+C`, wait that all containers are stopped. You have succefully made a new network ready to use with th SDK. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 ![Docker compose up screenshot](docs/images/docker-compose-up.png)
+
+> **Tips**: when the network is down, all containers used remains accessible, but not active, to check logs for example. You can see them with `docker ps -a`. In order to clean up this containers, you need to delete them with `docker rm $(docker ps -aq)`.
+
+> **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same place where the `docker-compose.yaml` is: `docker-compose down` (this will also remove all containers).
 
 ## 5. Build a simple application using SDK
 
