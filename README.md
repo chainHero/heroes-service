@@ -157,6 +157,7 @@ rm -rf fixtures/{config,src,.env,latest-env.sh}
 In order to make it work, we have to edit the `docker-compose.yaml` file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
 
 ```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
 vi fixtures/docker-compose.yaml
 ```
 
@@ -200,6 +201,7 @@ You will see the two peers, the orderer and the two CA. To stop the network go b
 Like we remove the config folder, we need to make a new config file. We will put everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode, that with we just put the blockchain configuration:
 
 ```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
 vi config.yaml
 ```
 
@@ -264,14 +266,13 @@ The full configuration file is available here: [config.yaml](config.yaml)
 We add a new folder named `blockchain` that will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in this folder.
 
 ```
-mkdir $GOPATH/src/github.com/tohero/heroes-service/blockchain && \
-cd $GOPATH/src/github.com/tohero/heroes-service/blockchain
+mkdir $GOPATH/src/github.com/tohero/heroes-service/blockchain
 ```
 
 Now add a new go file named `setup.go` :
 
 ```
-vi setup.go
+vi $GOPATH/src/github.com/tohero/heroes-service/blockchain/setup.go
 ```
 
 ```
@@ -381,6 +382,58 @@ func Initialize() (*FabricSetup, error) {
 The full file is available here: [blockchain/setup.go](blockchain/setup.go)
 
 At this stage we only initialize a client that will comunicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
+
+### b. Fabric SDK Go: test
+
+To make sure thaht the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any amin file. Let's add one:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+vi main.go
+```
+
+```
+package main
+
+import (
+	"github.com/tohero/heroes-service/blockchain"
+	"fmt"
+)
+
+func main() {
+	_, err := blockchain.Initialize()
+	if err != nil {
+		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
+	}
+}
+```
+
+The full file is available here: [main.go](main.go)
+
+The last thing to do before start the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA and Fabric SDK Go. All is ok but when we will try to compile our app, there will be some conflict (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
+
+```
+go get -u github.com/kardianos/govendor && \
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+govendor init && govendor add +external
+```
+
+Now we can make the compilation:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+go build
+```
+
+After some time, a new binary named `heroes-service` will appear at the root of the project. This is it, this is our application !
+Try to start the binary like this:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+./heroes-service
+```
+
+But this won't work.
 
 **TODO - Configuration**
 
