@@ -425,15 +425,27 @@ cd $GOPATH/src/github.com/tohero/heroes-service && \
 go build
 ```
 
-After some time, a new binary named `heroes-service` will appear at the root of the project. This is it, this is our application !
-Try to start the binary like this:
+After some time, a new binary named `heroes-service` will appear at the root of the project. Try to start the binary like this:
 
 ```
 cd $GOPATH/src/github.com/tohero/heroes-service && \
 ./heroes-service
 ```
 
-But this won't work.
+![Screenshot app started but no network](docs/images/start-app-no-network.png)
+
+But this won't work because there is no network that the SDK can talk to. Try to start the network and launch the app again:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service/fixtures && \
+docker-compose up -d && \
+cd .. && \
+./heroes-service
+```
+
+![Screenshot app started and SDK initialized](docs/images/start-app-initialized.png)
+
+Great! We arrive to initialize the SDK to our network created locally. Next step is to interact with a chaincode.
 
 **TODO - Configuration**
 
