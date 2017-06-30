@@ -652,7 +652,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	}
 
 	// Check that the number of argument is sufficient to possibly find the function to invoke
-	if len(args) >= 1 {
+	if len(args) < 1 {
 		return shim.Error("The number of arguments is insufficient, you need to provide the function to invoke.")
 	}
 
@@ -697,7 +697,7 @@ func main() {
 	// Start the chaincode and make it ready for futures requests
 	err := shim.Start(new(HeroesServiceChaincode))
 	if err != nil {
-		fmt.Printf("Error starting Heroes Service chaincode: %s", err)
+		fmt.Printf("Error starting Heroes Service chaincode: %s\n", err)
 	}
 }
 ```
@@ -710,8 +710,7 @@ For now, the chaincode does nothing extrodinary, just put the key/value `hello`/
 
 In order to install and instantiate the chaincode, we need to add some code in the application. Edit the [`blockchain/setup.go`](blockchain/setup.go) and add this following lines:
 
-> line 3 of [`blockchain/setup.go`](blockchain/setup.go)
-> We add the OS import to get access to the GOPATH variable in the environment
+> line 3 of [`blockchain/setup.go`](blockchain/setup.go): we add the OS import to get access to the GOPATH variable in the environment
 
 ```
 import (
@@ -726,8 +725,7 @@ import (
 
 ```
 
-> line 13 of [`blockchain/setup.go`](blockchain/setup.go)
-> We add chaincode parameters
+> line 13 of [`blockchain/setup.go`](blockchain/setup.go): we add chaincode parameters
 
 ```
 // FabricSetup implementation
@@ -746,8 +744,7 @@ type FabricSetup struct {
 
 ```
 
-> line 28 of [`blockchain/setup.go`](blockchain/setup.go)
-> We set new parameters
+> line 28 of [`blockchain/setup.go`](blockchain/setup.go): we set new parameters
 
 ```
 func Initialize() (*FabricSetup, error) {
@@ -759,7 +756,7 @@ func Initialize() (*FabricSetup, error) {
 		ChannelConfig:    "fixtures/channel/mychannel.tx",
 
 		// Chaincode parameters
-		ChaincodeId:      "hs", // For Heroes Service
+		ChaincodeId:      "heroes-service",
 		ChaincodeVersion: "v1.0.0",
 		ChaincodeGoPath:  os.Getenv("GOPATH"),
 		ChaincodePath:    "github.com/tohero/heroes-service/chaincode",
@@ -769,8 +766,7 @@ func Initialize() (*FabricSetup, error) {
 }
 ```
 
-> line 156 of [`blockchain/setup.go`](blockchain/setup.go)
-> We add the function that will install and instantiate the chaincode
+> line 156 of [`blockchain/setup.go`](blockchain/setup.go): we add the function that will install and instantiate the chaincode
 
 ```
 // Install and instantiate the chaincode
@@ -837,8 +833,7 @@ The full file is available here: [blockchain/setup.go](blockchain/setup.go)
 Finally, we add the call to this function in the [`main.go`](main.go) after the SDK initialization:
 
 
-> line 38 of [`main.go`](main.go)
-> We add the function that will install and instantiate the chaincode
+> line 38 of [`main.go`](main.go): we add the function that will install and instantiate the chaincode
 
 ```
 func main() {
@@ -848,13 +843,13 @@ func main() {
 	// Initialize the Fabric SDK
 	fabricSdk, err := blockchain.Initialize()
 	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
+		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 	}
 
 	// Install and instantiate the chaincode
 	err = fabricSdk.InstallAndInstantiateCC()
 	if err != nil {
-		fmt.Printf("Unable to install and instantiate the chaincode: %v", err)
+		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 	}
 }
 ```
@@ -869,3 +864,80 @@ make
 ```
 
 ![Screenshot Chaincode installed and instantiated](docs/images/install-and-instantiate-cc.png)
+
+> **Tips**: the installation and the instantiation don't need to be run at every start of the application. Only when we update the chaincode (and the chaincode version). A solution is to provide an argument when we run the application to tell to make this additional procedure before move on. For the tutorial, we will clean up every time the environment, so we don't care about that.
+
+### f. Fabric SDK Go: query the chaincode
+
+Like a database, the chaincode is plugged and ready to answer. Let's try the `hello` query.
+
+We will put all query functions in a new file named `query.go` in the `blockchain` folder:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+vi blockchain/query.go
+```
+
+```
+package blockchain
+
+import (
+	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
+	api "github.com/hyperledger/fabric-sdk-go/api"
+	"fmt"
+)
+
+// QueryHello query the chaincode to get the state of hello
+func (setup *FabricSetup) QueryHello() (string, error) {
+
+	// Prepare arguments
+	var args []string
+	args = append(args, "invoke")
+	args = append(args, "query")
+	args = append(args, "hello")
+
+	// Make the proposal and submit it to the network (via our primary peer)
+	transactionProposalResponses, _, err := fcutil.CreateAndSendTransactionProposal(
+		setup.Channel,
+		setup.ChaincodeId,
+		setup.ChannelId,
+		args,
+		[]api.Peer{setup.Channel.GetPrimaryPeer()}, // Peer contacted when submitted the proposal
+		nil,
+	)
+	if err != nil {
+		return "", fmt.Errorf("Create and send transaction proposal return error in the query hello: %v", err)
+	}
+	return string(transactionProposalResponses[0].ProposalResponse.GetResponse().Payload), nil
+}
+```
+
+The full file is available here: [blockchain/query.go](blockchain/query.go)
+
+Add the call to this new function in the [`main.go`](main.go):
+
+> line 49 of [`main.go`](main.go)
+
+```
+func main() {
+
+[...]
+
+	// Query the chaincode
+	response, err := fabricSdk.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
+	}
+}
+```
+
+Let's try to test this new feature:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+make
+```
+
+![Screenshot Query Hello](docs/images/query-hello.png)
