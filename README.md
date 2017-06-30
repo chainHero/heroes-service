@@ -868,3 +868,4 @@ cd $GOPATH/src/github.com/tohero/heroes-service && \
 make
 ```
 
+![Screenshot Chaincode installed and instantiated](docs/images/install-and-instantiate-cc.png)
