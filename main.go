@@ -53,4 +53,20 @@ func main() {
 	} else {
 		fmt.Printf("Response from the query hello: %s\n", response)
 	}
+
+	// Invoke the chaincode
+	txId, err := fabricSdk.InvokeHello("toHero")
+	if err != nil {
+		fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Successfully invoke hello, transaction ID: %s\n", txId)
+	}
+
+	// Query again the chaincode
+	response, err = fabricSdk.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
+	}
 }

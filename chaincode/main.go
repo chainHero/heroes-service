@@ -53,9 +53,14 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	}
 
 	// In order to manage multiple type of request, we will check the first argument.
-	// Here we have only one possible argument: query (every query request will read in the ledger without modification)
+	// Here we have one possible argument: query (every query request will read in the ledger without modification)
 	if args[0] == "query" {
 		return t.query(stub, args)
+	}
+
+	// The update argument will manage all update in the ledger
+	if args[0] == "invoke" {
+		return t.invoke(stub, args)
 	}
 
 	// If the argument given match any function, we return an error
@@ -68,7 +73,7 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 
 	// Check that the number of argument is sufficient to possibly find the function concern by the query
 	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient, you need to provide the function to query.")
+		return shim.Error("The number of arguments is insufficient, you need to provide the function for the query.")
 	}
 
 	// Like in the Invoke function, we manage multiple type of query request with the second argument.
@@ -86,7 +91,31 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 	}
 
 	// If the argument given match any function, we return an error
-	return shim.Error("Unknown query action, check the second argument, must be one of 'index' or 'count'")
+	return shim.Error("Unknown query action, check the second argument.")
+}
+
+// invoke
+// Every functions that read and write in the ledger will be here
+func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+
+	if len(args) < 2 {
+		return shim.Error("The number of arguments is insufficient, you need to provide the function for the invoke.")
+	}
+
+	if args[1] == "hello" && len(args) == 3 {
+
+		//
+		err := stub.PutState("hello", []byte(args[2]))
+		if err != nil {
+			return shim.Error("Failed to update state of hello")
+		}
+
+		// Return this value in response
+		return shim.Success(nil)
+	}
+
+	// If the argument given match any function, we return an error
+	return shim.Error("Unknown invoke action, check the second argument.")
 }
 
 func main() {
