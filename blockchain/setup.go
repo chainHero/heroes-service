@@ -34,7 +34,7 @@ func Initialize() (*FabricSetup, error) {
 		ChannelConfig:    "fixtures/channel/mychannel.tx",
 
 		// Chaincode parameters
-		ChaincodeId:      "hs", // For Heroes Service
+		ChaincodeId:      "heroes-service",
 		ChaincodeVersion: "v1.0.0",
 		ChaincodeGoPath:  os.Getenv("GOPATH"),
 		ChaincodePath:    "github.com/tohero/heroes-service/chaincode",

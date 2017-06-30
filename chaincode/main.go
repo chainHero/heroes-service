@@ -48,7 +48,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	}
 
 	// Check that the number of argument is sufficient to possibly find the function to invoke
-	if len(args) >= 1 {
+	if len(args) < 1 {
 		return shim.Error("The number of arguments is insufficient, you need to provide the function to invoke.")
 	}
 

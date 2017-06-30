@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/tohero/heroes-service/blockchain"
 	"fmt"
 	"os"
 	"runtime"
 	"path/filepath"
+	"github.com/tohero/heroes-service/blockchain"
 )
 
 // Fix empty GOPATH with golang 1.8 (see https://github.com/golang/go/blob/1363eeba6589fca217e155c829b2a7c00bc32a92/src/go/build/build.go#L260-L277)
@@ -37,12 +37,20 @@ func main() {
 	// Initialize the Fabric SDK
 	fabricSdk, err := blockchain.Initialize()
 	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
+		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 	}
 
 	// Install and instantiate the chaincode
 	err = fabricSdk.InstallAndInstantiateCC()
 	if err != nil {
-		fmt.Printf("Unable to install and instantiate the chaincode: %v", err)
+		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+	}
+
+	// Query the chaincode
+	response, err := fabricSdk.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
 	}
 }
