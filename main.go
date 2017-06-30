@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Initialize the Fabric SDK
-	fabricSdk, err := blockchain.Initialize()
+	_, err := blockchain.Initialize()
 	if err != nil {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
 	}
