@@ -7,6 +7,7 @@ import (
 	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 	"fmt"
+	"os"
 )
 
 // FabricSetup implementation
@@ -17,6 +18,10 @@ type FabricSetup struct {
 	Initialized      bool
 	ChannelId        string
 	ChannelConfig    string
+	ChaincodeId      string
+	ChaincodeVersion string
+	ChaincodeGoPath  string
+	ChaincodePath    string
 }
 
 // Initialize reads configuration from file and sets up client, chain and event hub
@@ -27,6 +32,12 @@ func Initialize() (*FabricSetup, error) {
 		// Channel parameters
 		ChannelId:        "mychannel",
 		ChannelConfig:    "fixtures/channel/mychannel.tx",
+
+		// Chaincode parameters
+		ChaincodeId:      "hs", // For Heroes Service
+		ChaincodeVersion: "v1.0.0",
+		ChaincodeGoPath:  os.Getenv("GOPATH"),
+		ChaincodePath:    "github.com/tohero/heroes-service/chaincode",
 	}
 
 	// Initialize the config
@@ -140,4 +151,60 @@ func getEventHub(client api.FabricClient) (api.EventHub, error) {
 	}
 
 	return eventHub, nil
+}
+
+// Install and instantiate the chaincode
+func (setup *FabricSetup) InstallAndInstantiateCC() error {
+
+	// Check if chaincode ID is provided
+	// otherwise, generate a random one
+	if setup.ChaincodeId == "" {
+		setup.ChaincodeId = fcutil.GenerateRandomID()
+	}
+
+	fmt.Printf(
+		"Chaincode %s (version %s) will be installed (Go Path: %s / Chaincode Path: %s)\n",
+		setup.ChaincodeId,
+		setup.ChaincodeVersion,
+		setup.ChaincodeGoPath,
+		setup.ChaincodePath,
+	)
+
+	// Install ChainCode
+	// Package the go code and make a proposal to the network with this new chaincode
+	err := fcutil.SendInstallCC(
+		setup.Client, // The SDK client
+		setup.Channel, // The channel concerned
+		setup.ChaincodeId,
+		setup.ChaincodePath,
+		setup.ChaincodeVersion,
+		nil,
+		setup.Channel.GetPeers(), // Peers concerned by this change in the channel
+		setup.ChaincodeGoPath,
+	)
+	if err != nil {
+		return fmt.Errorf("SendInstallProposal return error: %v", err)
+	} else {
+		fmt.Printf("ChainCode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+	}
+
+	// Instantiate ChainCode
+	// Call the Init function of the chaincode in order to initialize in every peer the new chaincode
+	err = fcutil.SendInstantiateCC(
+		setup.Channel,
+		setup.ChaincodeId,
+		setup.ChannelId,
+		[]string{"init"}, // Arguments for the invoke request
+		setup.ChaincodePath,
+		setup.ChaincodeVersion,
+		[]api.Peer{setup.Channel.GetPrimaryPeer()}, // Which peer to contact
+		setup.EventHub,
+	)
+	if err != nil {
+		return err
+	} else {
+		fmt.Printf("ChainCode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+	}
+
+	return nil
 }
