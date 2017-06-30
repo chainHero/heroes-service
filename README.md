@@ -593,7 +593,7 @@ To use it, go to the root of the project and use the `make` command:
 
 ### e. Fabric SDK Go: install & instanciate a chaincode
 
-We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) thht will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
+We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
 ```
 cd $GOPATH/src/github.com/tohero/heroes-service && \
@@ -704,4 +704,122 @@ func main() {
 
 The full file is available here: [chaincode/main.go](chaincode/main.go)
 
+> We choose to put the chaincode here to make the application simpler, but maybe it is better to use the architecture given by the SDK and put the chaincode in a `src` folder into the `fixtures` part. The chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. In addition, the chaincode can by write in Java or other languages in the future.
+
 For now, the chaincode does nothing extrodinary, just put the key/value `hello`/`world` in the ledger at the initialization. In addition, there is one function that we can call by an invoke: `query hello`. This function get the state in the ledger of `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
+
+In order to install and instantiate the chaincode, we need to add some code in the application. Edit the [`blockchain/setup.go`](blockchain/setup.go) and add this following lines:
+
+> line 13 of [`blockchain/setup.go`](blockchain/setup.go)
+> We add chaincode parameters
+
+```
+// FabricSetup implementation
+type FabricSetup struct {
+	Client           api.FabricClient
+	Channel          api.Channel
+	EventHub         api.EventHub
+	Initialized      bool
+	ChannelId        string
+	ChannelConfig    string
+	ChaincodeId      string
+	ChaincodeVersion string
+	ChaincodeGoPath  string
+	ChaincodePath    string
+}
+
+```
+
+> line 156 of [`blockchain/setup.go`](blockchain/setup.go)
+> We add the function that will install and instantiate the chaincode
+
+```
+// Install and instantiate the chaincode
+func (setup *FabricSetup) InstallAndInstantiateCC() error {
+
+	// Check if chaincode ID is provided
+	// otherwise, generate a random one
+	if setup.ChaincodeId == "" {
+		setup.ChaincodeId = fcutil.GenerateRandomID()
+	}
+
+	fmt.Printf(
+		"Chaincode %s (version %s) will be installed (Go Path: %s / Chaincode Path: %s)\n",
+		setup.ChaincodeId,
+		setup.ChaincodeVersion,
+		setup.ChaincodeGoPath,
+		setup.ChaincodePath,
+	)
+
+	// Install ChainCode
+	// Package the go code and make a proposal to the network with this new chaincode
+	err := fcutil.SendInstallCC(
+		setup.Client, // The SDK client
+		setup.Channel, // The channel concerned
+		setup.ChaincodeId,
+		setup.ChaincodePath,
+		setup.ChaincodeVersion,
+		nil,
+		setup.Channel.GetPeers(), // Peers concerned by this change in the channel
+		setup.ChaincodeGoPath,
+	)
+	if err != nil {
+		return fmt.Errorf("SendInstallProposal return error: %v", err)
+	} else {
+		fmt.Printf("ChainCode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+	}
+
+	// Instantiate ChainCode
+	// Call the Init function of the chaincode in order to initialize in every peer the new chaincode
+	err = fcutil.SendInstantiateCC(
+		setup.Channel,
+		setup.ChaincodeId,
+		setup.ChannelId,
+		[]string{"init"}, // Arguments for the invoke request
+		setup.ChaincodePath,
+		setup.ChaincodeVersion,
+		[]api.Peer{setup.Channel.GetPrimaryPeer()}, // Which peer to contact
+		setup.EventHub,
+	)
+	if err != nil {
+		return err
+	} else {
+		fmt.Printf("ChainCode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+	}
+
+	return nil
+}
+```
+
+The full file is available here: [blockchain/setup.go](blockchain/setup.go)
+
+> **Tips**: take care of the chaincode version, if you want to install and instantiate a new chaincode, increment this number. Overwhise the network will keep the same chaincode.
+
+Finally, we add the call to this function in the [`main.go`](main.go) after the SDK initialization:
+
+
+> line 43 of [`main.go`](main.go)
+> We add the function that will install and instantiate the chaincode
+
+```
+func main() {
+
+[...]
+
+	// Install and instantiate the chaincode
+	err = fabricSdk.InstallAndInstantiateCC()
+	if err != nil {
+		fmt.Printf("Unable to install and instantiate the chaincode: %v", err)
+	}
+}
+```
+
+The full file is available here: [main.go](main.go)
+
+We can test this, just with the `make` command setup in the previous step:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+make
+```
+
