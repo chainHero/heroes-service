@@ -283,9 +283,9 @@ import (
 	fsgConfig "github.com/hyperledger/fabric-sdk-go/pkg/config"
 	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
 	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 	"fmt"
 	"os"
-	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 )
 
 // FabricSetup implementation
@@ -593,4 +593,18 @@ To use it, go to the root of the project and use the `make` command:
 
 ### e. Fabric SDK Go: install & instanciate a chaincode
 
-We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) thht will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file 
+We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) thht will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+mkdir chaincode && \
+vi chaincode/main.go
+```
+
+```
+TODO
+```
+
+The full file is available here: [chaincode/main.go](chaincode/main.go)
+
+For now, the chaincode does nothing extrodinary, just put the key/value `hello`/`world` in the ledger at the initialization. In addition, there is one function that we can call by an invoke: `query hello`. This function get the state in the ledger of `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
