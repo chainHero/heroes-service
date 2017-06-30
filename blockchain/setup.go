@@ -5,6 +5,7 @@ import (
 	fsgConfig "github.com/hyperledger/fabric-sdk-go/pkg/config"
 	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
 	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 	"fmt"
 )
 
@@ -14,16 +15,18 @@ type FabricSetup struct {
 	Channel          api.Channel
 	EventHub         api.EventHub
 	Initialized      bool
-	ChannelID        string
+	ChannelId        string
 	ChannelConfig    string
 }
 
 // Initialize reads configuration from file and sets up client, chain and event hub
 func Initialize() (*FabricSetup, error) {
 
+	// Add parameters for the initialization
 	setup := FabricSetup{
-		ChannelID:       "mychannel",
-		ChannelConfig:   "fixtures/channel/mychannel.tx",
+		// Channel parameters
+		ChannelId:        "mychannel",
+		ChannelConfig:    "fixtures/channel/mychannel.tx",
 	}
 
 	// Initialize the config
@@ -53,9 +56,9 @@ func Initialize() (*FabricSetup, error) {
 	// Make a new instance of channel pre-configured with the info we have provided,
 	// but for now we can't use this channel because we need to create and
 	// make some peer join it
-	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelID)
+	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelId)
 	if err != nil {
-		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelID, err)
+		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelId, err)
 	}
 	setup.Channel = channel
 
@@ -93,8 +96,48 @@ func Initialize() (*FabricSetup, error) {
 	// Give the organisation user to the client for next proposal
 	client.SetUserContext(orgUser)
 
+	// Setup Event Hub
+	// This will allow use to listen for some event from the chaincode
+	// and make some actions. We won't use it for now.
+	eventHub, err := getEventHub(client)
+	if err != nil {
+		return nil, err
+	}
+	if err := eventHub.Connect(); err != nil {
+		return nil, fmt.Errorf("Failed eventHub.Connect() [%s]", err)
+	}
+	setup.EventHub = eventHub
+
 	// Tell that the initialization is done
 	setup.Initialized = true
 
 	return &setup, nil
+}
+
+// getEventHub initilizes the event hub
+func getEventHub(client api.FabricClient) (api.EventHub, error) {
+	eventHub, err := events.NewEventHub(client)
+	if err != nil {
+		return nil, fmt.Errorf("Error creating new event hub: %v", err)
+	}
+	foundEventHub := false
+	peerConfig, err := client.GetConfig().GetPeersConfig()
+	if err != nil {
+		return nil, fmt.Errorf("Error reading peer config: %v", err)
+	}
+	for _, p := range peerConfig {
+		if p.EventHost != "" && p.EventPort != 0 {
+			fmt.Printf("EventHub connect to peer (%s:%d)\n", p.EventHost, p.EventPort)
+			eventHub.SetPeerAddr(fmt.Sprintf("%s:%d", p.EventHost, p.EventPort),
+				p.TLS.Certificate, p.TLS.ServerHostOverride)
+			foundEventHub = true
+			break
+		}
+	}
+
+	if !foundEventHub {
+		return nil, fmt.Errorf("No EventHub configuration found")
+	}
+
+	return eventHub, nil
 }
