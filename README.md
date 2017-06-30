@@ -798,13 +798,19 @@ The full file is available here: [blockchain/setup.go](blockchain/setup.go)
 Finally, we add the call to this function in the [`main.go`](main.go) after the SDK initialization:
 
 
-> line 43 of [`main.go`](main.go)
+> line 38 of [`main.go`](main.go)
 > We add the function that will install and instantiate the chaincode
 
 ```
 func main() {
 
 [...]
+
+	// Initialize the Fabric SDK
+	fabricSdk, err := blockchain.Initialize()
+	if err != nil {
+		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
+	}
 
 	// Install and instantiate the chaincode
 	err = fabricSdk.InstallAndInstantiateCC()
