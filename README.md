@@ -730,6 +730,29 @@ type FabricSetup struct {
 
 ```
 
+> line 28 of [`blockchain/setup.go`](blockchain/setup.go)
+> We add chaincode parameters
+
+```
+func Initialize() (*FabricSetup, error) {
+
+	// Add parameters for the initialization
+	setup := FabricSetup{
+		// Channel parameters
+		ChannelId:        "mychannel",
+		ChannelConfig:    "fixtures/channel/mychannel.tx",
+
+		// Chaincode parameters
+		ChaincodeId:      "hs", // For Heroes Service
+		ChaincodeVersion: "v1.0.0",
+		ChaincodeGoPath:  os.Getenv("GOPATH"),
+		ChaincodePath:    "github.com/tohero/heroes-service/chaincode",
+	}
+    
+    [...]
+}
+```
+
 > line 156 of [`blockchain/setup.go`](blockchain/setup.go)
 > We add the function that will install and instantiate the chaincode
 
