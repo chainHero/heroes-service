@@ -259,7 +259,7 @@ client:
   path: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/channel/crypto-config"
 ```
 
-The full configuration file is available here: [config.yaml](config.yaml)
+The full configuration file is available here: [`config.yaml`](config.yaml)
 
 ### b. Initialize
 
@@ -422,7 +422,7 @@ func getEventHub(client api.FabricClient) (api.EventHub, error) {
 }
 ```
 
-The full file is available here: [blockchain/setup.go](blockchain/setup.go)
+The full file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 At this stage we only initialize a client that will comunicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
 
@@ -480,7 +480,7 @@ func main() {
 }
 ```
 
-The full file is available here: [main.go](main.go)
+The full file is available here: [`main.go`](main.go)
 
 Like you can see, we fix the GOPATH in the environment if it's not set. We will need this futur for compile the chaincode (we will see this in the next step).
 
@@ -583,7 +583,7 @@ clean: env-down
 	@echo "Clean up done"
 ```
 
-The full file is available here: [Makefile](Makefile)
+The full file is available here: [`Makefile`](Makefile)
 
 Now with the task `all`, first there will be a cleanup of the environment, then the compilation phase, then the network up and finally run the app.
 
@@ -660,7 +660,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	}
 
 	// In order to manage multiple type of request, we will check the first argument.
-	// Here we have only one possible argument: query (every query request will read in the ledger without modification)
+	// Here we have one possible argument: query (every query request will read in the ledger without modification)
 	if args[0] == "query" {
 		return t.query(stub, args)
 	}
@@ -675,7 +675,7 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 
 	// Check that the number of argument is sufficient to possibly find the function concern by the query
 	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient, you need to provide the function to query.")
+		return shim.Error("The number of arguments is insufficient, you need to provide the function for the query.")
 	}
 
 	// Like in the Invoke function, we manage multiple type of query request with the second argument.
@@ -693,7 +693,7 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 	}
 
 	// If the argument given match any function, we return an error
-	return shim.Error("Unknown query action, check the second argument, must be one of 'index' or 'count'")
+	return shim.Error("Unknown query action, check the second argument.")
 }
 
 func main() {
@@ -705,7 +705,7 @@ func main() {
 }
 ```
 
-The full file is available here: [chaincode/main.go](chaincode/main.go)
+The full file is available here: [`chaincode/main.go`](chaincode/main.go)
 
 > We choose to put the chaincode here to make the application simpler, but maybe it is better to use the architecture given by the SDK and put the chaincode in a `src` folder into the `fixtures` part. The chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. In addition, the chaincode can by write in Java or other languages in the future.
 
@@ -725,7 +725,6 @@ import (
 	"fmt"
 	"os"
 )
-
 ```
 
 > line 13 of [`blockchain/setup.go`](blockchain/setup.go): we add chaincode parameters
@@ -744,7 +743,6 @@ type FabricSetup struct {
 	ChaincodeGoPath  string
 	ChaincodePath    string
 }
-
 ```
 
 > line 28 of [`blockchain/setup.go`](blockchain/setup.go): we set new parameters
@@ -829,7 +827,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 }
 ```
 
-The full file is available here: [blockchain/setup.go](blockchain/setup.go)
+The full file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to install and instantiate a new chaincode, increment this number. Overwhise the network will keep the same chaincode.
 
@@ -857,7 +855,7 @@ func main() {
 }
 ```
 
-The full file is available here: [main.go](main.go)
+The full file is available here: [`main.go`](main.go)
 
 We can test this, just with the `make` command setup in the previous step:
 
@@ -915,7 +913,7 @@ func (setup *FabricSetup) QueryHello() (string, error) {
 }
 ```
 
-The full file is available here: [blockchain/query.go](blockchain/query.go)
+The full file is available here: [`blockchain/query.go`](blockchain/query.go)
 
 Add the call to this new function in the [`main.go`](main.go):
 
@@ -936,6 +934,8 @@ func main() {
 }
 ```
 
+The full file is available here: [`main.go`](main.go)
+
 Let's try to test this new feature:
 
 ```
@@ -944,6 +944,180 @@ make
 ```
 
 ![Screenshot Query Hello](docs/images/query-hello.png)
+
+### f. Change the ledger state
+
+The next thing to do in order to make a basic tour of the Fabric SDK Go, is to make a request to the chaincode in order to change the ledger state.
+
+First, we will add this ability in the chaincode. Edit the [`chaincode/main.go`](chaincode/main.go) file:
+
+> line 97 of [`chaincode/main.go`](chaincode/main.go)
+
+```
+// invoke
+// Every functions that read and write in the ledger will be here
+func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+
+	if len(args) < 2 {
+		return shim.Error("The number of arguments is insufficient, you need to provide the function for the invoke.")
+	}
+
+	if args[1] == "hello" && len(args) == 3 {
+
+		//
+		err := stub.PutState("hello", []byte(args[2]))
+		if err != nil {
+			return shim.Error("Failed to update state of hello")
+		}
+
+		// Return this value in response
+		return shim.Success(nil)
+	}
+
+	// If the argument given match any function, we return an error
+	return shim.Error("Unknown invoke action, check the second argument.")
+}
+```
+
+> line 57 of [`chaincode/main.go`](chaincode/main.go)
+
+```
+func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+
+[...]
+
+	if args[0] == "query" {
+		return t.query(stub, args)
+	}
+
+	// The update argument will manage all update in the ledger
+	if args[0] == "invoke" {
+		return t.invoke(stub, args)
+	}
+
+[...]
+
+}
+```
+
+The full file is available here: [`chaincode/main.go`](chaincode/main.go)
+
+In addition, from the application side, we add a new function to invoke the new function in the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+vi blockchain/invoke.go
+```
+
+```
+package blockchain
+
+import (
+	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
+	api "github.com/hyperledger/fabric-sdk-go/api"
+	"fmt"
+	"time"
+)
+
+// InvokeHello
+func (setup *FabricSetup) InvokeHello(value string) (string, error) {
+
+	// Prepare arguments
+	var args []string
+	args = append(args, "invoke")
+	args = append(args, "invoke")
+	args = append(args, "hello")
+	args = append(args, value)
+
+	// Add data that will be visible in the proposal, like a description of the invoke request
+	transientDataMap := make(map[string][]byte)
+	transientDataMap["result"] = []byte("Transient data in hello invoke")
+
+	// Make a nex transaction proposal and send it
+	transactionProposalResponse, txID, err := fcutil.CreateAndSendTransactionProposal(
+		setup.Channel,
+		setup.ChaincodeId,
+		setup.ChannelId,
+		args,
+		[]api.Peer{setup.Channel.GetPrimaryPeer()},
+		transientDataMap,
+	)
+	if err != nil {
+		return "", fmt.Errorf("Create and send transaction proposal in the invoke hello return error: %v", err)
+	}
+
+	// Register the Fabric SDK to listen to the event that will come back when the transaction will be send
+	done, fail := fcutil.RegisterTxEvent(txID, setup.EventHub)
+
+	// Send the final transaction signed by endorser
+	if _, err := fcutil.CreateAndSendTransaction(setup.Channel, transactionProposalResponse); err != nil {
+		return "", fmt.Errorf("Create and send transaction in the invoke hello return error: %v", err)
+	}
+
+	// Wait the result of the submission
+	select {
+	// Transaction Ok
+	case <-done:
+		return txID, nil
+
+	// Transaction failed
+	case <-fail:
+		return "", fmt.Errorf("Error received from eventhub for txid(%s) error(%v)", txID, fail)
+
+	// Transaction timeout
+	case <-time.After(time.Second * 30):
+		return "", fmt.Errorf("Didn't receive block event for txid(%s)", txID)
+	}
+}
+```
+
+The full file is available here: [`blockchain/invoke.go`](blockchain/invoke.go)
+
+Add the call to this new function in the [`main.go`](main.go):
+
+> line 49 of [`main.go`](main.go)
+
+```
+func main() {
+
+[...]
+
+	// Query the chaincode
+	response, err := fabricSdk.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
+	}
+
+	// Invoke the chaincode
+	txId, err := fabricSdk.InvokeHello("toHero")
+	if err != nil {
+		fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Successfully invoke hello, transaction ID: %s\n", txId)
+	}
+
+	// Query again the chaincode
+	response, err = fabricSdk.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
+	}
+}
+```
+
+The full file is available here: [`main.go`](main.go)
+
+Let's try to test this new feature:
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+make
+```
+
+![Screenshot Invoke Hello](docs/images/invoke-hello.png)
 
 ## 6. Final application: Heroes service
 
