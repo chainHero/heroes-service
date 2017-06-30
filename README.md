@@ -8,7 +8,7 @@ This tutorial won’t explain in detail how Hyperledger Fabric works, I will jus
 
 In the technical part, this tutorial has been made on **Ubuntu 16.04**. The Hyperledger Fabric framework is compatible with Mac OSX and Windows too, but I can’t guarantee that all the stuff can work.
 
-We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. There are other SDK if you want to, like for NodeJS, Java or Python.
+We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode can be write in Go too, so the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
 
 Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, in the v1.0, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization (we will install Docker in the installation part).
 
@@ -284,6 +284,8 @@ import (
 	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
 	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
 	"fmt"
+	"os"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 )
 
 // FabricSetup implementation
@@ -292,16 +294,18 @@ type FabricSetup struct {
 	Channel          api.Channel
 	EventHub         api.EventHub
 	Initialized      bool
-	ChannelID        string
+	ChannelId        string
 	ChannelConfig    string
 }
 
 // Initialize reads configuration from file and sets up client, chain and event hub
 func Initialize() (*FabricSetup, error) {
 
+	// Add parameters for the initialization
 	setup := FabricSetup{
-		ChannelID:       "mychannel",
-		ChannelConfig:   "fixtures/channel/mychannel.tx",
+		// Channel parameters
+		ChannelId:        "mychannel",
+		ChannelConfig:    "fixtures/channel/mychannel.tx",
 	}
 
 	// Initialize the config
@@ -331,9 +335,9 @@ func Initialize() (*FabricSetup, error) {
 	// Make a new instance of channel pre-configured with the info we have provided,
 	// but for now we can't use this channel because we need to create and
 	// make some peer join it
-	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelID)
+	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelId)
 	if err != nil {
-		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelID, err)
+		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelId, err)
 	}
 	setup.Channel = channel
 
@@ -371,12 +375,51 @@ func Initialize() (*FabricSetup, error) {
 	// Give the organisation user to the client for next proposal
 	client.SetUserContext(orgUser)
 
+	// Setup Event Hub
+	// This will allow use to listen for some event from the chaincode
+	// and make some actions. We won't use it for now.
+	eventHub, err := getEventHub(client)
+	if err != nil {
+		return nil, err
+	}
+	if err := eventHub.Connect(); err != nil {
+		return nil, fmt.Errorf("Failed eventHub.Connect() [%s]", err)
+	}
+	setup.EventHub = eventHub
+
 	// Tell that the initialization is done
 	setup.Initialized = true
 
 	return &setup, nil
 }
 
+// getEventHub initilizes the event hub
+func getEventHub(client api.FabricClient) (api.EventHub, error) {
+	eventHub, err := events.NewEventHub(client)
+	if err != nil {
+		return nil, fmt.Errorf("Error creating new event hub: %v", err)
+	}
+	foundEventHub := false
+	peerConfig, err := client.GetConfig().GetPeersConfig()
+	if err != nil {
+		return nil, fmt.Errorf("Error reading peer config: %v", err)
+	}
+	for _, p := range peerConfig {
+		if p.EventHost != "" && p.EventPort != 0 {
+			fmt.Printf("EventHub connect to peer (%s:%d)\n", p.EventHost, p.EventPort)
+			eventHub.SetPeerAddr(fmt.Sprintf("%s:%d", p.EventHost, p.EventPort),
+				p.TLS.Certificate, p.TLS.ServerHostOverride)
+			foundEventHub = true
+			break
+		}
+	}
+
+	if !foundEventHub {
+		return nil, fmt.Errorf("No EventHub configuration found")
+	}
+
+	return eventHub, nil
+}
 ```
 
 The full file is available here: [blockchain/setup.go](blockchain/setup.go)
@@ -385,7 +428,7 @@ At this stage we only initialize a client that will comunicate to a peer, a CA a
 
 ### c. Fabric SDK Go: test
 
-To make sure thaht the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any amin file. Let's add one:
+To make sure that the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any main file. Let's add one:
 
 ```
 cd $GOPATH/src/github.com/tohero/heroes-service && \
@@ -398,9 +441,38 @@ package main
 import (
 	"github.com/tohero/heroes-service/blockchain"
 	"fmt"
+	"os"
+	"runtime"
+	"path/filepath"
 )
 
+// Fix empty GOPATH with golang 1.8 (see https://github.com/golang/go/blob/1363eeba6589fca217e155c829b2a7c00bc32a92/src/go/build/build.go#L260-L277)
+func defaultGOPATH() string {
+	env := "HOME"
+	if runtime.GOOS == "windows" {
+		env = "USERPROFILE"
+	} else if runtime.GOOS == "plan9" {
+		env = "home"
+	}
+	if home := os.Getenv(env); home != "" {
+		def := filepath.Join(home, "go")
+		if filepath.Clean(def) == filepath.Clean(runtime.GOROOT()) {
+			// Don't set the default GOPATH to GOROOT,
+			// as that will trigger warnings from the go tool.
+			return ""
+		}
+		return def
+	}
+	return ""
+}
+
 func main() {
+	// Setup correctly the GOPATH in the environment
+	if goPath := os.Getenv("GOPATH"); goPath == "" {
+		os.Setenv("GOPATH", defaultGOPATH())
+	}
+
+	// Initialize the Fabric SDK
 	_, err := blockchain.Initialize()
 	if err != nil {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
@@ -409,6 +481,8 @@ func main() {
 ```
 
 The full file is available here: [main.go](main.go)
+
+Like you can see, we fix the GOPATH in the environment if it's not set. We will need this futur for compile the chaincode (we will see this in the next step).
 
 The last thing to do before start the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA and Fabric SDK Go. All is ok but when we will try to compile our app, there will be some conflict (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
 
@@ -517,10 +591,6 @@ To use it, go to the root of the project and use the `make` command:
 - Task `env-up`: `make env-up`
 - ...
 
-**TODO - Configuration**
+### e. Fabric SDK Go: install & instanciate a chaincode
 
-To manage this file we will use [viper](github.com/spf13/viper), a power tool that handle a lot of file type:
-
-```
-go get -u github.com/spf13/viper
-```
+We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) thht will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file 
