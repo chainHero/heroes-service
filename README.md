@@ -710,6 +710,22 @@ For now, the chaincode does nothing extrodinary, just put the key/value `hello`/
 
 In order to install and instantiate the chaincode, we need to add some code in the application. Edit the [`blockchain/setup.go`](blockchain/setup.go) and add this following lines:
 
+> line 3 of [`blockchain/setup.go`](blockchain/setup.go)
+> We add the OS import to get access to the GOPATH variable in the environment
+
+```
+import (
+	api "github.com/hyperledger/fabric-sdk-go/api"
+	fsgConfig "github.com/hyperledger/fabric-sdk-go/pkg/config"
+	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
+	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
+	"fmt"
+	"os"
+)
+
+```
+
 > line 13 of [`blockchain/setup.go`](blockchain/setup.go)
 > We add chaincode parameters
 
@@ -731,7 +747,7 @@ type FabricSetup struct {
 ```
 
 > line 28 of [`blockchain/setup.go`](blockchain/setup.go)
-> We add chaincode parameters
+> We set new parameters
 
 ```
 func Initialize() (*FabricSetup, error) {
