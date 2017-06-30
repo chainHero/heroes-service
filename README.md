@@ -194,9 +194,9 @@ You will see the two peers, the orderer and the two CA. To stop the network go b
 
 > **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same place where the `docker-compose.yaml` is: `docker-compose down` (this will also remove all containers).
 
-## 5. Build a simple application using SDK
+## 5. Use the Fabric SDK Go
 
-### a. Fabric SDK Go: configuration
+### a. Configuration
 
 Like we remove the config folder, we need to make a new config file. We will put everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode, that with we just put the blockchain configuration:
 
@@ -261,7 +261,7 @@ client:
 
 The full configuration file is available here: [config.yaml](config.yaml)
 
-### b. Fabric SDK Go: initialize
+### b. Initialize
 
 We add a new folder named `blockchain` that will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in this folder.
 
@@ -426,7 +426,7 @@ The full file is available here: [blockchain/setup.go](blockchain/setup.go)
 
 At this stage we only initialize a client that will comunicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
 
-### c. Fabric SDK Go: test
+### c. Test
 
 To make sure that the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any main file. Let's add one:
 
@@ -521,7 +521,7 @@ cd .. && \
 
 Great! We arrive to initialize the SDK to our network created locally. Next step is to interact with a chaincode.
 
-### d. Fabric SDK Go: clean up and Makefile
+### d. Clean up and Makefile
 
 The Fabric SDK generate some file, like certificates or temporally files. Put down the network won't fully clean up your environment and when you will start again, this files will be reused to avoid recreation. For development you can keep them to test quicly but for a real test, you need to clean up all and start from the begining.
 
@@ -594,7 +594,7 @@ To use it, go to the root of the project and use the `make` command:
 - Task `env-up`: `make env-up`
 - ...
 
-### e. Fabric SDK Go: install & instanciate a chaincode
+### e. Install & instanciate a chaincode
 
 We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
@@ -870,7 +870,7 @@ make
 
 > **Tips**: the installation and the instantiation don't need to be run at every start of the application. Only when we update the chaincode (and the chaincode version). A solution is to provide an argument when we run the application to tell to make this additional procedure before move on. For the tutorial, we will clean up every time the environment, so we don't care about that.
 
-### f. Fabric SDK Go: query the chaincode
+### f. Query the chaincode
 
 Like a database, the chaincode is plugged and ready to answer. Let's try the `hello` query.
 
@@ -944,3 +944,11 @@ make
 ```
 
 ![Screenshot Query Hello](docs/images/query-hello.png)
+
+## 6. Final application: Heroes service
+
+**TODO**
+
+## 7. Referencies
+
+**TODO**
