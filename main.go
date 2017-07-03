@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"path/filepath"
 	"github.com/tohero/heroes-service/blockchain"
+	"github.com/tohero/heroes-service/web"
+	"github.com/tohero/heroes-service/web/controllers"
 )
 
 // Fix empty GOPATH with golang 1.8 (see https://github.com/golang/go/blob/1363eeba6589fca217e155c829b2a7c00bc32a92/src/go/build/build.go#L260-L277)
@@ -46,27 +48,9 @@ func main() {
 		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 	}
 
-	// Query the chaincode
-	response, err := fabricSdk.QueryHello()
-	if err != nil {
-		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
-	} else {
-		fmt.Printf("Response from the query hello: %s\n", response)
+	app := &controllers.Application{
+		Fabric: fabricSdk,
 	}
 
-	// Invoke the chaincode
-	txId, err := fabricSdk.InvokeHello("toHero")
-	if err != nil {
-		fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err)
-	} else {
-		fmt.Printf("Successfully invoke hello, transaction ID: %s\n", txId)
-	}
-
-	// Query again the chaincode
-	response, err = fabricSdk.QueryHello()
-	if err != nil {
-		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
-	} else {
-		fmt.Printf("Response from the query hello: %s\n", response)
-	}
+	web.Serve(app)
 }
