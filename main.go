@@ -48,9 +48,9 @@ func main() {
 		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 	}
 
+	// Make the web application listening
 	app := &controllers.Application{
 		Fabric: fabricSdk,
 	}
-
 	web.Serve(app)
 }

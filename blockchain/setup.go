@@ -125,7 +125,7 @@ func Initialize() (*FabricSetup, error) {
 	return &setup, nil
 }
 
-// getEventHub initilizes the event hub
+// getEventHub initialize the event hub
 func getEventHub(client api.FabricClient) (api.EventHub, error) {
 	eventHub, err := events.NewEventHub(client)
 	if err != nil {
@@ -183,9 +183,9 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		setup.ChaincodeGoPath,
 	)
 	if err != nil {
-		return fmt.Errorf("SendInstallProposal return error: %v", err)
+		return fmt.Errorf("Send install proposal return error: %v", err)
 	} else {
-		fmt.Printf("ChainCode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+		fmt.Printf("Chaincode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
 	}
 
 	// Instantiate ChainCode
@@ -203,7 +203,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil {
 		return err
 	} else {
-		fmt.Printf("ChainCode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+		fmt.Printf("Chaincode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
 	}
 
 	return nil
