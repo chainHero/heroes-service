@@ -144,9 +144,9 @@ The installation can take a while (depending on your network connection), but at
 
 ### a. Prepare environment
 
-In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption in the end to end manner (SSL, TSL …) and the Fabric SDK Go provide them. So, we directly get the network used by the testing part of the SDK. 
+In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificate to ensure encryption in the end to end (SSL, TSL, authentification...) and the Fabric SDK Go provide them. So, we directly get the network used by the testing part of the SDK. 
 
-Make a new directory in the `src` folder of your `GOPATH`, we name it ‘heroes-service’:
+Make a new directory in the `src` folder of your `GOPATH`, we name it `heroes-service`:
 
 ```
 mkdir -p $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -167,7 +167,7 @@ rm -rf fixtures/{config,src,.env,latest-env.sh}
 
 ### b. Build a Docker compose file
 
-In order to make it work, we have to edit the `docker-compose.yaml` file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
+In order to make it works, we have to edit the `docker-compose.yaml` file. This is the configuration file for `docker-compose` command. It tells which container need to be created/started and with what configuration for each. Take your favorite text editor and copy/paste content from this repository:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -176,11 +176,11 @@ vi fixtures/docker-compose.yaml
 
 see [fixtures/docker-compose.yaml](fixtures/docker-compose.yaml)
 
-Now if we use docker-compose we will setup 2 fabric certificate authorities with 1 peer for each. Peers will have all roles: ledger, endorer and commiter. In addition, an orderer is also created with the `solo` ordering (no consensus is made).
+Now if we use `docker-compose`, we will setup two Fabric Certificate Authorities with one peer for each. Peers will have all roles: ledger, endorser and commiter. In addition, an orderer is also created with the `solo` ordering algorithm (no consensus is made).
 
 ### c. Test
 
-In order to check if the network works, we will use command provide by docker-compose to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
+In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && \
@@ -197,13 +197,13 @@ docker ps
 
 ![Docker compose up screenshot](docs/images/docker-ps.png)
 
-You will see the two peers, the orderer and the two CA. To stop the network go back to the previous terminal, and press `Ctrl+C`, wait that all containers are stopped. You have succefully made a new network ready to use with th SDK. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
+You will see the two peers, the orderer and the two CA. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. You have successfully made a new network ready to use with the SDK. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 ![Docker compose up screenshot](docs/images/docker-compose-up.png)
 
-> **Tips**: when the network is down, all containers used remains accessible, but not active, to check logs for example. You can see them with `docker ps -a`. In order to clean up this containers, you need to delete them with `docker rm $(docker ps -aq)`.
+> **Tips**: when the network is stopped, all containers used remain accessible. This is very useful to check logs for example. You can see them with `docker ps -a`. In order to clean up these containers, you need to delete them with `docker rm $(docker ps -aq)` or if you have used a `docker-compose` file, go where this file is and run `docker-compose down`.
 
-> **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same place where the `docker-compose.yaml` is: `docker-compose down` (this will also remove all containers).
+> **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same place where the `docker-compose.yaml` is: `docker-compose stop` (or `docker-compose down` to clean up after all containers are stopped).
 
 ## 5. Use the Fabric SDK Go
 
