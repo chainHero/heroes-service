@@ -1,6 +1,6 @@
 # Tutorial Hyperledger Fabric SDK Go: How to build your first app?
 
-This tutorial will introduce you to the Hyperledger Fabric Go SDK and allow you to build a simple application using the blockchain principle. The application will be a tool that allows people to make a request for a get some help. A hero can see all requests and accept some. When he achieved the service, the person who made the request can thank and reward the hero. The kind of things is like a smart contract between a simple user and a hero.
+This tutorial will introduce you to the Hyperledger Fabric Go SDK and allow you to build a simple application using the blockchain principle.
 
 ## 1. Prerequisites
 
@@ -393,7 +393,7 @@ func Initialize() (*FabricSetup, error) {
 	return &setup, nil
 }
 
-// getEventHub initilizes the event hub
+// getEventHub initialize the event hub
 func getEventHub(client api.FabricClient) (api.EventHub, error) {
 	eventHub, err := events.NewEventHub(client)
 	if err != nil {
@@ -800,9 +800,9 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		setup.ChaincodeGoPath,
 	)
 	if err != nil {
-		return fmt.Errorf("SendInstallProposal return error: %v", err)
+		return fmt.Errorf("Send install proposal return error: %v", err)
 	} else {
-		fmt.Printf("ChainCode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+		fmt.Printf("Chaincode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
 	}
 
 	// Instantiate ChainCode
@@ -820,7 +820,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil {
 		return err
 	} else {
-		fmt.Printf("ChainCode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+		fmt.Printf("Chaincode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
 	}
 
 	return nil
@@ -1119,10 +1119,33 @@ make
 
 ![Screenshot Invoke Hello](docs/images/invoke-hello.png)
 
-## 6. Final application: Heroes service
+## 6. Make this in a web application
 
-**TODO**
+We also can make this usable by any users. The best choice is a web application and we are lucky because the Go language provide by default a web server thaht handle HTTP requests and also templating for HTML.
+
+For now, we have only two different actions, the query and the invokation of the hello value. Let's make two HTML pages for each action. We add a [`web`](web) directory with three others directories:
+- [`web/templates`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates): contain all HTML pages (templates)
+- [`web/assets`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/assets): contain all CSS, Javascript, Fonts, Images...
+- [`web/controllers`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers): container all functions that will render templates
+
+We use the MVC (Model-View-Controller) to make it more readable. The Model part will be the blockchain part, the View are templates and Controller are provided by ths functions in the [`controllers`](web/controllers) directory.
+
+Populate each with the appropriate code (we also added Bootstrap to make the result a little prettier:
+
+- [`web/templates/layout.html`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates/layout.html)
+- [`web/templates/home.html`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates/home.html)
+- [`web/templates/request.html`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates/request.html)
+- [`web/controllers/controller.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers/controller.go)
+- [`web/controllers/home.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers/home.go)
+- [`web/controllers/request.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers/request.go)
+- [`web/app.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/app.go)
+- [`web/assets`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/assets)
+
 
 ## 7. Referencies
 
-**TODO**
+- [Hyperledger website](https://www.hyperledger.org/)
+- [Hyperledger Fabric online documentation](http://hyperledger-fabric.readthedocs.io/en/latest/)
+- [Hyperledger Fabric on github](https://github.com/hyperledger/fabric)
+- [Hyperledger Fabric Certificate Authority on github](https://github.com/hyperledger/fabric-ca)
+- [Hyperledger Fabric SDK Go on github](https://github.com/hyperledger/fabric-sdk-go)
