@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"html/template"
-	"github.com/tohero/heroes-service/blockchain"
+	"github.com/chainhero/heroes-service/blockchain"
 )
 
 type Application struct {

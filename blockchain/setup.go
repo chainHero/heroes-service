@@ -37,7 +37,7 @@ func Initialize() (*FabricSetup, error) {
 		ChaincodeId:      "heroes-service",
 		ChaincodeVersion: "v1.0.0",
 		ChaincodeGoPath:  os.Getenv("GOPATH"),
-		ChaincodePath:    "github.com/tohero/heroes-service/chaincode",
+		ChaincodePath:    "github.com/chainhero/heroes-service/chaincode",
 	}
 
 	// Initialize the config

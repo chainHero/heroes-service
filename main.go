@@ -5,9 +5,9 @@ import (
 	"os"
 	"runtime"
 	"path/filepath"
-	"github.com/tohero/heroes-service/blockchain"
-	"github.com/tohero/heroes-service/web"
-	"github.com/tohero/heroes-service/web/controllers"
+	"github.com/chainhero/heroes-service/blockchain"
+	"github.com/chainhero/heroes-service/web"
+	"github.com/chainhero/heroes-service/web/controllers"
 )
 
 // Fix empty GOPATH with golang 1.8 (see https://github.com/golang/go/blob/1363eeba6589fca217e155c829b2a7c00bc32a92/src/go/build/build.go#L260-L277)
