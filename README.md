@@ -144,13 +144,13 @@ The installation can take a while (depending on your network connection), but at
 
 ### a. Prepare environment
 
-In order to make a blockchain network we will use docker to build virtual computers that will handle different roles. In this tutorial we will stay simple as possible. To do so, we will directly get the network use of testing in the Fabric SDK Go. Hyperledger Fabric needs a lot of certificates to ensure encryption in the end to end manner (SSL, TSL …).
+In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption in the end to end manner (SSL, TSL …) and the Fabric SDK Go provide them. So, we directly get the network used by the testing part of the SDK. 
 
-Make a new directory in source folder of your GOPATH place, we will name it ‘heroes-service’:
+Make a new directory in the `src` folder of your `GOPATH`, we name it ‘heroes-service’:
 
 ```
-mkdir -p $GOPATH/src/github.com/tohero/heroes-service && \
-cd $GOPATH/src/github.com/tohero/heroes-service
+mkdir -p $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service
 ```
 
 Now, we can copy the environment of the Fabric SDK Go placed in the test folder:
@@ -170,7 +170,7 @@ rm -rf fixtures/{config,src,.env,latest-env.sh}
 In order to make it work, we have to edit the `docker-compose.yaml` file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 vi fixtures/docker-compose.yaml
 ```
 
@@ -183,7 +183,7 @@ Now if we use docker-compose we will setup 2 fabric certificate authorities with
 In order to check if the network works, we will use command provide by docker-compose to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service/fixtures && \
+cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && \
 docker-compose up
 ```
 
@@ -212,7 +212,7 @@ You will see the two peers, the orderer and the two CA. To stop the network go b
 Like we remove the config folder, we need to make a new config file. We will put everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode, that with we just put the blockchain configuration:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 vi config.yaml
 ```
 
@@ -227,7 +227,7 @@ client:
     primary: true
     tls:
       # Certificate location absolute path
-      certificate: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/cacerts/org1.example.com-cert.pem"
+      certificate: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/cacerts/org1.example.com-cert.pem"
       serverHostOverride: "peer0.org1.example.com"
 
  tls:
@@ -247,7 +247,7 @@ client:
   port: 7050
   tls:
     # Certificate location absolute path
-    certificate: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/cacerts/example.com-cert.pem"
+    certificate: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/cacerts/example.com-cert.pem"
     serverHostOverride: "orderer.example.com"
 
  logging:
@@ -261,13 +261,13 @@ client:
   mspDir: "msp"
   serverURL: "https://localhost:7054"
   certfiles :
-    - "$GOPATH/src/github.com/tohero/heroes-service/fixtures/tls/fabricca/ca/ca_root.pem"
+    - "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/ca/ca_root.pem"
   client:
-   keyfile: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/tls/fabricca/client/client_client1-key.pem"
-   certfile: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/tls/fabricca/client/client_client1.pem"
+   keyfile: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/client/client_client1-key.pem"
+   certfile: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/client/client_client1.pem"
 
  cryptoconfig:
-  path: "$GOPATH/src/github.com/tohero/heroes-service/fixtures/channel/crypto-config"
+  path: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config"
 ```
 
 The full configuration file is available here: [`config.yaml`](config.yaml)
@@ -277,13 +277,13 @@ The full configuration file is available here: [`config.yaml`](config.yaml)
 We add a new folder named `blockchain` that will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in this folder.
 
 ```
-mkdir $GOPATH/src/github.com/tohero/heroes-service/blockchain
+mkdir $GOPATH/src/github.com/chainhero/heroes-service/blockchain
 ```
 
 Now add a new go file named `setup.go` :
 
 ```
-vi $GOPATH/src/github.com/tohero/heroes-service/blockchain/setup.go
+vi $GOPATH/src/github.com/chainhero/heroes-service/blockchain/setup.go
 ```
 
 ```
@@ -442,7 +442,7 @@ At this stage we only initialize a client that will comunicate to a peer, a CA a
 To make sure that the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any main file. Let's add one:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 vi main.go
 ```
 
@@ -450,7 +450,7 @@ vi main.go
 package main
 
 import (
-	"github.com/tohero/heroes-service/blockchain"
+	"github.com/chainhero/heroes-service/blockchain"
 	"fmt"
 	"os"
 	"runtime"
@@ -499,21 +499,21 @@ The last thing to do before start the compilation is to use a vendor directory. 
 
 ```
 go get -u github.com/kardianos/govendor && \
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 govendor init && govendor add +external
 ```
 
 Now we can make the compilation:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 go build
 ```
 
 After some time, a new binary named `heroes-service` will appear at the root of the project. Try to start the binary like this:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 ./heroes-service
 ```
 
@@ -522,7 +522,7 @@ cd $GOPATH/src/github.com/tohero/heroes-service && \
 But this won't work because there is no network that the SDK can talk to. Try to start the network and launch the app again:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service/fixtures && \
+cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && \
 docker-compose up -d && \
 cd .. && \
 ./heroes-service
@@ -538,7 +538,7 @@ The Fabric SDK generate some file, like certificates or temporally files. Put do
 
 *How clean up my environment ?*
 
-- Put down your network: `cd $GOPATH/src/github.com/tohero/heroes-service/fixtures && docker-compose down`
+- Put down your network: `cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && docker-compose down`
 - Remove MSP folder (defined in the [config](config.yaml) file, in the `fabricCA` section): `rm -rf /tmp/msp`
 - Remove enrolment files (defined when we initialize the SDK, in the [setup](blockchain/setup.go) file, when we get the client):  `rm -rf /tmp/enroll_user`
 - Remove some docker containers and docker images no generated by the docker-compose command: 
@@ -610,7 +610,7 @@ To use it, go to the root of the project and use the `make` command:
 We are very close to use the blockchain system. But for now we haven't setup a chaincode (smart contract) that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 mkdir chaincode && \
 vi chaincode/main.go
 ```
@@ -771,7 +771,7 @@ func Initialize() (*FabricSetup, error) {
 		ChaincodeId:      "heroes-service",
 		ChaincodeVersion: "v1.0.0",
 		ChaincodeGoPath:  os.Getenv("GOPATH"),
-		ChaincodePath:    "github.com/tohero/heroes-service/chaincode",
+		ChaincodePath:    "github.com/chainhero/heroes-service/chaincode",
 	}
     
     [...]
@@ -871,7 +871,7 @@ The full file is available here: [`main.go`](main.go)
 We can test this, just with the `make` command setup in the previous step:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 make
 ```
 
@@ -886,7 +886,7 @@ Like a database, the chaincode is plugged and ready to answer. Let's try the `he
 We will put all query functions in a new file named `query.go` in the `blockchain` folder:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 vi blockchain/query.go
 ```
 
@@ -950,7 +950,7 @@ The full file is available here: [`main.go`](main.go)
 Let's try to test this new feature:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 make
 ```
 
@@ -1016,7 +1016,7 @@ The full file is available here: [`chaincode/main.go`](chaincode/main.go)
 In addition, from the application side, we add a new function to invoke the new function in the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 vi blockchain/invoke.go
 ```
 
@@ -1102,7 +1102,7 @@ func main() {
 	}
 
 	// Invoke the chaincode
-	txId, err := fabricSdk.InvokeHello("toHero")
+	txId, err := fabricSdk.InvokeHello("chainHero")
 	if err != nil {
 		fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err)
 	} else {
@@ -1124,7 +1124,7 @@ The full file is available here: [`main.go`](main.go)
 Let's try to test this new feature:
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 make
 ```
 
@@ -1159,7 +1159,7 @@ And finaly, we change the [`main.go`](main.go), in order to use the web interfac
 Run the app and go to [localhost:8000/home.html](http://localhost:8000/home.html):
 
 ```
-cd $GOPATH/src/github.com/tohero/heroes-service && \
+cd $GOPATH/src/github.com/chainhero/heroes-service && \
 make
 ```
 
