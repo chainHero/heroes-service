@@ -2,6 +2,8 @@
 
 This tutorial will introduce you to the Hyperledger Fabric Go SDK and allow you to build a simple application using the blockchain principle.
 
+**First part** This is the first part of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
+
 ## 1. Prerequisites
 
 This tutorial won’t explain in detail how Hyperledger Fabric works. I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work there that explains what kind of blockchain, Hyperledger Fabric is.
@@ -1174,6 +1176,8 @@ We can see the change by going back to the `home` page.
 
 ![Screenshot Web Home Hello Batman](docs/images/web-home-hello-batman.png)
 
+**It's the end for the first part. A more complex application is coming.**
+
 ## 7. Referencies
 
 - [Hyperledger website](https://www.hyperledger.org/)
@@ -1181,3 +1185,5 @@ We can see the change by going back to the `home` page.
 - [Hyperledger Fabric on github](https://github.com/hyperledger/fabric)
 - [Hyperledger Fabric Certificate Authority on github](https://github.com/hyperledger/fabric-ca)
 - [Hyperledger Fabric SDK Go on github](https://github.com/hyperledger/fabric-sdk-go)
+- [Fabric SDK Go tests](https://github.com/hyperledger/fabric-sdk-go/blob/master/test/integration/end_to_end_test.go)
+- [CLI](https://github.com/securekey/fabric-examples/tree/master/fabric-cli/): An example CLI for Fabric built with the Go SDK.
