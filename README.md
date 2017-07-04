@@ -946,7 +946,7 @@ func main() {
 
 The full file is available here: [`main.go`](main.go)
 
-Let's try to test this new feature:
+Let's try:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -955,7 +955,7 @@ make
 
 ![Screenshot Query Hello](docs/images/query-hello.png)
 
-### f. Change the ledger state
+### g. Change the ledger state
 
 The next thing to do in order to make a basic tour of the Fabric SDK Go, is to make a request to the chaincode in order to change the ledger state.
 
