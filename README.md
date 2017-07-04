@@ -209,7 +209,7 @@ You will see the two peers, the orderer and the two CA. To stop the network go b
 
 ### a. Configuration
 
-Like we remove the config folder, we need to make a new config file. We will put everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode, that with we just put the blockchain configuration:
+As we removed the config folder, we need to make a new config file. We will put in it everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -274,13 +274,13 @@ The full configuration file is available here: [`config.yaml`](config.yaml)
 
 ### b. Initialize
 
-We add a new folder named `blockchain` that will contain the whole interface that comunicate with the network. We will see the Fabric SDK go only in this folder.
+We add a new folder named `blockchain` that will contain the whole interface that communicate with the network. We will see the Fabric SDK Go only in this folder.
 
 ```
 mkdir $GOPATH/src/github.com/chainhero/heroes-service/blockchain
 ```
 
-Now add a new go file named `setup.go` :
+Now, we add a new go file named `setup.go` :
 
 ```
 vi $GOPATH/src/github.com/chainhero/heroes-service/blockchain/setup.go
@@ -296,7 +296,6 @@ import (
 	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 	"fmt"
-	"os"
 )
 
 // FabricSetup implementation
@@ -435,11 +434,11 @@ func getEventHub(client api.FabricClient) (api.EventHub, error) {
 
 The full file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
-At this stage we only initialize a client that will comunicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
+At this stage, we only initialize a client that will communicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
 
 ### c. Test
 
-To make sure that the client arrive to initialize all his components, we will make a simple test with the network up. In order to make this, we need to build the go code, but we haven't any main file. Let's add one:
+To make sure that the client arrive to initialize all his components, we will make a simple test with the network started. In order to do this, we need to build the go code, but we haven't any main file. Let's add one:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -493,9 +492,9 @@ func main() {
 
 The full file is available here: [`main.go`](main.go)
 
-Like you can see, we fix the GOPATH in the environment if it's not set. We will need this futur for compile the chaincode (we will see this in the next step).
+Like you can see, we fix the GOPATH in the environment if it's not set. We will need this feature for compiling the chaincode (we will see this in the next step).
 
-The last thing to do before start the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA and Fabric SDK Go. All is ok but when we will try to compile our app, there will be some conflict (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
+The last thing to do before starting the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA and Fabric SDK Go and maybe other projects. All is ok, but when we will try to compile our app, there will be some conflict (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
 
 ```
 go get -u github.com/kardianos/govendor && \
