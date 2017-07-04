@@ -1124,23 +1124,45 @@ make
 We also can make this usable by any users. The best choice is a web application and we are lucky because the Go language provide by default a web server thaht handle HTTP requests and also templating for HTML.
 
 For now, we have only two different actions, the query and the invokation of the hello value. Let's make two HTML pages for each action. We add a [`web`](web) directory with three others directories:
-- [`web/templates`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates): contain all HTML pages (templates)
-- [`web/assets`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/assets): contain all CSS, Javascript, Fonts, Images...
-- [`web/controllers`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers): container all functions that will render templates
+- [`web/templates`](web/templates): contain all HTML pages (templates)
+- [`web/assets`](web/assets): contain all CSS, Javascript, Fonts, Images...
+- [`web/controllers`](web/controllers): container all functions that will render templates
 
 We use the MVC (Model-View-Controller) to make it more readable. The Model part will be the blockchain part, the View are templates and Controller are provided by ths functions in the [`controllers`](web/controllers) directory.
 
 Populate each with the appropriate code (we also added Bootstrap to make the result a little prettier:
 
-- [`web/templates/layout.html`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates/layout.html)
-- [`web/templates/home.html`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates/home.html)
-- [`web/templates/request.html`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/templates/request.html)
-- [`web/controllers/controller.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers/controller.go)
-- [`web/controllers/home.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers/home.go)
-- [`web/controllers/request.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/controllers/request.go)
-- [`web/app.go`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/app.go)
-- [`web/assets`](https://git.tohero.fr/blockchain/heroes-service/src/904f6c586a4e7c466f7470fe17ec20224473c527/web/assets)
+- [`web/templates/layout.html`](web/templates/layout.html)
+- [`web/templates/home.html`](web/templates/home.html)
+- [`web/templates/request.html`](web/templates/request.html)
+- [`web/controllers/controller.go`](web/controllers/controller.go)
+- [`web/controllers/home.go`](web/controllers/home.go)
+- [`web/controllers/request.go`](web/controllers/request.go)
+- [`web/app.go`](web/app.go)
+- [`web/assets`](web/assets)
 
+And finaly, we change the [`main.go`](main.go), in order to use the web interface instead of directly query the blockchain.
+
+- [`main.go`](main.go)
+
+Run the app and go to [localhost:8000/home.html](http://localhost:8000/home.html):
+
+```
+cd $GOPATH/src/github.com/tohero/heroes-service && \
+make
+```
+
+The `home` page make a query in in the blockchain to get the value of the `hello` key and display it.
+
+![Screenshot Web Home Hello World](docs/images/web-home-hello-world.png)
+
+The `request` page have a form to change the `hello` value. After a successful submittion the transaction ID is given.
+
+![Screenshot Web Request Success](docs/images/web-request-success.png)
+
+We can see the change by going back to the `home` page.
+
+![Screenshot Web Home Hello Batman](docs/images/web-home-hello-batman.png)
 
 ## 7. Referencies
 
