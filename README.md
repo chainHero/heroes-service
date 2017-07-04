@@ -1012,7 +1012,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 
 The full file is available here: [`chaincode/main.go`](chaincode/main.go)
 
-In addition, from the application side, we add a new function to invoke the new function in the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
+In addition, from the application side, we add a new interface to make the invoke in the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -1083,7 +1083,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 
 The full file is available here: [`blockchain/invoke.go`](blockchain/invoke.go)
 
-Add the call to this new function in the [`main.go`](main.go):
+Add the call to this function in the [`main.go`](main.go):
 
 > line 49 of [`main.go`](main.go)
 
@@ -1120,7 +1120,7 @@ func main() {
 
 The full file is available here: [`main.go`](main.go)
 
-Let's try to test this new feature:
+Let's try:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -1131,14 +1131,14 @@ make
 
 ## 6. Make this in a web application
 
-We also can make this usable by any users. The best choice is a web application and we are lucky because the Go language provide by default a web server thaht handle HTTP requests and also templating for HTML.
+We also can make this usable by any users. The best choice is a web application and we are lucky because the Go language provides by default a web server thaht handle HTTP requests and also templating for HTML.
 
-For now, we have only two different actions, the query and the invokation of the hello value. Let's make two HTML pages for each action. We add a [`web`](web) directory with three others directories:
+For now, we have only two different actions: the query and the invocation of the hello value. Let's make two HTML pages for each action. We add a [`web`](web) directory with three other directories:
 - [`web/templates`](web/templates): contain all HTML pages (templates)
 - [`web/assets`](web/assets): contain all CSS, Javascript, Fonts, Images...
-- [`web/controllers`](web/controllers): container all functions that will render templates
+- [`web/controllers`](web/controllers): contain all functions that will render templates
 
-We use the MVC (Model-View-Controller) to make it more readable. The Model part will be the blockchain part, the View are templates and Controller are provided by ths functions in the [`controllers`](web/controllers) directory.
+We use the MVC (Model-View-Controller) to make it more readable. The Model part will be the blockchain part, the View are templates and Controller are provided by functions in the [`controllers`](web/controllers) directory.
 
 Populate each with the appropriate code (we also added Bootstrap to make the result a little prettier:
 
