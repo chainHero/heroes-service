@@ -4,21 +4,25 @@ This tutorial will introduce you to the Hyperledger Fabric Go SDK and allow you 
 
 ## 1. Prerequisites
 
-This tutorial won’t explain in detail how Hyperledger Fabric works, I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work that explains to you what kind of blockchain is Hyperledger Fabric.
+This tutorial won’t explain in detail how Hyperledger Fabric works. I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work there that explains what kind of blockchain, Hyperledger Fabric is.
 
-In the technical part, this tutorial has been made on **Ubuntu 16.04**. The Hyperledger Fabric framework is compatible with Mac OSX and Windows too, but I can’t guarantee that all the stuff can work.
+In the technical part, this tutorial has been made on **Ubuntu 16.04**. The Hyperledger Fabric framework is compatible with Mac OSX and Windows too, but we can’t guarantee that all the stuff works.
 
-We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode can be write in Go too, so the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
+We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode (smart contract) can be written in Go too. So the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
 
-Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, in the v1.0, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization (we will install Docker in the installation part).
+Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, in the v1.0, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization.
 
 ## 2. Introduction to Hyperledger Fabric
 
-*TODO - Explain Fabric and Fabric CA*
+> Hyperledger Fabric is a platform for distributed ledger solutions underpinned by a modular architecture delivering high degrees of confidentiality, resiliency, flexibility and scalability. It is designed to support pluggable implementations of different components and accommodate the complexity and intricacies that exist across the economic ecosystem.
+
+See the full explaination from the official documentation, in the introduction part: [Hyperledger Fabric Blockchain](http://hyperledger-fabric.readthedocs.io/en/latest/blockchain.html)
+
+![Blockchain Concensus](http://hyperledger-fabric.readthedocs.io/en/latest/_images/consensus.png)
 
 ## 3. Installation guide
 
-This installation guide was made in **Ubuntu 16.04**.
+This installation guide was made on **Ubuntu 16.04**.
 
 ### a. Docker
 
@@ -28,13 +32,13 @@ The required **version for docker is 1.12 or greater**, this version is already 
 sudo apt install docker.io
 ```
 
-In addition, we need **docker-compose 1.8+** to manage multiple containers at one. You can also use your package manager that hold the right version:
+In addition, we need **docker-compose 1.8+** to manage multiple containers at once. You can also use your package manager that hold the right version:
 
 ```
 sudo apt install docker-compose
 ```
 
-Now we need to manage the current user to avoid using root access when we will use docker. To do so, we need to add the user to the docker group:
+Now we need to manage the current user to avoid using `root` access when we will use docker. To do so, we need to add the current user to the `docker` group:
 
 ```
 sudo groupadd docker
@@ -53,7 +57,7 @@ docker-compose version
 
 ### b. Go
 
-Hyperledger Fabric required a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from golang.org (https://golang.org/dl/) or use this generics commands that will install Golang 1.8.3 and prepare your environment (generate your GOPATH and add variables):
+Hyperledger Fabric require a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from [golang.org](https://golang.org/dl/) or use this generics commands that will install Golang 1.8.3 and prepare your environment (generate your `GOPATH`):
 
 ```
 wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz && \
@@ -68,12 +72,12 @@ mkdir -p $HOME/go/{src,pkg,bin}
 To make sure that the installation works, you can logout/login (again) and run:
 
 ```
-go verison
+go version
 ```
 
 ![End of the Go installation](docs/images/finish-go-install.png)
 
-### c. Hyperledger Fabric & CA
+### c. Hyperledger Fabric & Certificate Authority (CA)
 
 Now we can install the main framework: Hyperledger Fabric. We will fix the commit level to the v1.0.0-rc1 because the Fabric SDK Go is compatible with it. All the code is available in a mirror on github, just check out (and optionally build binaries):
 
@@ -98,11 +102,20 @@ We won’t use directly the framework, but this is useful to have the framework 
 
 ### d. Fabric SDK Go
 
-Finally, we will install the Hyperledger Fabric SDK Go that will allow us to easily communicate with the Fabric framework. To do so, we will use the built in function provide by golang:
+Finally, we install the Hyperledger Fabric SDK Go that will allow us to easily communicate with the Fabric framework. To avoid issue with new commit in the master branch, we will checkout the commit version of the SDK when we writting this tutorial.
 
 ```
-go get -u github.com/hyperledger/fabric-sdk-go/pkg/fabric-client
-go get -u github.com/hyperledger/fabric-sdk-go/pkg/fabric-ca-client
+cd $GOPATH/src/github.com/hyperledger && \
+git clone https://github.com/hyperledger/fabric-sdk-go.git && \
+cd fabric-sdk-go && \
+git checkout 85fa3101eb4694d464003c3a900672d632f17833
+```
+
+Then, we will use the built in function provide by golang to install packages:
+
+```
+go get github.com/hyperledger/fabric-sdk-go/pkg/fabric-client && \
+go get github.com/hyperledger/fabric-sdk-go/pkg/fabric-ca-client
 ```
 
 If you get the following error:
@@ -111,19 +124,19 @@ If you get the following error:
 ../fabric-sdk-go/vendor/github.com/miekg/pkcs11/pkcs11.go:29:18: fatal error: ltdl.h: No such file or directory
 ```
 
-You need to install the package “libltdl-dev” and re-execute previous command (`go get ...`):
+You need to install the package `libltdl-dev` and re-execute previous command (`go get ...`):
 
 ```
 sudo apt install libltdl-dev
 ```
 
-Then you can go inside the new fabric-sdk-go directory in your GOPATH and install dependencies and check out if all is ok:
+Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and we will install dependencies and check out if all is ok:
 
 ```
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
-The installation can take a while (depending on your network connection), but at the end you should see Integration tests passed. During this process, a virtual network has been built and some test are made with the SDK in order to check if your system is ready. Now we can work with our first application.
+The installation can take a while (depending on your network connection), but at the end you should see `Integration tests passed.` During this process, a virtual network has been built and some test has been made in order to check if your system is ready. Now we can work with our first application.
 
 ![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
 
@@ -152,7 +165,7 @@ We can clean up a little bit to make it more simple. We remove the default chain
 rm -rf fixtures/{config,src,.env,latest-env.sh}
 ```
 
-### b. Built a Docker compose file
+### b. Build a Docker compose file
 
 In order to make it work, we have to edit the `docker-compose.yaml` file. This is the configuration file for docker-compose, it tells what containers need to be created and started and with a custom configuration for each. Take your favorite text editor and copy paste content from this repository:
 
@@ -164,8 +177,6 @@ vi fixtures/docker-compose.yaml
 see [fixtures/docker-compose.yaml](fixtures/docker-compose.yaml)
 
 Now if we use docker-compose we will setup 2 fabric certificate authorities with 1 peer for each. Peers will have all roles: ledger, endorer and commiter. In addition, an orderer is also created with the `solo` ordering (no consensus is made).
-
-In our example, one organisation will be the heroes and the other concern people who made request. So lets say that peer 0 of the organisation 1 is superman and peer 0 of the organisation 2 is John, a normal citizen.
 
 ### c. Test
 
