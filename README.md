@@ -8,7 +8,7 @@ This tutorial will introduce you to the Hyperledger Fabric Go SDK and allow you 
 
 This tutorial won’t explain in detail how Hyperledger Fabric works. I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work there that explains what kind of blockchain, Hyperledger Fabric is.
 
-In the technical part, this tutorial has been made on **Ubuntu 16.04**. The Hyperledger Fabric framework is compatible with Mac OSX and Windows too, but we can’t guarantee that all the stuff works.
+This tutorial has been made on **Ubuntu 16.04**. The Hyperledger Fabric framework is compatible with Mac OSX and Windows too, but we can’t guarantee that all the stuff works.
 
 We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode (smart contract) can be written in Go too. So the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
 
@@ -48,7 +48,7 @@ sudo gpasswd -a ${USER} docker
 sudo service docker restart
 ```
 
-In order to apply this change, you need to logout/login. Then check versions (and that works)  with:
+In order to apply these changes, you need to logout/login and then check versions with:
 
 ```
 docker --version
@@ -59,7 +59,7 @@ docker-compose version
 
 ### b. Go
 
-Hyperledger Fabric require a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from [golang.org](https://golang.org/dl/) or use this generics commands that will install Golang 1.8.3 and prepare your environment (generate your `GOPATH`):
+Hyperledger Fabric requires a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.8.3 and prepare your environment (generate your `GOPATH`):
 
 ```
 wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz && \
@@ -104,7 +104,7 @@ We won’t use directly the framework, but this is useful to have the framework 
 
 ### d. Fabric SDK Go
 
-Finally, we install the Hyperledger Fabric SDK Go that will allow us to easily communicate with the Fabric framework. To avoid issue with new commit in the master branch, we will checkout the commit version of the SDK when we writting this tutorial.
+Finally, we install the Hyperledger Fabric SDK Go that will allow us to easily communicate with the Fabric framework. To avoid versions issues, we directly checkout a specific commit that works with the following tutorial.
 
 ```
 cd $GOPATH/src/github.com/hyperledger && \
@@ -113,7 +113,7 @@ cd fabric-sdk-go && \
 git checkout 85fa3101eb4694d464003c3a900672d632f17833
 ```
 
-Then, we will use the built in function provide by golang to install packages:
+Then we will use the golang built in functions in order to install packages:
 
 ```
 go get github.com/hyperledger/fabric-sdk-go/pkg/fabric-client && \
@@ -138,7 +138,7 @@ Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and we w
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
-The installation can take a while (depending on your network connection), but at the end you should see `Integration tests passed.` During this process, a virtual network has been built and some test has been made in order to check if your system is ready. Now we can work with our first application.
+The installation can take a while (depending on your network connection), but in the end you should see `Integration tests passed.` During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
 
 ![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
 
@@ -146,7 +146,7 @@ The installation can take a while (depending on your network connection), but at
 
 ### a. Prepare environment
 
-In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificate to ensure encryption in the end to end (SSL, TSL, authentification...) and the Fabric SDK Go provide them. So, we directly get the network used by the testing part of the SDK. 
+In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption during the whole end to end process (SSL, TSL, authentification...). Fortunately, the Fabric SDK Go provides them. In order to use them, we simply use the network deployed by the testing part of the SDK.
 
 Make a new directory in the `src` folder of your `GOPATH`, we name it `heroes-service`:
 
@@ -169,7 +169,7 @@ rm -rf fixtures/{config,src,.env,latest-env.sh}
 
 ### b. Build a Docker compose file
 
-In order to make it works, we have to edit the `docker-compose.yaml` file. This is the configuration file for `docker-compose` command. It tells which container need to be created/started and with what configuration for each. Take your favorite text editor and copy/paste content from this repository:
+In order to make it works, we have to edit the `docker-compose.yaml` file, which is the configuration file for `docker-compose` command. It tells which containers need to be created/started and with the right configuration for each. Take your favorite text editor and copy/paste content from this repository:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -189,7 +189,7 @@ cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && \
 docker-compose up
 ```
 
-You will see a lot of logs with different colors (red isn't equal to errors).
+You will see a lot of logs with different colors (for your information, red isn't equal to errors).
 
 Open a new terminal and run:
 
@@ -199,19 +199,19 @@ docker ps
 
 ![Docker compose up screenshot](docs/images/docker-ps.png)
 
-You will see the two peers, the orderer and the two CA. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. You have successfully made a new network ready to use with the SDK. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
+You will see : two peers, the orderer and two CA. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. You have successfully made a new network ready to use with the SDK. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 ![Docker compose up screenshot](docs/images/docker-compose-up.png)
 
 > **Tips**: when the network is stopped, all containers used remain accessible. This is very useful to check logs for example. You can see them with `docker ps -a`. In order to clean up these containers, you need to delete them with `docker rm $(docker ps -aq)` or if you have used a `docker-compose` file, go where this file is and run `docker-compose down`.
 
-> **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same place where the `docker-compose.yaml` is: `docker-compose stop` (or `docker-compose down` to clean up after all containers are stopped).
+> **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same folder where the `docker-compose.yaml` is, the command: `docker-compose stop` (or `docker-compose down` to clean up after all containers are stopped).
 
 ## 5. Use the Fabric SDK Go
 
 ### a. Configuration
 
-As we removed the config folder, we need to make a new config file. We will put in it everything that the Fabric SDK Go need and our custom parameters for the app. For now we will only try to make the Fabric SDK Go work with the default chaincode:
+As we removed the config folder, we need to make a new config file. We will put in it everything that the Fabric SDK Go and our custom parameters for our app needs to work. For the moment, we will only try to make the Fabric SDK Go works with the default chaincode:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -274,7 +274,7 @@ client:
 
 The full configuration file is available here: [`config.yaml`](config.yaml)
 
-### b. Initialize
+### b. Initialise
 
 We add a new folder named `blockchain` that will contain the whole interface that communicate with the network. We will see the Fabric SDK Go only in this folder.
 
@@ -436,11 +436,11 @@ func getEventHub(client api.FabricClient) (api.EventHub, error) {
 
 The full file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
-At this stage, we only initialize a client that will communicate to a peer, a CA and an orderer. We also make a new channel and make the peer join this channel. See the comments in the code for more information.
+At this stage, we only initialised a client that will communicate to a peer, a CA and an orderer. We also made a new channel and a peer connected to this channel. See the comments in the code for more information.
 
 ### c. Test
 
-To make sure that the client arrive to initialize all his components, we will make a simple test with the network started. In order to do this, we need to build the go code, but we haven't any main file. Let's add one:
+To make sure that the client managed to initialise all his components, we will make a simple test with the network launched. In order to do this, we need to build the go code. Since we we haven't any main file we have to add one:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -494,9 +494,9 @@ func main() {
 
 The full file is available here: [`main.go`](main.go)
 
-Like you can see, we fix the GOPATH in the environment if it's not set. We will need this feature for compiling the chaincode (we will see this in the next step).
+As you can see, we fixed the GOPATH in the environment if it's not set. We will need this feature in order to compile the chaincode (we will see this in the next step).
 
-The last thing to do before starting the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA and Fabric SDK Go and maybe other projects. All is ok, but when we will try to compile our app, there will be some conflict (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
+The last thing to do before starting the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA, Fabric SDK Go and maybe other projects. When we will try to compile our app, there may be some conflicts (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
 
 ```
 go get -u github.com/kardianos/govendor && \
@@ -520,7 +520,7 @@ cd $GOPATH/src/github.com/chainhero/heroes-service && \
 
 ![Screenshot app started but no network](docs/images/start-app-no-network.png)
 
-But this won't work because there is no network that the SDK can talk to. Try to start the network and launch the app again:
+At this point, it won't work because there is no network deployed that the SDK can talk with. Try to start the network and launch the app again:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && \
@@ -529,24 +529,24 @@ cd .. && \
 ./heroes-service
 ```
 
-![Screenshot app started and SDK initialized](docs/images/start-app-initialized.png)
+![Screenshot app started and SDK initialised](docs/images/start-app-initialized.png)
 
-Great! We arrive to initialize the SDK with our local network. In the next step, we will interact with a chaincode.
+Great! We initialised the SDK with our local network. In the next step, we will interact with a chaincode.
 
 ### d. Clean up and Makefile
 
-The Fabric SDK generates some file, like certificates or temporally files. Put down the network won't fully clean up your environment and when you will start again, these files will be reused to avoid building process. For development you can keep them to test quickly but for a real test, you need to clean up all and start from the beginning.
+The Fabric SDK generates some file, like certificates or temporally files. Shut down the network won't fully clean up your environment and when you will need to start it again, these files will be reused to avoid building process. For development you can keep them to test quickly but for a real test, you need to clean up all and start from the beginning.
 
 *How clean up my environment ?*
 
-- Put down your network: `cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && docker-compose down`
+- Shut down your network: `cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && docker-compose down`
 - Remove MSP folder (defined in the [config](config.yaml) file, in the `fabricCA` section): `rm -rf /tmp/msp`
-- Remove enrolment files (defined when we initialize the SDK, in the [setup](blockchain/setup.go) file, when we get the client):  `rm -rf /tmp/enroll_user`
+- Remove enrolment files (defined when we initialise the SDK, in the [setup](blockchain/setup.go) file, when we get the client):  `rm -rf /tmp/enroll_user`
 - Remove some docker containers and docker images no generated by the `docker-compose` command: `docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null` and `docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null`
 
-*How to be more productive ?*
+*How to be more efficient ?*
 
-We can automatize all these tasks in a single one, same for the build and start process. To do so, we propose to use a Makefile. First, ensure that you have the tool:
+We can automatise all these tasks in a single one, same for the build and start process. To do so, we propose to use a Makefile. First, ensure that you have the tool:
 
 ```
 sudo apt install make
@@ -597,7 +597,7 @@ clean: env-down
 
 The full file is available here: [`Makefile`](Makefile)
 
-Now with the task `all`, there will be a cleanup of the environment, then the compilation phase, then the network start and finally runs the app.
+Now with the task `all`, the whole environment will be clean up, then our go program will be compiled, then the network will be deployed and finally the app will be up and running.
 
 To use it, go in the root of the project and use the `make` command:
 
@@ -608,7 +608,7 @@ To use it, go in the root of the project and use the `make` command:
 
 ### e. Install & instanciate a chaincode
 
-We are very close to use the blockchain system. But for now we haven't set up a chaincode (smart contract) that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
+We are very close to use the blockchain system. But for now we haven't set up any chaincode (smart contract) that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -719,9 +719,9 @@ func main() {
 
 The full file is available here: [`chaincode/main.go`](chaincode/main.go)
 
-> We choose to put the chaincode here to make the application simpler, but maybe it is better to use the architecture given by the SDK and put the chaincode in the `src` folder of `fixtures`. The chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. In addition, the chaincode can be written in Java or other languages in the future.
+> We choose to put the chaincode here to make the application simpler, but from an architecture point of view, it will be better to use the architecture given by the SDK and put the chaincode in the `src` folder of `fixtures`. The chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. For your information, in a near future, the chaincode could be written in other languages.
 
-For now, the chaincode does nothing extraordinary, just put the key/value `hello`/`world` in the ledger at the initialization. In addition, there is one function that we can call by an invoke: `query hello`. This function get the state in the ledger of `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
+For now, the chaincode does nothing extraordinary, just put the key/value `hello`/`world` in the ledger at the initialisation. In addition, there is one function that we can call by an invoke: `query hello`. This function get the state in the ledger of `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
 
 In order to install and instantiate the chaincode, we need to add some code in the application. Edit the [`blockchain/setup.go`](blockchain/setup.go) and add this following lines:
 
@@ -841,9 +841,9 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
 The full file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
-> **Tips**: take care of the chaincode version, if you want to update your chaincode, increment this number. Overwhise the network will keep the same chaincode.
+> **Tips**: take care of the chaincode version, if you want to update your chaincode, increment this number. Otherwise the network will keep the same chaincode.
 
-Finally, we add the call to this function in the [`main.go`](main.go) after the SDK initialization:
+Finally, we add the call to this function in the [`main.go`](main.go) after the SDK initialisation:
 
 
 > line 38 of [`main.go`](main.go): we add the function that will install and instantiate the chaincode
@@ -878,7 +878,7 @@ make
 
 ![Screenshot Chaincode installed and instantiated](docs/images/install-and-instantiate-cc.png)
 
-> **Tips**: the installation and the instantiation don't need to be run at every start of the application. Only when we update the chaincode (and the chaincode version). A solution is to provide an argument when we run the application to tell to make this additional procedure before move on. For the tutorial, we will clean up the environment every time, so we don't care about that.
+> **Tips**: the installation and the instantiation don't need to be run at every start of the application. Only when we update the chaincode (and the chaincode version). A solution is to provide an argument when we run the application to tell to do this additional procedure before move on. Since in this tutorial we will clean up the environment every time we don't really care about that.
 
 ### f. Query the chaincode
 
@@ -1014,7 +1014,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 
 The full file is available here: [`chaincode/main.go`](chaincode/main.go)
 
-In addition, from the application side, we add a new interface to make the invoke in the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
+From the application side, we add a new interface to make the invocation in the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
 
 ```
 cd $GOPATH/src/github.com/chainhero/heroes-service && \
@@ -1133,7 +1133,7 @@ make
 
 ## 6. Make this in a web application
 
-We also can make this usable by any users. The best choice is a web application and we are lucky because the Go language provides by default a web server thaht handle HTTP requests and also templating for HTML.
+We also can make this usable by any users. The best choice is a web application and we are lucky because the Go language natively provides a web server handling HTTP requests and also templating for HTML.
 
 For now, we have only two different actions: the query and the invocation of the hello value. Let's make two HTML pages for each action. We add a [`web`](web) directory with three other directories:
 - [`web/templates`](web/templates): contain all HTML pages (templates)
@@ -1168,7 +1168,7 @@ The `home` page make a query in in the blockchain to get the value of the `hello
 
 ![Screenshot Web Home Hello World](docs/images/web-home-hello-world.png)
 
-The `request` page have a form to change the `hello` value. After a successful submittion the transaction ID is given.
+The `request` page have a form to change the `hello` value. After a successful submission the transaction ID is given.
 
 ![Screenshot Web Request Success](docs/images/web-request-success.png)
 
