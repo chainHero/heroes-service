@@ -11,20 +11,20 @@ type HeroesServiceChaincode struct {
 }
 
 // Init of the chaincode
-// This function is call only one when the chaincode is instantiate.
-// So the goal is to prepare the ledger to handle futures requests.
+// This function is called only one when the chaincode is instantiated.
+// So the goal is to prepare the ledger to handle future requests.
 func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("########### HeroesServiceChaincode Init ###########")
 
 	// Get the function and arguments from the request
 	function, _ := stub.GetFunctionAndParameters()
 
-	// Check that the request concern an init
+	// Check if the request is the init function
 	if function != "init" {
 		return shim.Error("Unknown function call")
 	}
 
-	// Put in the ledger the key/value hello/wolrd
+	// Put in the ledger the key/value hello/world
 	err := stub.PutState("hello", []byte("world"))
 	if err != nil {
 		return shim.Error(err.Error())
@@ -35,21 +35,21 @@ func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Respo
 }
 
 // Invoke
-// Every futures requests named invoke will arrive here.
+// All future requests named invoke will arrive here.
 func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("########### HeroesServiceChaincode Invoke ###########")
 
 	// Get the function and arguments from the request
 	function, args := stub.GetFunctionAndParameters()
 
-	// Check that the request concern an invoke
+	// Check whether it is an invoke request
 	if function != "invoke" {
 		return shim.Error("Unknown function call")
 	}
 
-	// Check that the number of argument is sufficient to possibly find the function to invoke
+	// Check whether the number of arguments is sufficient
 	if len(args) < 1 {
-		return shim.Error("The number of arguments is insufficient, you need to provide the function to invoke.")
+		return shim.Error("The number of arguments is insufficient.")
 	}
 
 	// In order to manage multiple type of request, we will check the first argument.
@@ -63,7 +63,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 		return t.invoke(stub, args)
 	}
 
-	// If the argument given match any function, we return an error
+	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown action, check the first argument")
 }
 
@@ -71,12 +71,12 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 // Every readonly functions in the ledger will be here
 func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 
-	// Check that the number of argument is sufficient to possibly find the function concern by the query
+	// Check whether the number of arguments is sufficient
 	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient, you need to provide the function for the query.")
+		return shim.Error("The number of arguments is insufficient.")
 	}
 
-	// Like in the Invoke function, we manage multiple type of query request with the second argument.
+	// Like the Invoke function, we manage multiple type of query requests with the second argument.
 	// We also have only one possible argument: hello
 	if args[1] == "hello" {
 
@@ -90,7 +90,7 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 		return shim.Success(state)
 	}
 
-	// If the argument given match any function, we return an error
+	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown query action, check the second argument.")
 }
 
@@ -99,7 +99,7 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 
 	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient, you need to provide the function for the invoke.")
+		return shim.Error("The number of arguments is insufficient.")
 	}
 
 	if args[1] == "hello" && len(args) == 3 {
@@ -114,7 +114,7 @@ func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args [
 		return shim.Success(nil)
 	}
 
-	// If the argument given match any function, we return an error
+	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown invoke action, check the second argument.")
 }
 
