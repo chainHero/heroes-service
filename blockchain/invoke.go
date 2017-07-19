@@ -21,7 +21,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	transientDataMap := make(map[string][]byte)
 	transientDataMap["result"] = []byte("Transient data in hello invoke")
 
-	// Make a nex transaction proposal and send it
+	// Make a next transaction proposal and send it
 	transactionProposalResponse, txID, err := fcutil.CreateAndSendTransactionProposal(
 		setup.Channel,
 		setup.ChaincodeId,
@@ -42,7 +42,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 		return "", fmt.Errorf("Create and send transaction in the invoke hello return error: %v", err)
 	}
 
-	// Wait the result of the submission
+	// Wait for the result of the submission
 	select {
 	// Transaction Ok
 	case <-done:
