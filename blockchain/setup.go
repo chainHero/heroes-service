@@ -24,7 +24,7 @@ type FabricSetup struct {
 	ChaincodePath    string
 }
 
-// Initialize reads configuration from file and sets up client, chain and event hub
+// Initialize reads the configuration file and sets up the client, chain and event hub
 func Initialize() (*FabricSetup, error) {
 
 	// Add parameters for the initialization
@@ -40,7 +40,7 @@ func Initialize() (*FabricSetup, error) {
 		ChaincodePath:    "github.com/chainhero/heroes-service/chaincode",
 	}
 
-	// Initialize the config
+	// Initialize the configuration
 	// This will read the config.yaml, in order to tell to
 	// the SDK all options and how contact a peer
 	configImpl, err := fsgConfig.InitConfig("config.yaml")
@@ -49,14 +49,14 @@ func Initialize() (*FabricSetup, error) {
 	}
 
 	// Initialize blockchain cryptographic service provider (BCCSP)
-	// This tool manage certificates and keys
+	// This tool manages certificates and keys
 	err = bccspFactory.InitFactories(configImpl.GetCSPConfig())
 	if err != nil {
 		return nil, fmt.Errorf("Failed getting ephemeral software-based BCCSP [%s]", err)
 	}
 
 	// This will make a user access (here the admin) to interact with the network
-	// To do so, this will contact the Fabric CA to check if the user has access
+	// To do so, it will contact the Fabric CA to check if the user has access
 	// and give it to him (enrollment)
 	client, err := fcutil.GetClient("admin", "adminpw", "/tmp/enroll_user", configImpl)
 	if err != nil {
@@ -73,7 +73,7 @@ func Initialize() (*FabricSetup, error) {
 	}
 	setup.Channel = channel
 
-	// Get an orderer user that will be used to validate an order of proposal
+	// Get an orderer user that will validate a proposed order
 	// The authentication will be made with local certificates
 	ordererUser, err := fcutil.GetPreEnrolledUser(
 		client,
@@ -85,7 +85,7 @@ func Initialize() (*FabricSetup, error) {
 		return nil, fmt.Errorf("Unable to get the orderer user failed: %v", err)
 	}
 
-	// Get an organisation user (admin) that will be used to sign proposal
+	// Get an organisation user (admin) that will be used to sign the proposal
 	// The authentication will be made with local certificates
 	orgUser, err := fcutil.GetPreEnrolledUser(
 		client,
@@ -97,9 +97,9 @@ func Initialize() (*FabricSetup, error) {
 		return nil, fmt.Errorf("Unable to get the organisation user failed: %v", err)
 	}
 
-	// Initialize the channel "mychannel" base on the genesis block
-	// locate in fixtures/channel/mychannel.tx and join the peer given
-	// in the configuration file to this channel
+	// Initialize the channel "mychannel" based on the genesis block by
+	//   1. locating in fixtures/channel/mychannel.tx and
+	//   2. joining the peer given in the configuration file to this channel
 	if err := fcutil.CreateAndJoinChannel(client, ordererUser, orgUser, channel, setup.ChannelConfig); err != nil {
 		return nil, fmt.Errorf("CreateAndJoinChannel return error: %v", err)
 	}
@@ -108,8 +108,8 @@ func Initialize() (*FabricSetup, error) {
 	client.SetUserContext(orgUser)
 
 	// Setup Event Hub
-	// This will allow use to listen for some event from the chaincode
-	// and make some actions. We won't use it for now.
+	// This will allow us to listen for some event from the chaincode
+	// and act on it. We won't use it for now.
 	eventHub, err := getEventHub(client)
 	if err != nil {
 		return nil, err
