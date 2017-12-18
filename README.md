@@ -1206,7 +1206,7 @@ We can see the change by going back to the `home` page.
 
 **It's the end for the first part. A more complex application is coming.**
 
-## 7. Referencies
+## 7. References
 
 - [Hyperledger website](https://www.hyperledger.org/)
 - [Hyperledger Fabric online documentation](http://hyperledger-fabric.readthedocs.io/en/latest/)
