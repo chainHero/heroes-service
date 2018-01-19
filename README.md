@@ -213,7 +213,7 @@ mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
-In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new versions, we decided to create a simplified fixture file.
+In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new versions, we decided to create our own.
 
 ```
 // link to download our fixture folder
