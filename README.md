@@ -8,8 +8,6 @@ This tutorial will introduce you to the Hyperledger Fabric Go SDK and allows you
 
 **First part** This is the first part of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
 
-**This tutorial uses Hyperledger Fabric version 1.0.5**
-
 ## 1. Prerequisites
 
 This tutorial won’t explain in detail how Hyperledger Fabric works. I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work there that explains what kind of blockchain, Hyperledger Fabric is.
