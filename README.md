@@ -1,10 +1,10 @@
 # Tutorial Hyperledger Fabric SDK Go: How to build your first app?
 
-## Fabric SDK Go - v1.0.5
-
 Source: [chainhero.io/2017/07/tutorial-build-blockchain-app](https://chainhero.io/2017/07/tutorial-build-blockchain-app/)
 
 This tutorial will introduce you to the Hyperledger Fabric Go SDK and allows you to build a simple application using the blockchain principle.
+
+**This tutorial uses Hyperledger Fabric version 1.0.5**
 
 **First part** This is the first part of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
 
@@ -42,7 +42,14 @@ First, let's install docker's dependencies:
 sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
 ```
 
-As docker community edition is not natively available in the apt-get package, here is a trick to add it & install it:
+You can either install docker or docker-ce.
+
+Docker
+```
+sudo apt install docker.io
+```
+
+Docker-ce
 
 ```
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -157,7 +164,7 @@ cd fabric-ca && \
 git checkout v1.0.5
 ```
 
-We won’t use directly the framework, but this is useful to have the framework locally in your GOPATH to compile your app.
+We won’t use directly the framework, it's useful to have the framework locally in your GOPATH to compile your app.
 
 ### d. Fabric SDK Go
 
