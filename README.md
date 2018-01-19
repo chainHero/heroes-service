@@ -110,12 +110,12 @@ docker-compose version
 See instructions from the Docker-compose website: [docker.com/docker-for-windows](https://docs.docker.com/compose/install/)
 
 ### c. Go
-**Docker-compose version 1.7.x or greater is required.**
+**Go version 1.7.x or greater is required.**
 
-
-You can either follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 #### Linux
+
+You can either follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 ```
 wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz && \
@@ -196,7 +196,7 @@ Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and inst
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
-The installation can take a while (depending on your network connection), but in the end you should see `Integration tests passed.` During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
+The installation can take a while (depending on your network connection). During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
 
 ![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
 
@@ -213,7 +213,7 @@ mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
-In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new versions, we decided to create our own.
+In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new versions, we decided to create our own. Download it and move it in this folder `$GOPATH/src/github.com/chainHero/heroes-service`
 
 ```
 // link to download our fixture folder
@@ -241,6 +241,7 @@ docker ps
 You will see : two peers, the orderer and two CA containers. {ADD THE TWO NEW CONTAINERS} You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 ![Docker compose up screenshot](docs/images/docker-compose-up.png)
+> Do not pay attention about the warnings. It's just indicating that we disabled logs. You can enable them inside the docker-compose.yaml file.
 
 > **Tips**: when the network is stopped, all containers used remain accessible. This is very useful to check logs for example. You can see them with `docker ps -a`. In order to clean up these containers, you need to delete them with `docker rm $(docker ps -aq)` or if you have used a `docker-compose` file, go where this file is and run `docker-compose down`.
 
