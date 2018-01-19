@@ -89,11 +89,11 @@ See instructions from the Docker website: [docker.com/docker-for-windows](https:
 
 ### b. Docker Compose
 
-In order to manage multiple containers at once, we need **docker-compose 1.8+*.
+In order to manage multiple containers at once, we need **docker-compose 1.8+**.
 
 #### Linux
 
-It's installation is pretty fast:
+The installation is pretty fast:
 
 ```
 sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
