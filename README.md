@@ -1,10 +1,13 @@
 # Tutorial Hyperledger Fabric SDK Go: How to build your first app?
 
+## Fabric SDK Go - v1.0.5
+
 Source: [chainhero.io/2017/07/tutorial-build-blockchain-app](https://chainhero.io/2017/07/tutorial-build-blockchain-app/)
 
 This tutorial will introduce you to the Hyperledger Fabric Go SDK and allows you to build a simple application using the blockchain principle.
 
 **First part** This is the first part of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
+
 
 ## 1. Prerequisites
 
@@ -14,7 +17,7 @@ This tutorial has been made on **Ubuntu 16.04** but the Hyperledger Fabric frame
 
 We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode (smart contract) can be written in Go too. So the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
 
-Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, in the v1.0, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization.
+Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization.
 
 ## 2. Introduction to Hyperledger Fabric
 
@@ -32,16 +35,19 @@ This tutorial was made on **Ubuntu 16.04**, but there is some help for make the 
 
 #### Linux (Ubuntu)
 
-The required **version for docker is 1.12 or greater**, this version is already available in the package manager on Ubuntu. Just install it with this command line:
+First, let's install docker's dependencies:
 
 ```
-sudo apt install docker.io
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
 ```
 
-In addition, we need **docker-compose 1.8+** to manage multiple containers at once. You can also use your package manager that hold the right version:
+As docker community edition is not natively available in the apt-get package, here is a trick to add it & install it:
 
 ```
-sudo apt install docker-compose
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install docker-ce
 ```
 
 Now we need to manage the current user to avoid using `root` access when we will use docker. To do so, we need to add the current user to the `docker` group:
@@ -56,10 +62,7 @@ In order to apply these changes, you need to logout/login and then check version
 
 ```
 docker --version
-docker-compose version
 ```
-
-![End of the docker installation](docs/images/finish-docker-install.png)
 
 #### Mac OS X
 
@@ -76,14 +79,40 @@ See links below:
 
 See instructions from the Docker website: [docker.com/docker-for-windows](https://docs.docker.com/docker-for-windows/install/)
 
-### b. Go
+### b. Docker Compose
 
-Hyperledger Fabric requires a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.8.3 and prepare your environment (generate your `GOPATH`) for Ubuntu:
+In order to manage multiple containers at once, we need **docker-compose 1.8+*.
+
+#### Linux
+
+It's installation is pretty fast:
 
 ```
-wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz && \
-sudo tar -C /usr/local -xzf go1.8.3.linux-amd64.tar.gz && \
-rm go1.8.3.linux-amd64.tar.gz && \
+sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+In order to apply these changes, you need to logout/login and then check versions with:
+
+```
+docker-compose version
+```
+
+
+#### Windows / Mac OS X / Others
+
+See instructions from the Docker-compose website: [docker.com/docker-for-windows](https://docs.docker.com/compose/install/)
+
+### c. Go
+
+Hyperledger Fabric requires a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
+
+#### Linux
+
+```
+wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz && \
+sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz && \
+rm go1.9.2.linux-amd64.tar.gz && \
 echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile && \
 echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc && \
 echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc && \
@@ -96,18 +125,20 @@ To make sure that the installation works, you can logout/login (again) and run:
 go version
 ```
 
-![End of the Go installation](docs/images/finish-go-install.png)
+#### Windows / Mac OS X / Others
 
-### c. Hyperledger Fabric & Certificate Authority (CA)
+See instructions from the Golang website: [golang.org/install](https://golang.org/doc/install)
 
-Now we can install the main framework: Hyperledger Fabric. We will fix the commit level to the v1.0.0-rc1 because the Fabric SDK Go is compatible with it. All the code is available in a mirror on github, just check out (and optionally build binaries):
+### d. Hyperledger Fabric & Certificate Authority (CA)
+
+Now we can install the main framework: Hyperledger Fabric (Version 1.0.5). All the code is available in a mirror on github, just check out (and optionally build binaries):
 
 ```
 mkdir -p $GOPATH/src/github.com/hyperledger && \
 cd $GOPATH/src/github.com/hyperledger && \
 git clone https://github.com/hyperledger/fabric.git && \
 cd fabric && \
-git checkout v1.0.0-rc1
+git checkout v1.0.5
 ```
 
 Same for the Hyperledger Fabric CA part:
@@ -116,7 +147,7 @@ Same for the Hyperledger Fabric CA part:
 cd $GOPATH/src/github.com/hyperledger && \
 git clone https://github.com/hyperledger/fabric-ca.git && \
 cd fabric-ca && \
-git checkout v1.0.0-rc1
+git checkout v1.0.5
 ```
 
 We won’t use directly the framework, but this is useful to have the framework locally in your GOPATH to compile your app.
@@ -126,17 +157,20 @@ We won’t use directly the framework, but this is useful to have the framework 
 Finally, we install the Hyperledger Fabric SDK Go that will allow us to easily communicate with the Fabric framework. To avoid versions issues, we directly checkout a specific commit that works with the following tutorial.
 
 ```
-cd $GOPATH/src/github.com/hyperledger && \
-git clone https://github.com/hyperledger/fabric-sdk-go.git && \
-cd fabric-sdk-go && \
-git checkout 85fa3101eb4694d464003c3a900672d632f17833
+go get -u github.com/hyperledger/fabric-sdk-go
+git checkout 85fa310
 ```
 
-Then we will use the golang built in functions in order to install packages:
+Let's make sure that you have all needed dependencies:
 
 ```
-go get github.com/hyperledger/fabric-sdk-go/pkg/fabric-client && \
-go get github.com/hyperledger/fabric-sdk-go/pkg/fabric-ca-client
+cd $GOPATH/src/github.com/hyperledger/fabric-sdkX-go && make depend-install
+```
+
+Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and install it correctly:
+
+```
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
 If you get the following error:
@@ -149,12 +183,6 @@ You need to install the package `libltdl-dev` and re-execute previous command (`
 
 ```
 sudo apt install libltdl-dev
-```
-
-Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and we will install dependencies and check out if all is ok:
-
-```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
 The installation can take a while (depending on your network connection), but in the end you should see `Integration tests passed.` During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
@@ -170,8 +198,8 @@ In order to make a blockchain network, we will use `docker` to build virtual com
 Make a new directory in the `src` folder of your `GOPATH`, we name it `heroes-service`:
 
 ```
-mkdir -p $GOPATH/src/github.com/chainhero/heroes-service && \
-cd $GOPATH/src/github.com/chainhero/heroes-service
+mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
 Now, we can copy the environment of the Fabric SDK Go placed in the test folder:
@@ -191,7 +219,7 @@ rm -rf fixtures/{config,src,.env,latest-env.sh}
 In order to make it work, we have to edit the `docker-compose.yaml` file, which is the configuration file for `docker-compose` command. It tells which containers needs to be created/started and with the right configuration for each. Take your favorite text editor and copy/paste content from this repository:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi fixtures/docker-compose.yaml
 ```
 
