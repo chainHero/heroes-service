@@ -1,12 +1,12 @@
 # Tutorial Hyperledger Fabric SDK Go: How to build your first app?
 
-Source: [chainhero.io/2017/07/tutorial-build-blockchain-app](https://chainhero.io/2017/07/tutorial-build-blockchain-app/)
+Source: NEW LINK NEEDED
 
 This tutorial will introduce you to the Hyperledger Fabric Go SDK and allows you to build a simple application using the blockchain principle.
 
 **This tutorial uses Hyperledger Fabric version 1.0.5**
 
-**First part** This is the first part of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
+This is the **first part** of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
 
 ## 1. Prerequisites
 
@@ -16,7 +16,7 @@ This tutorial has been made on **Ubuntu 16.04** but the Hyperledger Fabric frame
 
 We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode (smart contract) can be written in Go too. So the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
 
-Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, some component (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization.
+Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, some components (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization.
 
 ## 2. Introduction to Hyperledger Fabric
 
@@ -62,7 +62,7 @@ sudo service docker restart
 In order to apply these changes, you need to logout/login and then check versions with:
 
 ```
-docker --version
+docker -v
 ```
 
 ![End of the docker installation](docs/images/finish-docker-install.png)
@@ -169,7 +169,7 @@ Last but not least, the Hyperledger Fabric SDK Go will allow us to easily commun
 
 ```
 go get -u github.com/hyperledger/fabric-sdk-go
-git checkout 85fa310 //un doute sur le nom du commit, il doit y avoir mieux
+git checkout cc04f203bb0940c3bf30342caa15a276cb6fb9d3 //un doute sur le nom du commit
 ```
 
 If you get the following error:
