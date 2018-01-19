@@ -34,20 +34,13 @@ This tutorial was made on **Ubuntu 16.04**, but there is some help for make the 
 
 #### Linux (Ubuntu)
 
-First, let's install docker's dependencies:
+First of all, we need to install docker's dependencies:
 
 ```
 sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
 ```
 
-You can either install docker or docker-ce.
-
-Docker
-```
-sudo apt install docker.io
-```
-
-Docker-ce
+Once the dependencies are installed, we can finally install docker:
 
 ```
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -89,7 +82,7 @@ See instructions from the Docker website: [docker.com/docker-for-windows](https:
 
 ### b. Docker Compose
 
-In order to manage multiple containers at once, we need **docker-compose 1.8+**.
+We are currently unable to manage multiple containers at once, to do so, we need **docker-compose 1.8+**.
 
 #### Linux
 
@@ -100,7 +93,7 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-c
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-In order to apply these changes, you need to logout/login and then check versions with:
+Apply these changes by logout/login. Then check its version with:
 
 ```
 docker-compose version
@@ -114,7 +107,7 @@ See instructions from the Docker-compose website: [docker.com/docker-for-windows
 
 ### c. Go
 
-Hyperledger Fabric requires a **Go version 1.7.x** or more and we have only Go version 1.6.x in package manager. So this time we need to use the official installation method. You can follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
+Hyperledger Fabric requires a **Go version 1.7.x** or more. You can either follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 #### Linux
 
@@ -143,7 +136,7 @@ See instructions from the Golang website: [golang.org/install](https://golang.or
 
 ### d. Hyperledger Fabric & Certificate Authority (CA)
 
-Now we can install the main framework: Hyperledger Fabric (Version 1.0.5). All the code is available in a mirror on github, just check out (and optionally build binaries):
+Now we can install the main framework: Hyperledger Fabric (Version 1.0.5). All the code is available on github:
 
 ```
 mkdir -p $GOPATH/src/github.com/hyperledger && \
@@ -162,27 +155,15 @@ cd fabric-ca && \
 git checkout v1.0.5
 ```
 
-We won’t use directly the framework, it's useful to have the framework locally in your GOPATH to compile your app.
+We won’t use directly the framework but it's useful to have it locally in your GOPATH to compile your app.
 
-### d. Fabric SDK Go
+### e. Fabric SDK Go
 
-Finally, we install the Hyperledger Fabric SDK Go that will allow us to easily communicate with the Fabric framework. To avoid versions issues, we directly checkout a specific commit that works with the following tutorial.
+Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric framework. To avoid versions issues, we directly checkout to a specific commit which works with the following tutorial.
 
 ```
 go get -u github.com/hyperledger/fabric-sdk-go
-git checkout 85fa310
-```
-
-Let's make sure that you have all needed dependencies:
-
-```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdkX-go && make depend-install
-```
-
-Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and install it correctly:
-
-```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
+git checkout 85fa310 //un doute sur le nom du commit, il doit y avoir mieux
 ```
 
 If you get the following error:
@@ -195,6 +176,18 @@ You need to install the package `libltdl-dev` and re-execute previous command (`
 
 ```
 sudo apt install libltdl-dev
+```
+
+Let's make sure that you have the requested dependencies:
+
+```
+cd $GOPATH/src/github.com/hyperledger/fabric-sdkX-go && make depend-install
+```
+
+Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and install it correctly:
+
+```
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && make
 ```
 
 The installation can take a while (depending on your network connection), but in the end you should see `Integration tests passed.` During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
@@ -217,7 +210,7 @@ cd $GOPATH/src/github.com/chainHero/heroes-service
 In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new versions, we decided to create a simplified fixture file.
 
 ```
-// link to download fixture folder
+// link to download our fixture folder
 ```
 
 ### b. Test
@@ -239,13 +232,16 @@ docker ps
 
 ![Docker compose up screenshot](docs/images/docker-ps.png)
 
-You will see : two peers, the orderer and two CA containers. You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
+You will see : two peers, the orderer and two CA containers. {ADD THE TWO NEW CONTAINERS} You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 ![Docker compose up screenshot](docs/images/docker-compose-up.png)
 
 > **Tips**: when the network is stopped, all containers used remain accessible. This is very useful to check logs for example. You can see them with `docker ps -a`. In order to clean up these containers, you need to delete them with `docker rm $(docker ps -aq)` or if you have used a `docker-compose` file, go where this file is and run `docker-compose down`.
 
 > **Tips**: you can run the `docker-compose` command in background to keep the prompt. To do so, use the parameter `-d`, like this: `docker-compose up -d`. To stop containers, run in the same folder where the `docker-compose.yaml` is, the command: `docker-compose stop` (or `docker-compose down` to clean up after all containers are stopped).
+
+// DONE_MARKER
+
 
 ## 5. Use the Fabric SDK Go
 
