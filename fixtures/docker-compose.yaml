@@ -16,6 +16,9 @@ services:
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls/server_wild_org1or2.example.com.pem
       - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/tls/server_wild_org1or2.example.com-key.pem
+    #comment out logging.driver in order to render the debug logs
+    logging:
+      driver: none
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -37,6 +40,9 @@ services:
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/tls/server_wild_org1or2.example.com.pem
       - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/tls/server_wild_org1or2.example.com-key.pem
+    #comment out logging.driver in order to render the debug logs
+    logging:
+      driver: none
     ports:
       - "8054:8054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d -p 8054'
@@ -63,15 +69,18 @@ services:
       - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/tls/orderer/ca.crt]
       - ORDERER_GENERAL_TLS_CLIENTAUTHENABLED
       - ORDERER_GENERAL_TLS_CLIENTROOTCAS
+    #comment out logging.driver in order to render the debug logs
+    logging:
+      driver: none
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer
     ports:
       - 7050:7050
     volumes:
-        - ./fabric/${FABRIC_FIXTURE_VERSION}/channel:/etc/hyperledger/configtx
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/msp/orderer
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls:/etc/hyperledger/tls/orderer
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/mutual_tls:/etc/hyperledger/mutual_tls/orderer
+        - ./fabric/${FABRIC_FIXTURE_FOLDER_NAME}/channel:/etc/hyperledger/configtx
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/msp/orderer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls:/etc/hyperledger/tls/orderer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/mutual_tls:/etc/hyperledger/mutual_tls/orderer
     networks:
       default:
         aliases:
@@ -112,6 +121,9 @@ services:
       # # https://docs.docker.com/compose/networking/
       - CORE_PEER_NETWORKID=${CORE_PEER_NETWORKID}
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${CORE_PEER_NETWORKID}_default      
+    #comment out logging.driver in order to render the debug logs
+    logging:
+      driver: none
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
@@ -123,9 +135,9 @@ services:
       - "7053"
     volumes:
         - /var/run/:/host/var/run/
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/msp/peer
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/tls/peer
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/mutual_tls:/etc/hyperledger/mutual_tls/peer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/msp/peer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/tls/peer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/mutual_tls:/etc/hyperledger/mutual_tls/peer
     networks:
       default:
         aliases:
@@ -170,6 +182,9 @@ services:
       # # https://docs.docker.com/compose/networking/
       - CORE_PEER_NETWORKID=${CORE_PEER_NETWORKID}
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${CORE_PEER_NETWORKID}_default     
+    #comment out logging.driver in order to render the debug logs
+    logging:
+      driver: none
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
     ports:
@@ -181,9 +196,9 @@ services:
       - "8053"
     volumes:
         - /var/run/:/host/var/run/
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/msp/peer
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls:/etc/hyperledger/tls/peer
-        - ./fabric/${FABRIC_CRYPTOCONFIG_VERSION}/mutual_tls:/etc/hyperledger/mutual_tls/peer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/msp/peer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls:/etc/hyperledger/tls/peer
+        - ./fabric/${FABRIC_CRYPTOCONFIG_FOLDER_NAME}/mutual_tls:/etc/hyperledger/mutual_tls/peer
     networks:
       default:
         aliases:

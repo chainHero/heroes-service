@@ -214,32 +214,13 @@ mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
-Now, we can copy the environment of the Fabric SDK Go placed in the test folder:
+In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new versions, we decided to create a simplified fixture file.
 
 ```
-cp -r $GOPATH/src/github.com/hyperledger/fabric-sdk-go/test/fixtures ./
+// link to download fixture folder
 ```
 
-We can clean up a little bit to make it more simple. We remove the default chaincode, as we will make our own chaincode later. We also remove some files used by the test script of the SDK:
-
-```
-rm -rf fixtures/{config,src,.env,latest-env.sh}
-```
-
-### b. Build a Docker compose file
-
-In order to make it work, we have to edit the `docker-compose.yaml` file, which is the configuration file for `docker-compose` command. It tells which containers needs to be created/started and with the right configuration for each. Take your favorite text editor and copy/paste content from this repository:
-
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
-vi fixtures/docker-compose.yaml
-```
-
-see [fixtures/docker-compose.yaml](fixtures/docker-compose.yaml)
-
-Now if we use `docker-compose`, we will setup two Fabric Certificate Authorities with one peer for each. Peers will have all roles: ledger, endorser and commiter. In addition, an orderer is also created with the `solo` ordering algorithm (no consensus is made).
-
-### c. Test
+### b. Test
 
 In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
