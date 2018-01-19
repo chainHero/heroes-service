@@ -28,9 +28,11 @@ See the full explaination from the official documentation, in the introduction p
 
 ## 3. Installation guide
 
-This tutorial was made on **Ubuntu 16.04**, but there is some help for make the installation in Windows, Mac OS X and other Linux distributions.
+This tutorial was made on **Ubuntu 16.04**, but there is some help for Windows, Mac OS X and other Linux distributions users.
 
 ### a. Docker
+**Docker version 17.03.0-ce or greater is required.**
+
 
 #### Linux (Ubuntu)
 
@@ -40,7 +42,7 @@ First of all, we need to install docker's dependencies:
 sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
 ```
 
-Once the dependencies are installed, we can finally install docker:
+Once the dependencies are installed, we can install docker:
 
 ```
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -81,8 +83,10 @@ See links below:
 See instructions from the Docker website: [docker.com/docker-for-windows](https://docs.docker.com/docker-for-windows/install/)
 
 ### b. Docker Compose
+**Docker-compose version 1.8 or greater is required.**
 
-We are currently unable to manage multiple containers at once, to do so, we need **docker-compose 1.8+**.
+
+We are currently unable to manage multiple containers at once, to do so, we need **docker-compose**.
 
 #### Linux
 
@@ -106,8 +110,10 @@ docker-compose version
 See instructions from the Docker-compose website: [docker.com/docker-for-windows](https://docs.docker.com/compose/install/)
 
 ### c. Go
+**Docker-compose version 1.7.x or greater is required.**
 
-Hyperledger Fabric requires a **Go version 1.7.x** or more. You can either follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
+
+You can either follow instructions from [golang.org](https://golang.org/dl/) or use these generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 #### Linux
 
