@@ -8,6 +8,7 @@ This tutorial will introduce you to the Hyperledger Fabric Go SDK and allows you
 
 **First part** This is the first part of this tutorial. The basics SDK features will be shown, but the second part is scheduled to demonstrate a more complex application.
 
+**This tutorial uses Hyperledger Fabric version 1.0.5**
 
 ## 1. Prerequisites
 
@@ -64,6 +65,8 @@ In order to apply these changes, you need to logout/login and then check version
 docker --version
 ```
 
+![End of the docker installation](docs/images/finish-docker-install.png)
+
 #### Mac OS X
 
 Dowload and install the latest [`Docker.dmg`](https://docs.docker.com/docker-for-mac/install/) package for Mac OS X available on the [Docker](https://docs.docker.com/docker-for-mac/install/) website. This will install `docker-compose` as well.
@@ -98,6 +101,7 @@ In order to apply these changes, you need to logout/login and then check version
 docker-compose version
 ```
 
+![End of the docker compose installation](docs/images/finish-docker_compose-install.png)
 
 #### Windows / Mac OS X / Others
 
@@ -124,6 +128,9 @@ To make sure that the installation works, you can logout/login (again) and run:
 ```
 go version
 ```
+
+![End of the go installation](docs/images/finish-go-install.png)
+
 
 #### Windows / Mac OS X / Others
 
