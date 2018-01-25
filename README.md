@@ -220,7 +220,7 @@ docker ps
 
 ![Docker compose up screenshot](docs/images/docker-ps.png)
 
-You will see : two peers, the orderer and two CA containers. You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deepper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
+You will see : two peers, the orderer and two CA containers. You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 ![Docker compose up screenshot](docs/images/docker-compose-up.png)
 
