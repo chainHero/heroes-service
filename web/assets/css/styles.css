@@ -1,0 +1,9 @@
+main.container {
+    margin-bottom: 100px;
+}
+
+nav .navbar-brand > img {
+    display: inline-block;
+    height: 100%;
+    margin-right: 10px;
+}
