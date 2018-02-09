@@ -29,7 +29,6 @@
   revision = "cd527374f1e5bff4938207604a14f2e38a9cf512"
 
 [[projects]]
-  branch = "master"
   name = "github.com/cloudflare/cfssl"
   packages = [
     "api",
@@ -46,7 +45,8 @@
     "ocsp/config",
     "signer"
   ]
-  revision = "1ae5a465bbe0ce48067127e7092edb300f6c9c0a"
+  revision = "27b05afbb5132883b0942e87e3dd53d194aaa2f5"
+  version = "1.3.0"
 
 [[projects]]
   branch = "master"
@@ -138,7 +138,7 @@
     "x509",
     "x509/pkix"
   ]
-  revision = "565dc33ed1f4f57523d464a59b3ece8c93944dce"
+  revision = "dca6ef1506f6d1ca5f2996809f97b43a0ddd6785"
 
 [[projects]]
   branch = "master"
@@ -200,13 +200,10 @@
     "api/apifabca",
     "api/apifabclient",
     "api/apilogging",
-    "api/apitxn",
+    "api/apitxn/chclient",
     "api/apitxn/chmgmtclient",
     "api/apitxn/resmgmtclient",
-    "def/factory/defclient",
-    "def/factory/defcore",
-    "def/factory/defsvc",
-    "def/provider/fabpvdr",
+    "api/kvstore",
     "internal/github.com/hyperledger/fabric-ca/api",
     "internal/github.com/hyperledger/fabric-ca/lib",
     "internal/github.com/hyperledger/fabric-ca/lib/tls",
@@ -233,36 +230,44 @@
     "pkg/cryptosuite",
     "pkg/cryptosuite/bccsp/sw",
     "pkg/cryptosuite/bccsp/wrapper",
-    "pkg/errors",
+    "pkg/errors/retry",
+    "pkg/errors/status",
     "pkg/fabric-ca-client",
     "pkg/fabric-client",
     "pkg/fabric-client/ccpackager/gopackager",
     "pkg/fabric-client/channel",
+    "pkg/fabric-client/chconfig",
     "pkg/fabric-client/credentialmgr",
+    "pkg/fabric-client/credentialmgr/persistence",
     "pkg/fabric-client/events",
     "pkg/fabric-client/events/consumer",
     "pkg/fabric-client/identity",
-    "pkg/fabric-client/internal",
-    "pkg/fabric-client/internal/txnproc",
     "pkg/fabric-client/keyvaluestore",
     "pkg/fabric-client/mocks",
     "pkg/fabric-client/orderer",
     "pkg/fabric-client/peer",
+    "pkg/fabric-client/resource",
     "pkg/fabric-client/signingmgr",
+    "pkg/fabric-client/txn",
     "pkg/fabric-txn/chclient",
     "pkg/fabric-txn/chmgmtclient",
+    "pkg/fabric-txn/discovery",
+    "pkg/fabric-txn/discovery/greylist",
     "pkg/fabric-txn/discovery/staticdiscovery",
-    "pkg/fabric-txn/internal",
     "pkg/fabric-txn/resmgmtclient",
     "pkg/fabric-txn/selection/staticselection",
+    "pkg/fabric-txn/txnhandler",
     "pkg/fabsdk",
     "pkg/fabsdk/api",
+    "pkg/fabsdk/factory/defclient",
+    "pkg/fabsdk/factory/defcore",
+    "pkg/fabsdk/factory/defsvc",
+    "pkg/fabsdk/provider/chpvdr",
+    "pkg/fabsdk/provider/fabpvdr",
     "pkg/logging",
     "pkg/logging/decorator",
     "pkg/logging/modlog",
     "pkg/logging/utils",
-    "pkg/status",
-    "test/integration",
     "test/metadata",
     "third_party/github.com/hyperledger/fabric/common/cauthdsl",
     "third_party/github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil",
@@ -275,7 +280,7 @@
     "third_party/github.com/hyperledger/fabric/protos/peer",
     "third_party/github.com/hyperledger/fabric/protos/utils"
   ]
-  revision = "3a0dae27f5b5b53c01a51a24c0080a3f0253f5aa"
+  revision = "dbcc63a7a3a55f188e5e424571e62021b8f244ef"
 
 [[projects]]
   branch = "master"
@@ -411,12 +416,6 @@
 
 [[projects]]
   branch = "master"
-  name = "golang.org/x/sync"
-  packages = ["syncmap"]
-  revision = "fd80eb99c8f653c847d294a001bdf2a3a6f768f5"
-
-[[projects]]
-  branch = "master"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -489,6 +488,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "14833b57177d364bba2be26696f44714f8750ca66c897eb56deea40f7dd14988"
+  inputs-digest = "b44a808a1009d054362980b394b0ef321dbf6ab93b6859748622fe98cb5f5762"
   solver-name = "gps-cdcl"
   solver-version = 1

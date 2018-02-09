@@ -7,7 +7,7 @@ dev: build run
 ##### BUILD
 build:
 	@echo "Build ..."
-	@govendor sync
+	@dep ensure
 	@go build
 	@echo "Build done"
 

@@ -3,48 +3,35 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime"
-	"path/filepath"
 	"github.com/chainHero/heroes-service/blockchain"
-//	"github.com/chainHero/heroes-service/web"
-//	"github.com/chainHero/heroes-service/web/controllers"
+	"github.com/chainHero/heroes-service/web/controllers"
+	"github.com/chainHero/heroes-service/web"
 )
 
-// Fix empty GOPATH with golang 1.8 (see https://github.com/golang/go/blob/1363eeba6589fca217e155c829b2a7c00bc32a92/src/go/build/build.go#L260-L277)
-func defaultGOPATH() string {
-	env := "HOME"
-	if runtime.GOOS == "windows" {
-		env = "USERPROFILE"
-	} else if runtime.GOOS == "plan9" {
-		env = "home"
-	}
-	if home := os.Getenv(env); home != "" {
-		def := filepath.Join(home, "go")
-		if filepath.Clean(def) == filepath.Clean(runtime.GOROOT()) {
-			// Don't set the default GOPATH to GOROOT,
-			// as that will trigger warnings from the go tool.
-			return ""
-		}
-		return def
-	}
-	return ""
-}
-
 func main() {
-	// Setup correctly the GOPATH in the environment
-	if goPath := os.Getenv("GOPATH"); goPath == "" {
-		os.Setenv("GOPATH", defaultGOPATH())
+	// Definition of the Fabric SDK properties
+	fSetup := blockchain.FabricSetup{
+		// Channel parameters
+		ChannelID:        	"chainhero",
+		ChannelConfig:    	"" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
+
+		// Chaincode parameters
+		ChainCodeID:      	"heroes-service",
+		ChaincodeGoPath:  	os.Getenv("GOPATH"),
+		ChaincodePath:    	"github.com/chainHero/heroes-service/chaincode/",
+		OrgAdmin:			"Admin",
+		OrgName:			"Org1",
+		ConfigFile:			"config.yaml",
 	}
 
-	// Initialize the Fabric SDK
-	fabricSdk, err := blockchain.Initialize()
+	// Initialization of the Fabric SDK from the previously set properties
+	err := fSetup.Initialize()
 	if err != nil {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 	}
-	_ = fabricSdk
-	// Make the web application listening
-/*	app := &controllers.Application{
-		Fabric: fabricSdk,
+	// Launch the web application listening
+	app := &controllers.Application{
+		Fabric: &fSetup,
 	}
-	web.Serve(app)*/
+	web.Serve(app)
 }
