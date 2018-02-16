@@ -48,9 +48,9 @@ sudo apt-get install apt-transport-https ca-certificates curl software-propertie
 Once the dependencies are installed, we can install docker:
 
 ```
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - ;
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" ;
-sudo apt-get update ;
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - ; \
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" ; \
+sudo apt-get update ; \
 sudo apt-get install docker-ce
 ```
 
@@ -58,7 +58,7 @@ Now we need to manage the current user to avoid using `root` access when we will
 
 ```
 sudo groupadd docker 
-sudo gpasswd -a ${USER} docker ;
+sudo gpasswd -a ${USER} docker ; \
 sudo service docker restart
 ```
 
@@ -99,7 +99,7 @@ We are currently unable to manage multiple containers at once. To solve this iss
 The installation is pretty fast:
 
 ```
-sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose ;
+sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose ; \
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
@@ -125,12 +125,12 @@ See instructions from the Docker-compose website: [docker.com/docker-for-windows
 You can either follow instructions from [golang.org](https://golang.org/dl/) or use those generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 ```
-wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz ;
-sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz ;
-rm go1.9.2.linux-amd64.tar.gz ;
-echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile ;
-echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc ;
-echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc ;
+wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz ; \
+sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz ; \
+rm go1.9.2.linux-amd64.tar.gz ; \
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile ; \
+echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc ; \
+echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc ; \
 mkdir -p $HOME/go/{src,pkg,bin}
 ```
 
@@ -152,19 +152,19 @@ See instructions from the Golang website: [golang.org/install](https://golang.or
 Now we can install the main framework: Hyperledger Fabric (Version 1.0.5). All the code is available on github:
 
 ```
-mkdir -p $GOPATH/src/github.com/hyperledger ;
-cd $GOPATH/src/github.com/hyperledger ;
-git clone https://github.com/hyperledger/fabric.git ;
-cd fabric ;
+mkdir -p $GOPATH/src/github.com/hyperledger ; \
+cd $GOPATH/src/github.com/hyperledger ; \
+git clone https://github.com/hyperledger/fabric.git ; \
+cd fabric ; \
 git checkout v1.0.5
 ```
 
 Same for the Hyperledger Fabric CA part:
 
 ```
-cd $GOPATH/src/github.com/hyperledger ;
-git clone https://github.com/hyperledger/fabric-ca.git ;
-cd fabric-ca ;
+cd $GOPATH/src/github.com/hyperledger ; \
+git clone https://github.com/hyperledger/fabric-ca.git ; \
+cd fabric-ca ; \
 git checkout v1.0.5
 ```
 
@@ -175,8 +175,8 @@ We won’t use directly the framework but it's necessary to have it locally in y
 Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric framework. To avoid version issues, we are going to checkout to a specific commit which works with the following tutorial.
 
 ```
-go get -u github.com/hyperledger/fabric-sdk-go ;
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ;
+go get -u github.com/hyperledger/fabric-sdk-go ; \
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
 git checkout 614551a752802488988921a730b172dada7def1d
 ```
 
@@ -195,14 +195,14 @@ sudo apt install libltdl-dev
 Let's make sure that you have the requested dependencies:
 
 ```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; 
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
 make depend-install
 ```
 
 Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and install it correctly:
 
 ```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ;
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
 make
 ```
 
@@ -221,7 +221,7 @@ In order to make a blockchain network, we will use `docker` to build virtual com
 Make a new directory in the `src` folder of your `GOPATH`, we name it `heroes-service`:
 
 ```
-mkdir -p $GOPATH/src/github.com/chainHero/heroes-service ;
+mkdir -p $GOPATH/src/github.com/chainHero/heroes-service ; \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
@@ -229,8 +229,8 @@ In the previous version of this tutorial we were starting from the SDK fixture f
 
 From command line:
 ```
-sudo apt-get install subversion ;
-cd $GOPATH/src/github.com/chainHero/heroes-service ;
+sudo apt-get install subversion ; \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 svn checkout https://github.com/chainHero/heroes-service/branches/newVersion/fixtures
 ```
 
@@ -243,7 +243,7 @@ If you want to download it from GitHub, there is no other choice for you to down
 In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures ;
+cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures ; \
 docker-compose up
 ```
 
