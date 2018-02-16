@@ -29,6 +29,12 @@ func main() {
 	if err != nil {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 	}
+
+	// Install and instantiate the chaincode
+	err = fSetup.InstallAndInstantiateCC()
+	if err != nil {
+		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+	}
 	// Launch the web application listening
 	app := &controllers.Application{
 		Fabric: &fSetup,
