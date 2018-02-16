@@ -29,6 +29,7 @@
   revision = "cd527374f1e5bff4938207604a14f2e38a9cf512"
 
 [[projects]]
+  branch = "master"
   name = "github.com/cloudflare/cfssl"
   packages = [
     "api",
@@ -45,8 +46,7 @@
     "ocsp/config",
     "signer"
   ]
-  revision = "27b05afbb5132883b0942e87e3dd53d194aaa2f5"
-  version = "1.3.0"
+  revision = "50a1a698eaa492fc865316df9fe39353a49a9184"
 
 [[projects]]
   branch = "master"
@@ -195,7 +195,6 @@
   name = "github.com/hyperledger/fabric-sdk-go"
   packages = [
     "api/apiconfig",
-    "api/apicore",
     "api/apicryptosuite",
     "api/apifabca",
     "api/apifabclient",
@@ -230,6 +229,7 @@
     "pkg/cryptosuite",
     "pkg/cryptosuite/bccsp/sw",
     "pkg/cryptosuite/bccsp/wrapper",
+    "pkg/errors/multi",
     "pkg/errors/retry",
     "pkg/errors/status",
     "pkg/fabric-ca-client",
@@ -280,7 +280,7 @@
     "third_party/github.com/hyperledger/fabric/protos/peer",
     "third_party/github.com/hyperledger/fabric/protos/utils"
   ]
-  revision = "dbcc63a7a3a55f188e5e424571e62021b8f244ef"
+  revision = "614551a752802488988921a730b172dada7def1d"
 
 [[projects]]
   branch = "master"
@@ -488,6 +488,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b44a808a1009d054362980b394b0ef321dbf6ab93b6859748622fe98cb5f5762"
+  inputs-digest = "b4a0363951653d59119b99b9285a880de5e5b4d2f154ee1fb3481cccc160df73"
   solver-name = "gps-cdcl"
   solver-version = 1

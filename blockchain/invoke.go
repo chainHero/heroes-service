@@ -24,7 +24,10 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 
 	// Register a notification handler on the client
 	notifier := make(chan *chclient.CCEvent)
-	rce := setup.client.RegisterChaincodeEvent(notifier, setup.ChainCodeID, eventID)
+	rce, err := setup.client.RegisterChaincodeEvent(notifier, setup.ChainCodeID, eventID)
+	if err != nil {
+		return "", fmt.Errorf("failed to register chaincode evet: %v", err)
+	}
 
 	// Create a request (proposal) and send it
 	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap:transientDataMap})

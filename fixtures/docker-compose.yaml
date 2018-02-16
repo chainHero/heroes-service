@@ -112,16 +112,6 @@ services:
         aliases:
           - peer0.org1.hf.chainhero.io
 
-  couchdb.peer1.org1.hf.chainhero.io:
-    image: hyperledger/fabric-couchdb:x86_64-1.0.5
-    container_name: couchdb.peer1.org1.hf.chainhero.io
-    ports:
-      - 8984:5984
-    networks:
-      default:
-        aliases:
-          - couchdb.peer1.org1.hf.chainhero.io
-
   peer1.org1.hf.chainhero.io:
     image: hyperledger/fabric-peer:x86_64-1.0.5
     container_name: peer1.org1.hf.chainhero.io
@@ -167,3 +157,14 @@ services:
       default:
         aliases:
           - peer1.org1.hf.chainhero.io
+
+
+  couchdb.peer1.org1.hf.chainhero.io:
+    image: hyperledger/fabric-couchdb:x86_64-1.0.5
+    container_name: couchdb.peer1.org1.hf.chainhero.io
+    ports:
+      - 8984:5984
+    networks:
+      default:
+        aliases:
+          - couchdb.peer1.org1.hf.chainhero.io

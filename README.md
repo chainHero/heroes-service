@@ -12,19 +12,19 @@ This is the **first part** of this tutorial. The basics SDK features will be sho
 
 ## 1. Prerequisites
 
-This tutorial won’t explain in detail how Hyperledger Fabric works. I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work there that explains what kind of blockchain, Hyperledger Fabric is.
+This tutorial won’t explain in detail how Hyperledger Fabric works. I will just give some tips to understand the general behavior of the framework. If you want to get a full explanation of the tool, go to the official [documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) there is a lot of work there that explains what kind of blockchain Hyperledger Fabric is.
 
 This tutorial has been made on **Ubuntu 16.04** but the Hyperledger Fabric framework is compatible with Mac OS X, Windows and other Linux distributions.
 
-We will use the **Go** language to design a first application, because the Hyperledger Fabric has been built also in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode (smart contract) can be written in Go too. So the full-stack will be only in Go! There are other SDK if you want to, like for NodeJS, Java or Python.
+We will use the **Go** language to design our first application because the Hyperledger Fabric has been also built in Go and the Fabric SDK Go is really simple to use. In addition, the chaincode (smart contract) can be written in Go too. So the full-stack will be only in Go! Awesome right ? However, if you are go phobic, there are other SDK like for NodeJS, Java or Python but we won't discuss about them here.
 
-Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, some components (peers) also deploys docker containers to separate data (channel). So make sure that the platform supports this kind of virtualization.
+Hyperledger Fabric uses **Docker** to easily deploy a blockchain network. In addition, some components (peers) also deploys docker containers to separate data (channel). So make sure that your platform supports this kind of virtualization.
 
 ## 2. Introduction to Hyperledger Fabric
 
 > Hyperledger Fabric is a platform for distributed ledger solutions underpinned by a modular architecture delivering high degrees of confidentiality, resiliency, flexibility and scalability. It is designed to support pluggable implementations of different components and accommodate the complexity and intricacies that exist across the economic ecosystem.
 
-See the full explaination from the official documentation, in the introduction part: [Hyperledger Fabric Blockchain](http://hyperledger-fabric.readthedocs.io/en/latest/blockchain.html)
+See the full explanation from the official documentation in the introduction part: [Hyperledger Fabric Blockchain](http://hyperledger-fabric.readthedocs.io/en/latest/blockchain.html)
 
 ![Blockchain Concensus](http://hyperledger-fabric.readthedocs.io/en/latest/_images/consensus.png)
 
@@ -62,7 +62,9 @@ sudo gpasswd -a ${USER} docker &&
 sudo service docker restart
 ```
 
-To apply these changes, you need to logout/login. You can then check your version with:
+Do not mind if 'groupadd: group 'docker' already exists' error pop up.
+
+To apply the changes made, you need to logout/login. You can then check your version with:
 
 ```
 docker -v
@@ -87,6 +89,7 @@ See instructions from the Docker website: [docker.com/docker-for-windows](https:
 
 ### b. Docker Compose
 **Docker-compose version 1.8 or greater is required.**
+
 
 
 We are currently unable to manage multiple containers at once. To solve this issue, we need **docker-compose**.
@@ -114,6 +117,7 @@ See instructions from the Docker-compose website: [docker.com/docker-for-windows
 
 ### c. Go
 **Go version 1.7.x or greater is required.**
+
 
 
 #### Linux
@@ -173,7 +177,7 @@ Last but not least, the Hyperledger Fabric SDK Go will allow us to easily commun
 ```
 go get -u github.com/hyperledger/fabric-sdk-go &&
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go &&
-git checkout cc04f203bb0940c3bf30342caa15a276cb6fb9d3
+git checkout 614551a752802488988921a730b172dada7def1d
 ```
 
 If you get the following error:
@@ -191,7 +195,7 @@ sudo apt install libltdl-dev
 Let's make sure that you have the requested dependencies:
 
 ```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go &&
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && 
 make depend-install
 ```
 
@@ -202,9 +206,11 @@ cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go &&
 make
 ```
 
-The installation can take a while (depending on your network connection). During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
+The installation take a while (depending on your network connection). During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
 
 ![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
+
+Note that there is more output but it's irrelevant to put it here. The only things you need to care about is the line `fabsdkgo_integration-tests_1 exited with code 0`. If you have `fabsdkgo_integration-tests_1 exited with code 1` then you did something wrong.
 
 ## 4. Make your first blockchain network
 
@@ -223,16 +229,14 @@ In the previous version of this tutorial we were starting from the SDK fixture f
 
 From command line:
 ```
-sudo apt-get install subversion
-cd $GOPATH/src/github.com/chainHero/heroes-service
+sudo apt-get install subversion &&
+cd $GOPATH/src/github.com/chainHero/heroes-service &&
 svn checkout https://github.com/chainHero/heroes-service/branches/newVersion/fixtures
 ```
 
 If you want to download it from GitHub, there is no other choice for you to download the whole repository and extract the fixture folder from it:
 
 - [Github Repository](https://github.com/chainHero/heroes-service/archive/newVersion.zip)
-
-Once its downloaded move the fixture folder here `$GOPATH/src/github.com/chainHero/heroes-service`.
 
 ### b. Test
 
@@ -253,10 +257,7 @@ docker ps
 
 ![Docker compose up screenshot](docs/images/docker-ps.png)
 
-You will see : two peers, the orderer, two CA containers and two dependencies (golangruntime and builder) You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
-
-![Docker compose up screenshot](docs/images/docker-compose-up.png)
-> Do not pay attention about the warnings. It's just indicating that we disabled logs. You can enable them inside the docker-compose.yaml file.
+You will see : two peers, the orderer, one CA containers and two dependencies (golangruntime and builder) You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 > **Tips**: when the network is stopped, all containers used remain accessible. This is very useful to check logs for example. You can see them with `docker ps -a`. In order to clean up these containers, you need to delete them with `docker rm $(docker ps -aq)` or if you have used a `docker-compose` file, go where this file is and run `docker-compose down`.
 
@@ -270,62 +271,146 @@ You will see : two peers, the orderer, two CA containers and two dependencies (g
 As we removed the config folder, we need to make a new config file. We will put in it everything that the Fabric SDK Go and our custom parameters for our app needs to work. The config file will contain all our custom parameters and everything else the Fabric SDK Go needs for our app to work. For the moment, we will only try to make the Fabric SDK Go work with the default chaincode:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi config.yaml
 ```
 
 ```
+name: "chainHero-network"
+
+# Describe what the target network is/does.
+description: "The network which will host my first blockchain"
+
+# Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
+version: 2
+
+# The client section used by GO SDK.
 client:
- peers:
-  # peer0
-  - host: "localhost"
-    port: 7051
-    eventHost: "localhost"
-    eventPort: 7053
-    primary: true
-    tls:
-      # Certificate location absolute path
-      certificate: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/cacerts/org1.example.com-cert.pem"
-      serverHostOverride: "peer0.org1.example.com"
+  # Which organization does this application instance belong to? The value must be the name of an org
+  organization: Org1
+  logging:
+    level: info
 
- tls:
-  enabled: true
 
- security:
-  enabled: true
-  hashAlgorithm: "SHA2"
-  level: 256
 
- tcert:
-  batch:
-    size: 200
+# Global configuration for peer, event service and orderer timeouts
+  peer:
+    timeout:
+      connection: 3s
+      queryResponse: 45s
+      executeTxResponse: 30s
+  eventService:
+    timeout:
+      connection: 3s
+      registrationResponse: 3s
+  orderer:
+    timeout:
+      connection: 3s
+      response: 5s
 
- orderer:
-  host: "localhost"
-  port: 7050
-  tls:
-    # Certificate location absolute path
-    certificate: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/cacerts/example.com-cert.pem"
-    serverHostOverride: "orderer.example.com"
 
- logging:
-  level: info
 
- fabricCA:
-  tlsEnabled: true
-  id: "Org1MSP"
-  name: "ca-org1"
-  homeDir: "/tmp/"
-  mspDir: "msp"
-  serverURL: "https://localhost:7054"
-  certfiles :
-    - "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/ca/ca_root.pem"
-  client:
-   keyfile: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/client/client_client1-key.pem"
-   certfile: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/client/client_client1.pem"
+  cryptoconfig:
+    path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
 
- cryptoconfig:
-  path: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config"
+
+
+
+  credentialStore:
+    path: "/tmp/hfc-heroes-service-kvs"
+    cryptoStore:
+      path: "/tmp/heroes-service-msp"
+
+
+
+   # BCCSP config for the client. Used by GO SDK.
+  BCCSP:
+    security:
+     enabled: true
+     default:
+      provider: "SW"
+     hashAlgorithm: "SHA2"
+     softVerify: true
+     ephemeral: false
+     level: 256
+
+
+
+  tlsCerts:
+    systemCertPool: false
+
+
+channels:
+  chainhero:
+    orderers:
+      - orderer.hf.chainhero.io
+    peers:
+      peer0.org1.hf.chainhero.io:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer1.org1.hf.chainhero.io:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+    chaincodes:
+      # the format follows the "canonical name" of chaincodes by fabric code
+
+
+# list of participating organizations in this network
+organizations:
+  Org1:
+    mspid: org1.hf.chainhero.io
+    cryptoPath:  "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
+    peers:
+      - peer0.org1.hf.chainhero.io
+      - peer1.org1.hf.chainhero.io
+    certificateAuthorities:
+      - ca.org1.hf.chainhero.io
+
+# List of orderers to send transaction and channel create/update requests to. For the time being only one orderer is needed.
+orderers:
+  orderer.hf.chainhero.io:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.hf.chainhero.io
+      grpc-max-send-message-length: 15
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/ordererOrganizations/hf.chainhero.io/tlsca/tlsca.hf.chainhero.io-cert.pem"
+
+# List of peers to send various requests to, including endorsement, query and event listener registration.
+peers:
+  peer0.org1.hf.chainhero.io:
+    url: grpcs://localhost:7051
+    eventUrl: grpcs://localhost:7053
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.hf.chainhero.io
+      grpc.http2.keepalive_time: 15
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
+
+  peer1.org1.hf.chainhero.io:
+    url: grpcs://localhost:8051
+    eventUrl: grpcs://localhost:8053
+    grpcOptions:
+      ssl-target-name-override: peer1.org1.hf.chainhero.io
+      grpc.http2.keepalive_time: 15
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
+
+
+certificateAuthorities:
+  ca.org1.hf.chainhero.io:
+    url: https://localhost:7054
+    httpOptions:
+      verify: false
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+    caName: ca.org1.hf.chainhero.io
 ```
 
 The full configuration file is available here: [`config.yaml`](config.yaml)
@@ -335,158 +420,91 @@ The full configuration file is available here: [`config.yaml`](config.yaml)
 We add a new folder named `blockchain` that will contain the whole interface that communicate with the network. We will see the Fabric SDK Go only in this folder.
 
 ```
-mkdir $GOPATH/src/github.com/chainhero/heroes-service/blockchain
+mkdir $GOPATH/src/github.com/chainHero/heroes-service/blockchain
 ```
 
 Now, we add a new go file named `setup.go` :
 
 ```
-vi $GOPATH/src/github.com/chainhero/heroes-service/blockchain/setup.go
+vi $GOPATH/src/github.com/chainHero/heroes-service/blockchain/setup.go
 ```
 
 ```
 package blockchain
 
 import (
-	api "github.com/hyperledger/fabric-sdk-go/api"
-	fsgConfig "github.com/hyperledger/fabric-sdk-go/pkg/config"
-	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
-	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
-	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
+	"github.com/hyperledger/fabric-sdk-go/pkg/config"
+	"time"
+	packager "github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/ccpackager/gopackager"
+	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
+	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
+	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
 
 // FabricSetup implementation
 type FabricSetup struct {
-	Client           api.FabricClient
-	Channel          api.Channel
-	EventHub         api.EventHub
-	Initialized      bool
-	ChannelId        string
-	ChannelConfig    string
+        ConfigFile      string
+        OrgID           string
+        ChannelID       string
+        initialized     bool
+        ChannelConfig   string
+        OrgAdmin        string
+        OrgName         string
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
-func Initialize() (*FabricSetup, error) {
+func (setup *FabricSetup) Initialize() error {
 
-	// Add parameters for the initialization
-	setup := FabricSetup{
-		// Channel parameters
-		ChannelId:        "mychannel",
-		ChannelConfig:    "fixtures/channel/mychannel.tx",
-	}
+        // Add parameters for the initialization
+        if setup.initialized {
+                return fmt.Errorf("sdk already initialized")
+        }
 
-	// Initialize the configuration
-	// This will read the config.yaml, in order to tell to
-	// the SDK all options and how contact a peer
-	configImpl, err := fsgConfig.InitConfig("config.yaml")
-	if err != nil {
-		return nil, fmt.Errorf("Initialize the config failed: %v", err)
-	}
+        sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
+        if err != nil {
+                return fmt.Errorf("failed to create sdk: %v", err)
+        }
 
-	// Initialize blockchain cryptographic service provider (BCCSP)
-	// This tool manages certificates and keys
-	err = bccspFactory.InitFactories(configImpl.GetCSPConfig())
-	if err != nil {
-		return nil, fmt.Errorf("Failed getting ephemeral software-based BCCSP [%s]", err)
-	}
+        // Channel management client is responsible for managing channels (create/update channel)
+        // Supply user that has privileges to create channel (in this case orderer admin)
+        chMgmtClient, err := sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).ChannelMgmt()
+        if err != nil {
+                return fmt.Errorf("failed to add Admin user to sdk: %v", err)
+        }
 
-	// This will make a user access (here the admin) to interact with the network
-	// To do so, it will contact the Fabric CA to check if the user has access
-	// and give it to him (enrollment)
-	client, err := fcutil.GetClient("admin", "adminpw", "/tmp/enroll_user", configImpl)
-	if err != nil {
-		return nil, fmt.Errorf("Create client failed: %v", err)
-	}
-	setup.Client = client
+        // Org admin user is signing user for creating channel
+        session, err := sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
+        if err != nil {
+                return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)
+        }
+        orgAdminUser := session
 
-	// Make a new instance of channel pre-configured with the info we have provided,
-	// but for now we can't use this channel because we need to create and
-	// make some peer join it
-	channel, err := fcutil.GetChannel(setup.Client, setup.ChannelId)
-	if err != nil {
-		return nil, fmt.Errorf("Create channel (%s) failed: %v", setup.ChannelId, err)
-	}
-	setup.Channel = channel
+        // Create channel
+        req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
+        if err = chMgmtClient.SaveChannel(req); err != nil {
+                return fmt.Errorf("failed to create channel: %v", err)
+        }
 
-	// Get an orderer user that will validate a proposed order
-	// The authentication will be made with local certificates
-	ordererUser, err := fcutil.GetPreEnrolledUser(
-		client,
-		"ordererOrganizations/example.com/users/Admin@example.com/keystore",
-		"ordererOrganizations/example.com/users/Admin@example.com/signcerts",
-		"ordererAdmin",
-	)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to get the orderer user failed: %v", err)
-	}
+        // Allow orderer to process channel creation
+        time.Sleep(time.Second * 5)
 
-	// Get an organisation user (admin) that will be used to sign the proposal
-	// The authentication will be made with local certificates
-	orgUser, err := fcutil.GetPreEnrolledUser(
-		client,
-		"peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore",
-		"peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts",
-		"peerorg1Admin",
-	)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to get the organisation user failed: %v", err)
-	}
+        // Org resource management client
+        orgResMgmt, err := sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
+        if err != nil {
+                return fmt.Errorf("failed to create new resource management client: %v", err)
+        }
 
-	// Initialize the channel "mychannel" based on the genesis block by
-	//   1. locating in fixtures/channel/mychannel.tx and
-	//   2. joining the peer given in the configuration file to this channel
-	if err := fcutil.CreateAndJoinChannel(client, ordererUser, orgUser, channel, setup.ChannelConfig); err != nil {
-		return nil, fmt.Errorf("CreateAndJoinChannel return error: %v", err)
-	}
+        // Org peers join channel
+        if err = orgResMgmt.JoinChannel(setup.ChannelID); err != nil {
+                return fmt.Errorf("org peers failed to join the channel: %v", err)
+        }
 
-	// Give the organisation user to the client for next proposal
-	client.SetUserContext(orgUser)
-
-	// Setup Event Hub
-	// This will allow us to listen for some event from the chaincode
-	// and act on it. We won't use it for now.
-	eventHub, err := getEventHub(client)
-	if err != nil {
-		return nil, err
-	}
-	if err := eventHub.Connect(); err != nil {
-		return nil, fmt.Errorf("Failed eventHub.Connect() [%s]", err)
-	}
-	setup.EventHub = eventHub
-
-	// Tell that the initialization is done
-	setup.Initialized = true
-
-	return &setup, nil
-}
-
-// getEventHub initialize the event hub
-func getEventHub(client api.FabricClient) (api.EventHub, error) {
-	eventHub, err := events.NewEventHub(client)
-	if err != nil {
-		return nil, fmt.Errorf("Error creating new event hub: %v", err)
-	}
-	foundEventHub := false
-	peerConfig, err := client.GetConfig().GetPeersConfig()
-	if err != nil {
-		return nil, fmt.Errorf("Error reading peer config: %v", err)
-	}
-	for _, p := range peerConfig {
-		if p.EventHost != "" && p.EventPort != 0 {
-			fmt.Printf("EventHub connect to peer (%s:%d)\n", p.EventHost, p.EventPort)
-			eventHub.SetPeerAddr(fmt.Sprintf("%s:%d", p.EventHost, p.EventPort),
-				p.TLS.Certificate, p.TLS.ServerHostOverride)
-			foundEventHub = true
-			break
-		}
-	}
-
-	if !foundEventHub {
-		return nil, fmt.Errorf("No EventHub configuration found")
-	}
-
-	return eventHub, nil
+        setup.initialized = true
+        fmt.Println("Success")
+        return nil
 }
 ```
 
@@ -499,53 +517,40 @@ At this stage, we only initialised a client that will communicate to a peer, a C
 To make sure that the client managed to initialise all his components, we will make a simple test with the network launched. In order to do this, we need to build the go code. Since we we haven't any main file we have to add one:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi main.go
 ```
 
 ```
+
 package main
 
 import (
-	"github.com/chainhero/heroes-service/blockchain"
-	"fmt"
-	"os"
-	"runtime"
-	"path/filepath"
+        "fmt"
+        "os"
+        "github.com/chainHero/heroes-service/blockchain"
 )
 
-// Fix empty GOPATH with golang 1.8 (see https://github.com/golang/go/blob/1363eeba6589fca217e155c829b2a7c00bc32a92/src/go/build/build.go#L260-L277)
-func defaultGOPATH() string {
-	env := "HOME"
-	if runtime.GOOS == "windows" {
-		env = "USERPROFILE"
-	} else if runtime.GOOS == "plan9" {
-		env = "home"
-	}
-	if home := os.Getenv(env); home != "" {
-		def := filepath.Join(home, "go")
-		if filepath.Clean(def) == filepath.Clean(runtime.GOROOT()) {
-			// Don't set the default GOPATH to GOROOT,
-			// as that will trigger warnings from the go tool.
-			return ""
-		}
-		return def
-	}
-	return ""
-}
-
 func main() {
-	// Setup correctly the GOPATH in the environment
-	if goPath := os.Getenv("GOPATH"); goPath == "" {
-		os.Setenv("GOPATH", defaultGOPATH())
-	}
+        // Definition of the Fabric SDK properties
+        fSetup := blockchain.FabricSetup{
+                // Channel parameters
+                ChannelID:              "chainhero",
+                ChannelConfig:          "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
 
-	// Initialize the Fabric SDK
-	_, err := blockchain.Initialize()
-	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v", err)
-	}
+                // Chaincode parameters
+                OrgAdmin:               "Admin",
+                OrgName:                "Org1",
+                ConfigFile:             "config.yaml",
+        }
+
+        // Initialization of the Fabric SDK from the previously set properties
+        err := fSetup.Initialize()
+        if err != nil {
+                fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
+        }
 }
+
 ```
 
 The file is available here: [`main.go`](main.go)
@@ -554,23 +559,24 @@ As you can see, we fixed the GOPATH of the environment if it's not set. We will 
 
 The last thing to do before starting the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA, Fabric SDK Go and maybe other projects. When we will try to compile our app, there may be some conflicts (like multiple definitions of BCCSP). We will handle this by using a tool like `govendor` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
 
+//TODO
 ```
 go get -u github.com/kardianos/govendor && \
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 govendor init && govendor add +external
 ```
 
 Now we can make the compilation:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 go build
 ```
 
 After some time, a new binary named `heroes-service` will appear at the root of the project. Try to start the binary like this:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 ./heroes-service
 ```
 
@@ -579,15 +585,16 @@ cd $GOPATH/src/github.com/chainhero/heroes-service && \
 At this point, it won't work because there is no network deployed that the SDK can talk with. Start the network and launch the app again:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && \
+cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && \
 docker-compose up -d && \
 cd .. && \
 ./heroes-service
 ```
 
 ![Screenshot app started and SDK initialised](docs/images/start-app-initialized.png)
+Note: You need to see "Success". If it's not the case then something went wrong.
 
-Great! We initialised the SDK with our local network. In the next step, we will interact with a chaincode.
+Alright ! So we just initialised the SDK with our local network. In the next step, we will interact with a chaincode.
 
 ### d. Clean up and Makefile
 
@@ -595,7 +602,7 @@ The Fabric SDK generates some files, like certificates and/or temporally files. 
 
 *How clean up my environment ?*
 
-- Shut down your network: `cd $GOPATH/src/github.com/chainhero/heroes-service/fixtures && docker-compose down`
+- Shut down your network: `cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && docker-compose down`
 - Remove MSP folder (defined in the [config](config.yaml) file, in the `fabricCA` section): `rm -rf /tmp/msp`
 - Remove enrolment files (defined when we initialise the SDK, in the [setup](blockchain/setup.go) file, when we get the client):  `rm -rf /tmp/enroll_user`
 - Remove some docker containers and docker images not generated by the `docker-compose` command: ```docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null``` and ```docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null```
@@ -676,7 +683,7 @@ To use it, go in the root of the project and use the `make` command:
 We are almost there to use the blockchain system. But for now we haven't set up any chaincode (smart contract) yet that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 mkdir chaincode && \
 vi chaincode/main.go
 ```
@@ -742,6 +749,11 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 		return t.query(stub, args)
 	}
 
+	// The update argument will manage all update in the ledger
+	if args[0] == "invoke" {
+		return t.invoke(stub, args)
+	}
+
 	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown action, check the first argument")
 }
@@ -749,10 +761,11 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 // query
 // Every readonly functions in the ledger will be here
 func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	fmt.Println("########### HeroesServiceChaincode query ###########")
 
 	// Check whether the number of arguments is sufficient
 	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient")
+		return shim.Error("The number of arguments is insufficient.")
 	}
 
 	// Like the Invoke function, we manage multiple type of query requests with the second argument.
@@ -773,11 +786,43 @@ func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []
 	return shim.Error("Unknown query action, check the second argument.")
 }
 
+// invoke
+// Every functions that read and write in the ledger will be here
+func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	fmt.Println("########### HeroesServiceChaincode invoke ###########")
+
+	if len(args) < 2 {
+		return shim.Error("The number of arguments is insufficient.")
+	}
+
+	// Check if the ledger key is "hello" and process if it is the case. Otherwise it returns an error.
+	if args[1] == "hello" && len(args) == 3 {
+
+		// Write the new value in the ledger
+		err := stub.PutState("hello", []byte(args[2]))
+		if err != nil {
+			return shim.Error("Failed to update state of hello")
+		}
+
+		// Notify listeners that an event "eventInvoke" have been executed (check line 19 in the file invoke.go)
+		err = stub.SetEvent("eventInvoke", []byte{})
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+
+		// Return this value in response
+		return shim.Success(nil)
+	}
+
+	// If the arguments given don’t match any function, we return an error
+	return shim.Error("Unknown invoke action, check the second argument.")
+}
+
 func main() {
 	// Start the chaincode and make it ready for futures requests
 	err := shim.Start(new(HeroesServiceChaincode))
 	if err != nil {
-		fmt.Printf("Error starting Heroes Service chaincode: %s\n", err)
+		fmt.Printf("Error starting Heroes Service chaincode: %s", err)
 	}
 }
 ```
@@ -788,118 +833,126 @@ The file is available here: [`chaincode/main.go`](chaincode/main.go)
 
 For now, the chaincode does nothing extraordinary, just put the key/value `hello`/`world` in the ledger at initialisation. In addition, there is one function that we can call by an invoke: `query hello`. This function gets the state of the ledger, i.e. `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
 
-In order to install and instantiate the chaincode, we need to add some code in the application. Edit the [`blockchain/setup.go`](blockchain/setup.go) and add this following lines:
-
-> line 3 of [`blockchain/setup.go`](blockchain/setup.go): we add the OS import to get access to the GOPATH variable in the environment
+In order to install and instantiate the chaincode, we need to add some code in the application. Edit the [`blockchain/setup.go`](blockchain/setup.go) with those following lines:
 
 ```
+package blockchain
+
 import (
-	api "github.com/hyperledger/fabric-sdk-go/api"
-	fsgConfig "github.com/hyperledger/fabric-sdk-go/pkg/config"
-	bccspFactory "github.com/hyperledger/fabric/bccsp/factory"
-	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
-	"github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/events"
 	"fmt"
-	"os"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
+	"github.com/hyperledger/fabric-sdk-go/pkg/config"
+	"time"
+	packager "github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/ccpackager/gopackager"
+	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
+	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
+	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
-```
 
-> line 13 of [`blockchain/setup.go`](blockchain/setup.go): we add chaincode parameters
-
-```
 // FabricSetup implementation
 type FabricSetup struct {
-	Client           api.FabricClient
-	Channel          api.Channel
-	EventHub         api.EventHub
-	Initialized      bool
-	ChannelId        string
-	ChannelConfig    string
-	ChaincodeId      string
-	ChaincodeVersion string
-	ChaincodeGoPath  string
-	ChaincodePath    string
+	ConfigFile      string
+	OrgID           string
+	ChannelID       string
+	ChainCodeID     string
+	initialized     bool
+	ChannelConfig   string
+	ChaincodeGoPath string
+	ChaincodePath   string
+	OrgAdmin        string
+	OrgName         string
+	client          chclient.ChannelClient
 }
-```
 
-> line 28 of [`blockchain/setup.go`](blockchain/setup.go): we set new parameters
-
-```
-func Initialize() (*FabricSetup, error) {
+// Initialize reads the configuration file and sets up the client, chain and event hub
+func (setup *FabricSetup) Initialize() error {
 
 	// Add parameters for the initialization
-	setup := FabricSetup{
-		// Channel parameters
-		ChannelId:        "mychannel",
-		ChannelConfig:    "fixtures/channel/mychannel.tx",
-
-		// Chaincode parameters
-		ChaincodeId:      "heroes-service",
-		ChaincodeVersion: "v1.0.0",
-		ChaincodeGoPath:  os.Getenv("GOPATH"),
-		ChaincodePath:    "github.com/chainhero/heroes-service/chaincode",
-	}
-    
-    [...]
-}
-```
-
-> line 156 of [`blockchain/setup.go`](blockchain/setup.go): we add the function that will install and instantiate the chaincode
-
-```
-// Install and instantiate the chaincode
-func (setup *FabricSetup) InstallAndInstantiateCC() error {
-
-	// Check if chaincode ID is provided
-	// otherwise, generate a random one
-	if setup.ChaincodeId == "" {
-		setup.ChaincodeId = fcutil.GenerateRandomID()
+	if setup.initialized {
+		return fmt.Errorf("sdk already initialized")
 	}
 
-	fmt.Printf(
-		"Chaincode %s (version %s) will be installed (Go Path: %s / Chaincode Path: %s)\n",
-		setup.ChaincodeId,
-		setup.ChaincodeVersion,
-		setup.ChaincodeGoPath,
-		setup.ChaincodePath,
-	)
-
-	// Install ChainCode
-	// Package the go code and make a proposal to the network with this new chaincode
-	err := fcutil.SendInstallCC(
-		setup.Client, // The SDK client
-		setup.Channel, // The channel concerned
-		setup.ChaincodeId,
-		setup.ChaincodePath,
-		setup.ChaincodeVersion,
-		nil,
-		setup.Channel.GetPeers(), // Peers concerned by this change in the channel
-		setup.ChaincodeGoPath,
-	)
+	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
 	if err != nil {
-		return fmt.Errorf("Send install proposal return error: %v", err)
-	} else {
-		fmt.Printf("Chaincode %s installed (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+		return fmt.Errorf("failed to create sdk: %v", err)
 	}
 
-	// Instantiate ChainCode
-	// Call the Init function of the chaincode in order to initialize in every peer the new chaincode
-	err = fcutil.SendInstantiateCC(
-		setup.Channel,
-		setup.ChaincodeId,
-		setup.ChannelId,
-		[]string{"init"}, // Arguments for the invoke request
-		setup.ChaincodePath,
-		setup.ChaincodeVersion,
-		[]api.Peer{setup.Channel.GetPrimaryPeer()}, // Which peer to contact
-		setup.EventHub,
-	)
+	// Channel management client is responsible for managing channels (create/update channel)
+	// Supply user that has privileges to create channel (in this case orderer admin)
+	chMgmtClient, err := sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).ChannelMgmt()
 	if err != nil {
-		return err
-	} else {
-		fmt.Printf("Chaincode %s instantiated (version %s)\n", setup.ChaincodeId, setup.ChaincodeVersion)
+		return fmt.Errorf("failed to add Admin user to sdk: %v", err)
 	}
 
+	// Org admin user is signing user for creating channel
+	session, err := sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
+	if err != nil {
+		return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)
+	}
+	orgAdminUser := session
+
+	// Create channel
+	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
+	if err = chMgmtClient.SaveChannel(req); err != nil {
+		return fmt.Errorf("failed to create channel: %v", err)
+	}
+
+	// Allow orderer to process channel creation
+	time.Sleep(time.Second * 5)
+
+	// Org resource management client
+	orgResMgmt, err := sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
+	if err != nil {
+		return fmt.Errorf("failed to create new resource management client: %v", err)
+	}
+
+	// Org peers join channel
+	if err = orgResMgmt.JoinChannel(setup.ChannelID); err != nil {
+		return fmt.Errorf("org peers failed to join the channel: %v", err)
+	}
+
+	// Create chaincode package for our chaincode
+	fmt.Println("Start Create")
+	ccPkg, err := packager.NewCCPackage(setup.ChaincodePath, setup.ChaincodeGoPath)
+	if err != nil {
+		return fmt.Errorf("failed to create chaincode package: %v", err)
+	}
+
+	// Install our chaincode on org peers
+	fmt.Println("Start Install")
+	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Package: ccPkg}
+	_, err = orgResMgmt.InstallCC(installCCReq)
+	if err != nil {
+		return fmt.Errorf("failed to install cc to org peers %v", err)
+	}
+
+	// Set up chaincode policy
+	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
+
+	// Org resource manager will instantiate our chaincode on the channel
+	fmt.Println("Start Instantiate")
+	err = orgResMgmt.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
+	if err != nil {
+		return fmt.Errorf("failed to instantiate the chaincode: %v", err)
+	}
+
+	// CHAINCODE INSTALLATION SUCCESSFUL
+	fmt.Println("Chaincode successfully installed and instantiated")
+
+	// Channel client is used to query and execute transactions
+	chClient, err := sdk.NewClient(fabsdk.WithUser("User1")).Channel(setup.ChannelID)
+	if err != nil {
+		return fmt.Errorf("failed to create new channel client: %v", err)
+	}
+
+	// We store it into our struct to use it wherever we need a client to communicate with the ledger
+	setup.client = chClient
+
+	// Clean the client
+	defer chClient.Close()
+
+	fmt.Println("Success")
 	return nil
 }
 ```
@@ -908,36 +961,29 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to update your chaincode, increment this number. Otherwise the network will keep the same chaincode.
 
-Finally, we add the call to this function in the [`main.go`](main.go) after the SDK initialisation:
+We need now to modify our setup structure in the main
 
-
-> line 38 of [`main.go`](main.go): we add the function that will install and instantiate the chaincode
-
+You can directly edit the file by modifying those lines inside
 ```
-func main() {
+	fSetup := blockchain.FabricSetup{
+		// Channel parameters
+		ChannelID:        	"chainhero",
+		ChannelConfig:    	"" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
 
-[...]
-
-	// Initialize the Fabric SDK
-	fabricSdk, err := blockchain.Initialize()
-	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
+		// Chaincode parameters
+		ChainCodeID:      	"heroes-service",
+		ChaincodeGoPath:  	os.Getenv("GOPATH"),
+		ChaincodePath:    	"github.com/chainHero/heroes-service/chaincode/",
+		OrgAdmin:			"Admin",
+		OrgName:			"Org1",
+		ConfigFile:			"config.yaml",
 	}
-
-	// Install and instantiate the chaincode
-	err = fabricSdk.InstallAndInstantiateCC()
-	if err != nil {
-		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
-	}
-}
 ```
-
-The file is available here: [`main.go`](main.go)
 
 We can test this, just with the `make` command setup in the previous step:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 make
 ```
 
@@ -952,7 +998,7 @@ Like a database, the chaincode is plugged and ready to answer. Let's try the `he
 We will put all query functions in a new file named `query.go` in the `blockchain` folder:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi blockchain/query.go
 ```
 
@@ -960,8 +1006,7 @@ vi blockchain/query.go
 package blockchain
 
 import (
-	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
-	api "github.com/hyperledger/fabric-sdk-go/api"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	"fmt"
 )
 
@@ -974,19 +1019,12 @@ func (setup *FabricSetup) QueryHello() (string, error) {
 	args = append(args, "query")
 	args = append(args, "hello")
 
-	// Make the proposal and submit it to the network (via our primary peer)
-	transactionProposalResponses, _, err := fcutil.CreateAndSendTransactionProposal(
-		setup.Channel,
-		setup.ChaincodeId,
-		setup.ChannelId,
-		args,
-		[]api.Peer{setup.Channel.GetPrimaryPeer()}, // Peer contacted when submitted the proposal
-		nil,
-	)
+	response, err := setup.client.Query(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2])}})
 	if err != nil {
-		return "", fmt.Errorf("Create and send transaction proposal return error in the query hello: %v", err)
+		return "", fmt.Errorf("failed to query: %v", err)
 	}
-	return string(transactionProposalResponses[0].ProposalResponse.GetResponse().Payload), nil
+
+	return string(response.Payload), nil
 }
 ```
 
@@ -1002,7 +1040,7 @@ func main() {
 [...]
 
 	// Query the chaincode
-	response, err := fabricSdk.QueryHello()
+	response, err := fSetup.QueryHello()
 	if err != nil {
 		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
 	} else {
@@ -1016,7 +1054,7 @@ The file is available here: [`main.go`](main.go)
 Let's try:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 make
 ```
 
@@ -1031,29 +1069,39 @@ First, we will add this ability in the chaincode. Edit the [`chaincode/main.go`]
 > line 97 of [`chaincode/main.go`](chaincode/main.go)
 
 ```
-// invoke
-// All functions that read and write in the ledger will be here
-func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+// Invoke
+// All future requests named invoke will arrive here.
+func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	fmt.Println("########### HeroesServiceChaincode Invoke ###########")
 
-	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient, you need to provide the function for the invoke.")
+	// Get the function and arguments from the request
+	function, args := stub.GetFunctionAndParameters()
+
+	// Check whether it is an invoke request
+	if function != "invoke" {
+		return shim.Error("Unknown function call")
 	}
 
-	if args[1] == "hello" && len(args) == 3 {
-
-		//
-		err := stub.PutState("hello", []byte(args[2]))
-		if err != nil {
-			return shim.Error("Failed to update state of hello")
-		}
-
-		// Return this value in response
-		return shim.Success(nil)
+	// Check whether the number of arguments is sufficient
+	if len(args) < 1 {
+		return shim.Error("The number of arguments is insufficient.")
 	}
 
-	// If the arguments given don't match any function, we return an error
-	return shim.Error("Unknown invoke action, check the second argument.")
+	// In order to manage multiple type of request, we will check the first argument.
+	// Here we have one possible argument: query (every query request will read in the ledger without modification)
+	if args[0] == "query" {
+		return t.query(stub, args)
+	}
+
+	// The update argument will manage all update in the ledger
+	if args[0] == "invoke" {
+		return t.invoke(stub, args)
+	}
+
+	// If the arguments given don’t match any function, we return an error
+	return shim.Error("Unknown action, check the first argument")
 }
+
 ```
 
 > line 57 of [`chaincode/main.go`](chaincode/main.go)
@@ -1063,14 +1111,37 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 
 [...]
 
-	if args[0] == "query" {
-		return t.query(stub, args)
+// invoke
+// Every functions that read and write in the ledger will be here
+func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	fmt.Println("########### HeroesServiceChaincode invoke ###########")
+
+	if len(args) < 2 {
+		return shim.Error("The number of arguments is insufficient.")
 	}
 
-	// The update argument will manage all update in the ledger
-	if args[0] == "invoke" {
-		return t.invoke(stub, args)
+	// Check if the ledger key is "hello" and process if it is the case. Otherwise it returns an error.
+	if args[1] == "hello" && len(args) == 3 {
+
+		// Write the new value in the ledger
+		err := stub.PutState("hello", []byte(args[2]))
+		if err != nil {
+			return shim.Error("Failed to update state of hello")
+		}
+
+		// Notify listeners that an event "eventInvoke" have been executed (check line 19 in the file invoke.go)
+		err = stub.SetEvent("eventInvoke", []byte{})
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+
+		// Return this value in response
+		return shim.Success(nil)
 	}
+
+	// If the arguments given don’t match any function, we return an error
+	return shim.Error("Unknown invoke action, check the second argument.")
+}
 
 [...]
 
@@ -1082,7 +1153,7 @@ The file is available here: [`chaincode/main.go`](chaincode/main.go)
 From the application side, we add a new interface to make the invocation of the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi blockchain/invoke.go
 ```
 
@@ -1090,10 +1161,9 @@ vi blockchain/invoke.go
 package blockchain
 
 import (
-	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
-	api "github.com/hyperledger/fabric-sdk-go/api"
 	"fmt"
 	"time"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
 
 // InvokeHello
@@ -1106,45 +1176,34 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	args = append(args, "hello")
 	args = append(args, value)
 
+	eventID := "eventInvoke"
+
 	// Add data that will be visible in the proposal, like a description of the invoke request
 	transientDataMap := make(map[string][]byte)
 	transientDataMap["result"] = []byte("Transient data in hello invoke")
 
-	// Make a next transaction proposal and send it
-	transactionProposalResponse, txID, err := fcutil.CreateAndSendTransactionProposal(
-		setup.Channel,
-		setup.ChaincodeId,
-		setup.ChannelId,
-		args,
-		[]api.Peer{setup.Channel.GetPrimaryPeer()},
-		transientDataMap,
-	)
+	// Register a notification handler on the client
+	notifier := make(chan *chclient.CCEvent)
+	rce := setup.client.RegisterChaincodeEvent(notifier, setup.ChainCodeID, eventID)
+
+	// Create a request (proposal) and send it
+	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap:transientDataMap})
 	if err != nil {
-		return "", fmt.Errorf("Create and send transaction proposal in the invoke hello return error: %v", err)
-	}
-
-	// Register the Fabric SDK to listen to the event that will come back when the transaction will be send
-	done, fail := fcutil.RegisterTxEvent(txID, setup.EventHub)
-
-	// Send the final transaction signed by endorser
-	if _, err := fcutil.CreateAndSendTransaction(setup.Channel, transactionProposalResponse); err != nil {
-		return "", fmt.Errorf("Create and send transaction in the invoke hello return error: %v", err)
+		return "", fmt.Errorf("failed to move funds: %v", err)
 	}
 
 	// Wait for the result of the submission
 	select {
-	// Transaction Ok
-	case <-done:
-		return txID, nil
-
-	// Transaction failed
-	case <-fail:
-		return "", fmt.Errorf("Error received from eventhub for txid(%s) error(%v)", txID, fail)
-
-	// Transaction timeout
-	case <-time.After(time.Second * 30):
-		return "", fmt.Errorf("Didn't receive block event for txid(%s)", txID)
+	case ccEvent := <-notifier:
+		fmt.Printf("Received CC event: %s\n", ccEvent)
+	case <-time.After(time.Second * 20):
+		return "", fmt.Errorf("did NOT receive CC event for eventId(%s)", eventID)
 	}
+
+	// Unregister the notification handler previously created on the client
+	err = setup.client.UnregisterChaincodeEvent(rce)
+
+	return response.TransactionID.ID, nil
 }
 ```
 
@@ -1160,7 +1219,7 @@ func main() {
 [...]
 
 	// Query the chaincode
-	response, err := fabricSdk.QueryHello()
+	response, err := fSetup.QueryHello()
 	if err != nil {
 		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
 	} else {
@@ -1168,7 +1227,7 @@ func main() {
 	}
 
 	// Invoke the chaincode
-	txId, err := fabricSdk.InvokeHello("chainHero")
+	txId, err := fSetup.InvokeHello("chainHero")
 	if err != nil {
 		fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err)
 	} else {
@@ -1176,7 +1235,7 @@ func main() {
 	}
 
 	// Query again the chaincode
-	response, err = fabricSdk.QueryHello()
+	response, err = fSetup.QueryHello()
 	if err != nil {
 		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
 	} else {
@@ -1190,7 +1249,7 @@ The file is available here: [`main.go`](main.go)
 Let's try:
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 make
 ```
 
@@ -1225,20 +1284,23 @@ And finaly, we change the [`main.go`](main.go), in order to use the web interfac
 Run the app and go to [localhost:3000/home.html](http://localhost:3000/home.html):
 
 ```
-cd $GOPATH/src/github.com/chainhero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 make
 ```
 
 The `home` page make a query in in the blockchain to get the value of the `hello` key and display it.
 
+//TODO
 ![Screenshot Web Home Hello World](docs/images/web-home-hello-world.png)
 
 The `request` page has a form to change the `hello` value. After a successful submission the transaction ID is given.
 
+//TODO
 ![Screenshot Web Request Success](docs/images/web-request-success.png)
 
 We can see the change by going back to the `home` page.
 
+//TODO
 ![Screenshot Web Home Hello Batman](docs/images/web-home-hello-batman.png)
 
 **It's the end for the first part. A more complex application is coming.**
