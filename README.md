@@ -48,9 +48,9 @@ sudo apt-get install apt-transport-https ca-certificates curl software-propertie
 Once the dependencies are installed, we can install docker:
 
 ```
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - &&
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" &&
-sudo apt-get update &&
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - ;
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" ;
+sudo apt-get update ;
 sudo apt-get install docker-ce
 ```
 
@@ -58,7 +58,7 @@ Now we need to manage the current user to avoid using `root` access when we will
 
 ```
 sudo groupadd docker 
-sudo gpasswd -a ${USER} docker &&
+sudo gpasswd -a ${USER} docker ;
 sudo service docker restart
 ```
 
@@ -99,7 +99,7 @@ We are currently unable to manage multiple containers at once. To solve this iss
 The installation is pretty fast:
 
 ```
-sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose &&
+sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose ;
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
@@ -125,12 +125,12 @@ See instructions from the Docker-compose website: [docker.com/docker-for-windows
 You can either follow instructions from [golang.org](https://golang.org/dl/) or use those generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 ```
-wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz &&
-sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz &&
-rm go1.9.2.linux-amd64.tar.gz &&
-echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile &&
-echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc &&
-echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc &&
+wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz ;
+sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz ;
+rm go1.9.2.linux-amd64.tar.gz ;
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile ;
+echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc ;
+echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc ;
 mkdir -p $HOME/go/{src,pkg,bin}
 ```
 
@@ -152,19 +152,19 @@ See instructions from the Golang website: [golang.org/install](https://golang.or
 Now we can install the main framework: Hyperledger Fabric (Version 1.0.5). All the code is available on github:
 
 ```
-mkdir -p $GOPATH/src/github.com/hyperledger &&
-cd $GOPATH/src/github.com/hyperledger &&
-git clone https://github.com/hyperledger/fabric.git &&
-cd fabric &&
+mkdir -p $GOPATH/src/github.com/hyperledger ;
+cd $GOPATH/src/github.com/hyperledger ;
+git clone https://github.com/hyperledger/fabric.git ;
+cd fabric ;
 git checkout v1.0.5
 ```
 
 Same for the Hyperledger Fabric CA part:
 
 ```
-cd $GOPATH/src/github.com/hyperledger &&
-git clone https://github.com/hyperledger/fabric-ca.git &&
-cd fabric-ca &&
+cd $GOPATH/src/github.com/hyperledger ;
+git clone https://github.com/hyperledger/fabric-ca.git ;
+cd fabric-ca ;
 git checkout v1.0.5
 ```
 
@@ -175,8 +175,8 @@ We won’t use directly the framework but it's necessary to have it locally in y
 Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric framework. To avoid version issues, we are going to checkout to a specific commit which works with the following tutorial.
 
 ```
-go get -u github.com/hyperledger/fabric-sdk-go &&
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go &&
+go get -u github.com/hyperledger/fabric-sdk-go ;
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ;
 git checkout 614551a752802488988921a730b172dada7def1d
 ```
 
@@ -195,14 +195,14 @@ sudo apt install libltdl-dev
 Let's make sure that you have the requested dependencies:
 
 ```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && 
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; 
 make depend-install
 ```
 
 Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and install it correctly:
 
 ```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go &&
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ;
 make
 ```
 
@@ -221,7 +221,7 @@ In order to make a blockchain network, we will use `docker` to build virtual com
 Make a new directory in the `src` folder of your `GOPATH`, we name it `heroes-service`:
 
 ```
-mkdir -p $GOPATH/src/github.com/chainHero/heroes-service &&
+mkdir -p $GOPATH/src/github.com/chainHero/heroes-service ;
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
@@ -229,8 +229,8 @@ In the previous version of this tutorial we were starting from the SDK fixture f
 
 From command line:
 ```
-sudo apt-get install subversion &&
-cd $GOPATH/src/github.com/chainHero/heroes-service &&
+sudo apt-get install subversion ;
+cd $GOPATH/src/github.com/chainHero/heroes-service ;
 svn checkout https://github.com/chainHero/heroes-service/branches/newVersion/fixtures
 ```
 
@@ -243,7 +243,7 @@ If you want to download it from GitHub, there is no other choice for you to down
 In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures &&
+cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures ;
 docker-compose up
 ```
 
@@ -271,7 +271,7 @@ You will see : two peers, the orderer, one CA containers and two dependencies (g
 As we removed the config folder, we need to make a new config file. We will put in it everything that the Fabric SDK Go and our custom parameters for our app needs to work. The config file will contain all our custom parameters and everything else the Fabric SDK Go needs for our app to work. For the moment, we will only try to make the Fabric SDK Go work with the default chaincode:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 vi config.yaml
 ```
 
@@ -519,7 +519,7 @@ At this stage, we only initialised a client that will communicate to a peer, a C
 To make sure that the client managed to initialise all his components, we will make a simple test with the network launched. In order to do this, we need to build the go code. Since we we haven't any main file we have to add one:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 vi main.go
 ```
 
@@ -576,14 +576,14 @@ dep ensure
 Now we can make compile:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 go build
 ```
 
 After some time, a new binary named `heroes-service` will appear at the root of the project. Try to start the binary like this:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 ./heroes-service
 ```
 
@@ -592,9 +592,9 @@ cd $GOPATH/src/github.com/chainHero/heroes-service && \
 At this point, it won't work because there is no network deployed that the SDK can talk with. Start the network and launch the app again:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && \
-docker-compose up -d && \
-cd .. && \
+cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures ; \
+docker-compose up -d ; \
+cd .. ; \
 ./heroes-service
 ```
 
@@ -690,8 +690,8 @@ To use it, go in the root of the project and use the `make` command:
 We are almost there to use the blockchain system. But for now we haven't set up any chaincode (smart contract) yet that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
-mkdir chaincode && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+mkdir chaincode ; \
 vi chaincode/main.go
 ```
 
@@ -960,7 +960,7 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 We can test this, just with the `make` command setup in the previous step:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
 
@@ -975,7 +975,7 @@ Like a database, the chaincode is plugged and ready to answer. Let's try the `he
 We will put all query functions in a new file named `query.go` in the `blockchain` folder:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 vi blockchain/query.go
 ```
 
@@ -1031,7 +1031,7 @@ The file is available here: [`main.go`](main.go)
 Let's try:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
 
@@ -1187,7 +1187,7 @@ The file is available here: [`chaincode/main.go`](chaincode/main.go)
 From the application side, we add a new interface to make the invocation of the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 vi blockchain/invoke.go
 ```
 
@@ -1286,7 +1286,7 @@ The file is available here: [`main.go`](main.go)
 Let's try:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
 
@@ -1327,7 +1327,7 @@ And finaly, we change the [`main.go`](main.go), in order to use the web interfac
 Run the app and go to [localhost:3000/home.html](http://localhost:3000/home.html):
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service && \
+cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
 
