@@ -57,7 +57,7 @@ sudo apt-get install docker-ce
 Now we need to manage the current user to avoid using `root` access when we will use docker. To do so, we need to add the current user to the `docker` group:
 
 ```
-sudo groupadd docker 
+sudo groupadd docker ; \
 sudo gpasswd -a ${USER} docker ; \
 sudo service docker restart
 ```
