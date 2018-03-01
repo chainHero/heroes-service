@@ -607,7 +607,7 @@ Alright ! So we just initialised the SDK with our local network. In the next ste
 
 The Fabric SDK generates some files, like certificates and/or temporally files. Shutting down the network won't fully clean up your environment and when you will need to start it again, these files will be reused to avoid building process. For development you can keep them to test quickly but for a real test, you need to clean up all and start from the beginning.
 
-*How clean up my environment ?*
+*How to clean up my environment ?*
 
 - Shut down your network: `cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && docker-compose down`
 - Remove MSP folder (defined in the [config](config.yaml) file, in the `fabricCA` section): `rm -rf /tmp/msp`
@@ -685,7 +685,7 @@ To use it, go in the root of the project and use the `make` command:
 - Task `env-up`: `make env-up`
 - ...
 
-### e. Install & instanciate a chaincode
+### e. Install & instanciate the chaincode
 
 We are almost there to use the blockchain system. But for now we haven't set up any chaincode (smart contract) yet that will handle queries from our application. First, let's create a new directory named `chaincode` and add a new file named `main.go`:
 
@@ -831,8 +831,8 @@ type FabricSetup struct {
 	OrgAdmin        string
 	OrgName         string
 	client          chclient.ChannelClient
-	admin 			resmgmt.ResourceMgmtClient
-	sdk 			*fabsdk.FabricSDK
+	admin 		resmgmt.ResourceMgmtClient
+	sdk 		*fabsdk.FabricSDK
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
@@ -946,9 +946,9 @@ You can directly edit the file by modifying those lines inside
 		ChainCodeID:      	"heroes-service",
 		ChaincodeGoPath:  	os.Getenv("GOPATH"),
 		ChaincodePath:    	"github.com/chainHero/heroes-service/chaincode/",
-		OrgAdmin:			"Admin",
-		OrgName:			"Org1",
-		ConfigFile:			"config.yaml",
+		OrgAdmin:		"Admin",
+		OrgName:		"Org1",
+		ConfigFile:		"config.yaml",
 	}
 ```
 
