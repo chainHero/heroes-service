@@ -797,9 +797,7 @@ func main() {
 }
 ```
 
-The file is available here: [`chaincode/main.go`](chaincode/main.go)
-
-> We choose to put the chaincode here to make the application simpler, but from an architecture point of view, it will be better to use the architectural given by the SDK and put the chaincode in the `src` folder of `fixtures`. The chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. For your information, in a near future, the chaincode could be written in other languages.
+> The chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. For your information, in a near future, the chaincode could be written in other languages.
 
 For now, the chaincode does nothing extraordinary, just put the key/value `hello`/`world` in the ledger at initialisation. In addition, there is one function that we can call by an invoke: `query hello`. This function gets the state of the ledger, i.e. `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
 
@@ -1007,9 +1005,7 @@ func (setup *FabricSetup) QueryHello() (string, error) {
 
 The file is available here: [`blockchain/query.go`](blockchain/query.go)
 
-Add the call to this new function in the [`main.go`](main.go):
-
-> line 49 of [`main.go`](main.go)
+You can add the call to this new function in the [`main.go`](main.go):
 
 ```
 func main() {
@@ -1246,9 +1242,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 
 The file is available here: [`blockchain/invoke.go`](blockchain/invoke.go)
 
-Add the call to this function in the [`main.go`](main.go):
-
-> line 49 of [`main.go`](main.go)
+You can then add the call to this function in the [`main.go`](main.go):
 
 ```
 func main() {
@@ -1281,8 +1275,6 @@ func main() {
 }
 ```
 
-The file is available here: [`main.go`](main.go)
-
 Let's try:
 
 ```
@@ -1290,6 +1282,7 @@ cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
 
+// TODO executer la fonction précedente et copié l'output
 ![Screenshot Invoke Hello](docs/images/invoke-hello.png)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
