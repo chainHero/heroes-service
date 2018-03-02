@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"github.com/chainHero/heroes-service/blockchain"
-	"github.com/chainHero/heroes-service/web/controllers"
-	"github.com/chainHero/heroes-service/web"
+//	"github.com/chainHero/heroes-service/web/controllers"
+//	"github.com/chainHero/heroes-service/web"
 )
 
 func main() {
@@ -36,10 +36,28 @@ func main() {
 		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 	}
 
-	// Launch the web application listening
-	app := &controllers.Application{
-		Fabric: &fSetup,
-	}
-	web.Serve(app)
 
+	// Query the chaincode
+	response, err := fSetup.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
+	}
+
+	// Invoke the chaincode
+	txId, err := fSetup.InvokeHello("chainHero")
+	if err != nil {
+		fmt.Printf("Unable to invoke hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Successfully invoke hello, transaction ID: %s\n", txId)
+	}
+
+	// Query again the chaincode
+	response, err = fSetup.QueryHello()
+	if err != nil {
+		fmt.Printf("Unable to query hello on the chaincode: %v\n", err)
+	} else {
+		fmt.Printf("Response from the query hello: %s\n", response)
+	}
 }

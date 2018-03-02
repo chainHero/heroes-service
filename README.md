@@ -1285,12 +1285,6 @@ make
 // TODO executer la fonction précedente et copié l'output
 ![Screenshot Invoke Hello](docs/images/invoke-hello.png)
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 ## 6. Make this in a web application
 
 We also can make this usable for any user. The best choice is a web application and we are lucky because the Go language natively provides a web server handling HTTP requests and also templating for HTML.
@@ -1326,18 +1320,19 @@ make
 
 The `home` page make a query in in the blockchain to get the value of the `hello` key and display it.
 
-//TODO
 ![Screenshot Web Home Hello World](docs/images/web-home-hello-world.png)
 
-The `request` page has a form to change the `hello` value. After a successful submission the transaction ID is given.
+The `request` page has a form to change the `hello` value. 
 
-//TODO
+![Screenshot Web Request Write](docs/images/web-request-write.png)
+
+After a successful submission the transaction ID is given.
+
 ![Screenshot Web Request Success](docs/images/web-request-success.png)
 
 We can see the change by going back to the `home` page.
 
-//TODO
-![Screenshot Web Home Hello Batman](docs/images/web-home-hello-batman.png)
+![Screenshot Web Home Hello Superman](docs/images/web-home-hello-superman.png)
 
 **It's the end for the first part. A more complex application is coming.**
 
