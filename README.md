@@ -238,6 +238,9 @@ If you want to download it from GitHub, there is no other choice for you to down
 
 - [Github Repository](https://github.com/chainHero/heroes-service/archive/newVersion.zip)
 
+Alternatively, if you wanna know how to build this fixture folder and learn how to create the blockchain network, then we made a tutorial here [coming.soon](coming.soon).
+
+
 ### b. Test
 
 In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
