@@ -436,15 +436,13 @@ vi $GOPATH/src/github.com/chainHero/heroes-service/blockchain/setup.go
 package blockchain
 
 import (
-	"fmt"
-	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
-	"github.com/hyperledger/fabric-sdk-go/pkg/config"
-	"time"
-	packager "github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/ccpackager/gopackager"
-	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
-	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
-	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
-	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
+        "fmt"
+        "github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
+        "github.com/hyperledger/fabric-sdk-go/pkg/config"
+        "time"
+        resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
+        chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
+        "github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
 
 // FabricSetup implementation
@@ -452,64 +450,69 @@ type FabricSetup struct {
         ConfigFile      string
         OrgID           string
         ChannelID       string
+        ChainCodeID     string
         initialized     bool
         ChannelConfig   string
+        ChaincodeGoPath string
+        ChaincodePath   string
         OrgAdmin        string
         OrgName         string
+        client          chclient.ChannelClient
+        admin                   resmgmt.ResourceMgmtClient
+        sdk                     *fabsdk.FabricSDK
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
 func (setup *FabricSetup) Initialize() error {
 
-	// Add parameters for the initialization
-	if setup.initialized {
-		return fmt.Errorf("sdk already initialized")
-	}
+        // Add parameters for the initialization
+        if setup.initialized {
+                return fmt.Errorf("sdk already initialized")
+        }
+	
+	var err error
+        
+        setup.sdk, err = fabsdk.New(config.FromFile(setup.ConfigFile))
+        if err != nil {
+                return fmt.Errorf("failed to create sdk: %v", err)
+        }
 
-	//TODO
-	err := fmt.Errorf("")
+        // Channel management client is responsible for managing channels (create/update channel)
+        // Supply user that has privileges to create channel (in this case orderer admin)
+        chMgmtClient, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).ChannelMgmt()
+        if err != nil {
+                return fmt.Errorf("failed to add Admin user to sdk: %v", err)
+        }
 
-	setup.sdk, err = fabsdk.New(config.FromFile(setup.ConfigFile))
-	if err != nil {
-		return fmt.Errorf("failed to create sdk: %v", err)
-	}
+        // Org admin user is signing user for creating channel
+        session, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
+        if err != nil {
+                return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)
+        }
+        orgAdminUser := session
 
-	// Channel management client is responsible for managing channels (create/update channel)
-	// Supply user that has privileges to create channel (in this case orderer admin)
-	chMgmtClient, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).ChannelMgmt()
-	if err != nil {
-		return fmt.Errorf("failed to add Admin user to sdk: %v", err)
-	}
+        // Create channel
+        req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
+        if err = chMgmtClient.SaveChannel(req); err != nil {
+                return fmt.Errorf("failed to create channel: %v", err)
+        }
 
-	// Org admin user is signing user for creating channel
-	session, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
-	if err != nil {
-		return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)
-	}
-	orgAdminUser := session
+        // Allow orderer to process channel creation
+        time.Sleep(time.Second * 5)
 
-	// Create channel
-	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
-	if err = chMgmtClient.SaveChannel(req); err != nil {
-		return fmt.Errorf("failed to create channel: %v", err)
-	}
+        // Org resource management client
+        setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
+        if err != nil {
+                return fmt.Errorf("failed to create new resource management client: %v", err)
+        }
 
-	// Allow orderer to process channel creation
-	time.Sleep(time.Second * 5)
+        // Org peers join channel
+        if err = setup.admin.JoinChannel(setup.ChannelID); err != nil {
+                return fmt.Errorf("org peers failed to join the channel: %v", err)
+        }
 
-	// Org resource management client
-	setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
-	if err != nil {
-		return fmt.Errorf("failed to create new resource management client: %v", err)
-	}
-
-	// Org peers join channel
-	if err = setup.admin.JoinChannel(setup.ChannelID); err != nil {
-		return fmt.Errorf("org peers failed to join the channel: %v", err)
-	}
-
-	fmt.Println("Initialization Successful")
-	return nil
+        fmt.Println("Initialization Successful")
+        return nil
 }
 ```
 
