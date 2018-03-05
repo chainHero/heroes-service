@@ -33,36 +33,35 @@ See the full explanation from the official documentation in the introduction par
 This tutorial was made on **Ubuntu 16.04**, but there is help for Windows, Mac OS X and other Linux distributions users.
 
 ### a. Docker
+
 **Docker version 17.03.0-ce or greater is required.**
-
-
 
 #### Linux (Ubuntu)
 
 First of all, in order to install docker correctly we need to install its dependencies:
 
 ```
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
 ```
 
 Once the dependencies are installed, we can install docker:
 
 ```
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - ; \
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" ; \
-sudo apt-get update ; \
-sudo apt-get install docker-ce
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
+sudo apt update && \
+sudo apt install -y docker-ce
 ```
 
-Now we need to manage the current user to avoid using `root` access when we will use docker. To do so, we need to add the current user to the `docker` group:
+Now we need to manage the current user to avoid using administration rights (`root`) access when we will use the docker command. To do so, we need to add the current user to the `docker` group:
 
 ```
 sudo groupadd docker ; \
-sudo gpasswd -a ${USER} docker ; \
+sudo gpasswd -a ${USER} docker && \
 sudo service docker restart
 ```
 
-Do not mind if 'groupadd: group 'docker' already exists' error pop up.
+Do not mind if `groupadd: group 'docker' already exists` error pop up.
 
 To apply the changes made, you need to logout/login. You can then check your version with:
 
@@ -74,7 +73,7 @@ docker -v
 
 #### Mac OS X
 
-Dowload and install the latest [`Docker.dmg`](https://docs.docker.com/docker-for-mac/install/) package for Mac OS X available on the [Docker](https://docs.docker.com/docker-for-mac/install/) website. This will install `docker-compose` as well.
+Download and install the latest [`Docker.dmg`](https://docs.docker.com/docker-for-mac/install/) package for Mac OS X available on the [Docker](https://docs.docker.com/docker-for-mac/install/) website. This will install `docker-compose` as well, so you can skip the next step.
 
 #### Linux (not Ubuntu)
 
@@ -88,18 +87,17 @@ See links below:
 See instructions from the Docker website: [docker.com/docker-for-windows](https://docs.docker.com/docker-for-windows/install/)
 
 ### b. Docker Compose
+
 **Docker-compose version 1.8 or greater is required.**
 
-
-
-We are currently unable to manage multiple containers at once. To solve this issue, we need **docker-compose**.
+We are currently unable to manage easily multiple containers at once. To solve this issue, we need **docker-compose**.
 
 #### Linux
 
 The installation is pretty fast:
 
 ```
-sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose ; \
+sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
@@ -111,26 +109,25 @@ docker-compose version
 
 ![End of the docker compose installation](docs/images/finish-docker_compose-install.png)
 
-#### Windows / Mac OS X / Others
+#### Windows / Others
 
-See instructions from the Docker-compose website: [docker.com/docker-for-windows](https://docs.docker.com/compose/install/)
+See instructions from the Docker-compose website: [docs.docker.com/compose/install](https://docs.docker.com/compose/install/)
 
 ### c. Go
-**Go version 1.7.x or greater is required.**
 
-
+**Go version 1.9.x or greater is required.**
 
 #### Linux
 
 You can either follow instructions from [golang.org](https://golang.org/dl/) or use those generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
 ```
-wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz ; \
-sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz ; \
-rm go1.9.2.linux-amd64.tar.gz ; \
-echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile ; \
-echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc ; \
-echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc ; \
+wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz && \
+sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz && \
+rm go1.9.2.linux-amd64.tar.gz && \
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile && \
+echo 'export GOPATH=$HOME/go' | tee -a $HOME/.bashrc && \
+echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' | tee -a $HOME/.bashrc && \
 mkdir -p $HOME/go/{src,pkg,bin}
 ```
 
