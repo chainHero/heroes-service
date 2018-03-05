@@ -1200,13 +1200,13 @@ Populate each with the appropriate code (we also added Bootstrap to make the res
 - [`web/app.go`](web/app.go)
 - [`web/assets`](web/assets)
 
-And finaly, we change the [`main.go`](main.go), in order to use the web interface instead of directly query the blockchain.
+And finally, we change the [`main.go`](main.go), in order to use the web interface instead of directly query the blockchain.
 
 - [`main.go`](main.go)
 
 Run the app and go to [localhost:3000/home.html](http://localhost:3000/home.html):
 
-```
+```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
