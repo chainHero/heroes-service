@@ -144,37 +144,28 @@ go version
 
 See instructions from the Golang website: [golang.org/install](https://golang.org/doc/install)
 
-### d. Hyperledger Fabric & Certificate Authority (CA)
+### d. Fabric SDK Go
 
-Now we can install the main framework: Hyperledger Fabric (Version 1.0.5). All the code is available on github:
-
-```
-mkdir -p $GOPATH/src/github.com/hyperledger ; \
-cd $GOPATH/src/github.com/hyperledger ; \
-git clone https://github.com/hyperledger/fabric.git ; \
-cd fabric ; \
-git checkout v1.0.5
-```
-
-Same for the Hyperledger Fabric CA part:
+Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric's components. You don't need to install the Fabric or Fabric CA framework because the SDK automatically handles it locally. To avoid version issues, we are going to checkout to a specific commit which works with the following tutorial.
 
 ```
-cd $GOPATH/src/github.com/hyperledger ; \
-git clone https://github.com/hyperledger/fabric-ca.git ; \
-cd fabric-ca ; \
-git checkout v1.0.5
-```
-
-We won’t use directly the framework but it's necessary to have it locally in your GOPATH to compile your app.
-
-### e. Fabric SDK Go
-
-Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric framework. To avoid version issues, we are going to checkout to a specific commit which works with the following tutorial.
-
-```
-go get -u github.com/hyperledger/fabric-sdk-go ; \
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
+go get -u github.com/hyperledger/fabric-sdk-go && \
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && \
 git checkout 614551a752802488988921a730b172dada7def1d
+```
+
+Let's make sure that you have the requested dependencies:
+
+```
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && \
+make depend-install
+```
+
+Finally, we can launch the various tests of the SDK to check its proper functioning before going further:
+
+```
+cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
+make
 ```
 
 If you get the following error:
@@ -183,51 +174,37 @@ If you get the following error:
 ../fabric-sdk-go/vendor/github.com/miekg/pkcs11/pkcs11.go:29:18: fatal error: ltdl.h: No such file or directory
 ```
 
-You need to install the package `libltdl-dev` and re-execute previous command (`go get ...`):
+You need to install the package `libltdl-dev` and re-execute previous command (`make`):
 
 ```
 sudo apt install libltdl-dev
 ```
 
-Let's make sure that you have the requested dependencies:
-
-```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
-make depend-install
-```
-
-Then you can go inside the new `fabric-sdk-go` directory in your GOPATH and install it correctly:
-
-```
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
-make
-```
-
-The installation take a while (depending on your network connection). During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
+The process take a while (depending on your network connection). During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
 
 ![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
 
-Note that there is more output but it's irrelevant to put it here. The only things you need to care about is the line `fabsdkgo_integration-tests_1 exited with code 0`. If you have `fabsdkgo_integration-tests_1 exited with code 1` then you did something wrong.
+> **Note**: there is more output but it's irrelevant to put it here. The only things you need to care about is the line `fabsdkgo_integration-tests_1 exited with code 0`. If you have `fabsdkgo_integration-tests_1 exited with code 1` then you have a problem. Scroll up in the messages above to find the error.
 
 ## 4. Make your first blockchain network
 
 ### a. Prepare environment
 
-In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption during the whole end to end process (SSL, TSL, authentification...). Fortunately, the Fabric SDK Go provides them. In order to use them, we simply use the network deployed by the testing part of the SDK.
+In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption during the whole end to end process (TSL, authentications, signing blocks...). The creation of these files requires a little time and in order to go straight to the heart of the matter, we have already prepared all this for you.
 
-Make a new directory in the `src` folder of your `GOPATH`, we name it `heroes-service`:
+Make a new directory in the `src` folder of your `GOPATH`, following our repository naming:
 
 ```
-mkdir -p $GOPATH/src/github.com/chainHero/heroes-service ; \
+mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
-In the previous version of this tutorial we were starting from the SDK fixture folder. Due to a lot of changes in the new version, we decided to create our own and simplified it a little bit. You can either follow this command line, which will force you to download subversion package. Or download it from github. 
+You can either follow this command line, which will force you to download subversion package. Or download it from github. 
 
 From command line:
 ```
-sudo apt-get install subversion ; \
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+sudo apt install subversion && \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 svn checkout https://github.com/chainHero/heroes-service/branches/newVersion/fixtures
 ```
 
