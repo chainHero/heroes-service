@@ -13,8 +13,6 @@ client:
   logging:
     level: info
 
-
-
 # Global configuration for peer, event service and orderer timeouts
   peer:
     timeout:
@@ -30,20 +28,13 @@ client:
       connection: 3s
       response: 5s
 
-
-
   cryptoconfig:
     path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
 
-
-
-
   credentialStore:
-    path: "/tmp/hfc-heroes-service-kvs"
+    path: "/tmp/heroes-service-kvs"
     cryptoStore:
       path: "/tmp/heroes-service-msp"
-
-
 
    # BCCSP config for the client. Used by GO SDK.
   BCCSP:
@@ -56,11 +47,8 @@ client:
      ephemeral: false
      level: 256
 
-
-
   tlsCerts:
     systemCertPool: false
-
 
 channels:
   chainhero:
@@ -86,7 +74,7 @@ channels:
 organizations:
   Org1:
     mspid: org1.hf.chainhero.io
-    cryptoPath:  "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
+    cryptoPath: "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
     peers:
       - peer0.org1.hf.chainhero.io
       - peer1.org1.hf.chainhero.io
@@ -122,7 +110,6 @@ peers:
       grpc.http2.keepalive_time: 15
     tlsCACerts:
       path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
-
 
 certificateAuthorities:
   ca.org1.hf.chainhero.io:

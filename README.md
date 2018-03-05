@@ -240,10 +240,10 @@ You will see : two peers, the orderer and one CA containers. You have successful
 
 ### a. Configuration
 
-As we removed the config folder, we need to make a new config file. We will put in it everything that the Fabric SDK Go and our custom parameters for our app needs to work. The config file will contain all our custom parameters and everything else the Fabric SDK Go needs for our app to work. For the moment, we will only try to make the Fabric SDK Go work with the default chaincode:
+Our application needs a lot of parameters, especially the addresses of the Fabric's components to communicate. We will put everything in a new configuration file, the Fabric SDK Go configuration and our custom parameters. For the moment, we will only try to make the Fabric SDK Go works with the default chaincode:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi config.yaml
 ```
 
@@ -263,8 +263,6 @@ client:
   logging:
     level: info
 
-
-
 # Global configuration for peer, event service and orderer timeouts
   peer:
     timeout:
@@ -280,20 +278,13 @@ client:
       connection: 3s
       response: 5s
 
-
-
   cryptoconfig:
     path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
 
-
-
-
   credentialStore:
-    path: "/tmp/hfc-heroes-service-kvs"
+    path: "/tmp/heroes-service-kvs"
     cryptoStore:
       path: "/tmp/heroes-service-msp"
-
-
 
    # BCCSP config for the client. Used by GO SDK.
   BCCSP:
@@ -306,11 +297,8 @@ client:
      ephemeral: false
      level: 256
 
-
-
   tlsCerts:
     systemCertPool: false
-
 
 channels:
   chainhero:
@@ -336,7 +324,7 @@ channels:
 organizations:
   Org1:
     mspid: org1.hf.chainhero.io
-    cryptoPath:  "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
+    cryptoPath: "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
     peers:
       - peer0.org1.hf.chainhero.io
       - peer1.org1.hf.chainhero.io
@@ -373,7 +361,6 @@ peers:
     tlsCACerts:
       path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
 
-
 certificateAuthorities:
   ca.org1.hf.chainhero.io:
     url: https://localhost:7054
@@ -385,7 +372,7 @@ certificateAuthorities:
     caName: ca.org1.hf.chainhero.io
 ```
 
-The full configuration file is available here: [`config.yaml`](config.yaml)
+The configuration file is also available here: [`config.yaml`](config.yaml)
 
 ### b. Initialise
 
