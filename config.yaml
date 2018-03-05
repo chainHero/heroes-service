@@ -69,7 +69,6 @@ channels:
     chaincodes:
       # the format follows the "canonical name" of chaincodes by fabric code
 
-
 # list of participating organizations in this network
 organizations:
   Org1:
