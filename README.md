@@ -190,7 +190,7 @@ The process take a while (depending on your network connection). During this pro
 
 ### a. Prepare environment
 
-In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption during the whole end to end process (TSL, authentications, signing blocks...). The creation of these files requires a little time and in order to go straight to the heart of the matter, we have already prepared all this for you.
+In order to make a blockchain network, we will use `docker` to build virtual computers that will handle different roles. In this tutorial we will stay as simple as possible. Hyperledger Fabric needs a lot of certificates to ensure encryption during the whole end to end process (TSL, authentications, signing blocks...). The creation of these files requires a little time and in order to go straight to the heart of the matter, we have already prepared all this for you in the folder `fixtures` in this repository.
 
 Make a new directory in the `src` folder of your `GOPATH`, following our repository naming:
 
@@ -199,28 +199,23 @@ mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
-You can either follow this command line, which will force you to download subversion package. Or download it from github. 
+To get the `fixtures` folder, you can either follow this command line, which will install and use subversion to get the folder from this repository. Or download the [zip file from Github](https://github.com/chainHero/heroes-service/archive/v1.0.5.zip) and extract only the `fixtures` folder.
 
-From command line:
 ```
-sudo apt install subversion && \
+sudo apt install -y subversion && \
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
-svn checkout https://github.com/chainHero/heroes-service/branches/newVersion/fixtures
+svn checkout https://github.com/chainHero/heroes-service/branches/v1.0.5/fixtures &&
+rm -rf fixtures/.svn
 ```
 
-If you want to download it from GitHub, there is no other choice for you to download the whole repository and extract the fixture folder from it:
-
-- [Github Repository](https://github.com/chainHero/heroes-service/archive/newVersion.zip)
-
-Alternatively, if you wanna know how to build this fixture folder and learn how to create the blockchain network, then we made a tutorial here [coming.soon](coming.soon).
-
+Alternatively, if you wanna know how to build this fixture folder and learn how to create the blockchain network, We are currently working on a dedicated tutorial on this topic.
 
 ### b. Test
 
 In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
 ```
-cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures ; \
+cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && \
 docker-compose up
 ```
 
