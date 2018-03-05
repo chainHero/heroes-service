@@ -1,9 +1,9 @@
 package web
 
 import (
-	"net/http"
 	"fmt"
 	"github.com/chainHero/heroes-service/web/controllers"
+	"net/http"
 )
 
 func Serve(app *controllers.Application) {

@@ -7,12 +7,12 @@ import (
 func (app *Application) RequestHandler(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
 		TransactionId string
-		Success bool
-		Response bool
+		Success       bool
+		Response      bool
 	}{
 		TransactionId: "",
-		Success: false,
-		Response: false,
+		Success:       false,
+		Response:      false,
 	}
 	if r.FormValue("submitted") == "true" {
 		helloValue := r.FormValue("hello")
