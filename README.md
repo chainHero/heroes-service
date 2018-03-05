@@ -40,13 +40,13 @@ This tutorial was made on **Ubuntu 16.04**, but there is help for Windows, Mac O
 
 First of all, in order to install docker correctly we need to install its dependencies:
 
-```
+```bash
 sudo apt install apt-transport-https ca-certificates curl software-properties-common
 ```
 
 Once the dependencies are installed, we can install docker:
 
-```
+```bash
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
 sudo apt update && \
@@ -55,7 +55,7 @@ sudo apt install -y docker-ce
 
 Now we need to manage the current user to avoid using administration rights (`root`) access when we will use the docker command. To do so, we need to add the current user to the `docker` group:
 
-```
+```bash
 sudo groupadd docker ; \
 sudo gpasswd -a ${USER} docker && \
 sudo service docker restart
@@ -65,7 +65,7 @@ Do not mind if `groupadd: group 'docker' already exists` error pop up.
 
 To apply the changes made, you need to logout/login. You can then check your version with:
 
-```
+```bash
 docker -v
 ```
 
@@ -96,14 +96,14 @@ We are currently unable to manage easily multiple containers at once. To solve t
 
 The installation is pretty fast:
 
-```
+```bash
 sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 Apply these changes by logout/login and then check its version with:
 
-```
+```bash
 docker-compose version
 ```
 
@@ -121,7 +121,7 @@ See instructions from the Docker-compose website: [docs.docker.com/compose/insta
 
 You can either follow instructions from [golang.org](https://golang.org/dl/) or use those generics commands that will install Golang 1.9.2 and prepare your environment (generate your `GOPATH`) for Ubuntu:
 
-```
+```bash
 wget https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz && \
 sudo tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz && \
 rm go1.9.2.linux-amd64.tar.gz && \
@@ -133,7 +133,7 @@ mkdir -p $HOME/go/{src,pkg,bin}
 
 To make sure that the installation works, you can logout/login (again) and run:
 
-```
+```bash
 go version
 ```
 
@@ -148,7 +148,7 @@ See instructions from the Golang website: [golang.org/install](https://golang.or
 
 Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric's components. You don't need to install the Fabric or Fabric CA framework because the SDK automatically handles it locally. To avoid version issues, we are going to checkout to a specific commit which works with the following tutorial.
 
-```
+```bash
 go get -u github.com/hyperledger/fabric-sdk-go && \
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && \
 git checkout 614551a752802488988921a730b172dada7def1d
@@ -156,14 +156,14 @@ git checkout 614551a752802488988921a730b172dada7def1d
 
 Let's make sure that you have the requested dependencies:
 
-```
+```bash
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && \
 make depend-install
 ```
 
 Finally, we can launch the various tests of the SDK to check its proper functioning before going further:
 
-```
+```bash
 cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
 make
 ```
@@ -176,7 +176,7 @@ If you get the following error:
 
 You need to install the package `libltdl-dev` and re-execute previous command (`make`):
 
-```
+```bash
 sudo apt install libltdl-dev
 ```
 
@@ -194,14 +194,14 @@ In order to make a blockchain network, we will use `docker` to build virtual com
 
 Make a new directory in the `src` folder of your `GOPATH`, following our repository naming:
 
-```
+```bash
 mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
 To get the `fixtures` folder, you can either follow this command line, which will install and use subversion to get the folder from this repository. Or download the [zip file from Github](https://github.com/chainHero/heroes-service/archive/v1.0.5.zip) and extract only the `fixtures` folder.
 
-```
+```bash
 sudo apt install -y subversion && \
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
 svn checkout https://github.com/chainHero/heroes-service/branches/v1.0.5/fixtures &&
@@ -214,7 +214,7 @@ Alternatively, if you wanna know how to build this fixture folder and learn how 
 
 In order to check if the network works, we will use `docker-compose` to start or stop all containers at the same time. Go inside the `fixtures` folder, and run:
 
-```
+```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && \
 docker-compose up
 ```
@@ -223,7 +223,7 @@ You will see a lot of logs with different colors (for your information, red isn'
 
 Open a new terminal and run:
 
-```
+```bash
 docker ps
 ```
 
@@ -242,12 +242,12 @@ You will see : two peers, the orderer and one CA containers. You have successful
 
 Our application needs a lot of parameters, especially the addresses of the Fabric's components to communicate. We will put everything in a new configuration file, the Fabric SDK Go configuration and our custom parameters. For the moment, we will only try to make the Fabric SDK Go works with the default chaincode:
 
-```
+```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi config.yaml
 ```
 
-```
+```yaml
 name: "chainHero-network"
 
 # Describe what the target network is/does.
@@ -377,220 +377,248 @@ The configuration file is also available here: [`config.yaml`](config.yaml)
 
 We add a new folder named `blockchain` that will contain the whole interface that communicate with the network. We will see the Fabric SDK Go only in this folder.
 
-```
+```bash
 mkdir $GOPATH/src/github.com/chainHero/heroes-service/blockchain
 ```
 
 Now, we add a new go file named `setup.go` :
 
-```
+```bash
 vi $GOPATH/src/github.com/chainHero/heroes-service/blockchain/setup.go
 ```
 
-```
+```go
 package blockchain
 
 import (
-        "fmt"
-        "github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
-        "github.com/hyperledger/fabric-sdk-go/pkg/config"
-        "time"
-        resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
-        chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
-        "github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
+	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
+	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
+	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
+	"github.com/hyperledger/fabric-sdk-go/pkg/config"
+	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
+	"time"
 )
 
 // FabricSetup implementation
 type FabricSetup struct {
-        ConfigFile      string
-        OrgID           string
-        ChannelID       string
-        ChainCodeID     string
-        initialized     bool
-        ChannelConfig   string
-        ChaincodeGoPath string
-        ChaincodePath   string
-        OrgAdmin        string
-        OrgName         string
-        client          chclient.ChannelClient
-        admin                   resmgmt.ResourceMgmtClient
-        sdk                     *fabsdk.FabricSDK
+	ConfigFile      string
+	OrgID           string
+	ChannelID       string
+	ChainCodeID     string
+	initialized     bool
+	ChannelConfig   string
+	ChaincodeGoPath string
+	ChaincodePath   string
+	OrgAdmin        string
+	OrgName         string
+	client          chclient.ChannelClient
+	admin           resmgmt.ResourceMgmtClient
+	sdk             *fabsdk.FabricSDK
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
 func (setup *FabricSetup) Initialize() error {
 
-        // Add parameters for the initialization
-        if setup.initialized {
-                return fmt.Errorf("sdk already initialized")
-        }
-	
-	var err error
-        
-        setup.sdk, err = fabsdk.New(config.FromFile(setup.ConfigFile))
-        if err != nil {
-                return fmt.Errorf("failed to create sdk: %v", err)
-        }
+	// Add parameters for the initialization
+	if setup.initialized {
+		return fmt.Errorf("sdk already initialized")
+	}
 
-        // Channel management client is responsible for managing channels (create/update channel)
-        // Supply user that has privileges to create channel (in this case orderer admin)
-        chMgmtClient, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).ChannelMgmt()
-        if err != nil {
-                return fmt.Errorf("failed to add Admin user to sdk: %v", err)
-        }
+	// Initialize the SDK with the configuration file
+	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
+	if err != nil {
+		return fmt.Errorf("failed to create sdk: %v", err)
+	}
+	setup.sdk = sdk
 
-        // Org admin user is signing user for creating channel
-        session, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
-        if err != nil {
-                return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)
-        }
-        orgAdminUser := session
+	// Channel management client is responsible for managing channels (create/update channel)
+	// Supply user that has privileges to create channel (in this case orderer admin)
+	chMgmtClient, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).ChannelMgmt()
+	if err != nil {
+		return fmt.Errorf("failed to add Admin user to sdk: %v", err)
+	}
 
-        // Create channel
-        req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
-        if err = chMgmtClient.SaveChannel(req); err != nil {
-                return fmt.Errorf("failed to create channel: %v", err)
-        }
+	// Org admin user is signing user for creating channel.
+	// The session method is the only way for now to get the user identity.
+	session, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
+	if err != nil {
+		return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)
+	}
+	orgAdminUser := session
 
-        // Allow orderer to process channel creation
-        time.Sleep(time.Second * 5)
+	// Create channel
+	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
+	if err = chMgmtClient.SaveChannel(req); err != nil {
+		return fmt.Errorf("failed to create channel: %v", err)
+	}
 
-        // Org resource management client
-        setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
-        if err != nil {
-                return fmt.Errorf("failed to create new resource management client: %v", err)
-        }
+	// Allow orderer to process channel creation
+	time.Sleep(time.Second * 5)
 
-        // Org peers join channel
-        if err = setup.admin.JoinChannel(setup.ChannelID); err != nil {
-                return fmt.Errorf("org peers failed to join the channel: %v", err)
-        }
+	// Org resource management client
+	setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
+	if err != nil {
+		return fmt.Errorf("failed to create new resource management client: %v", err)
+	}
 
-        fmt.Println("Initialization Successful")
-        return nil
+	// Org peers join channel
+	if err = setup.admin.JoinChannel(setup.ChannelID); err != nil {
+		return fmt.Errorf("org peers failed to join the channel: %v", err)
+	}
+
+	fmt.Println("Initialization Successful")
+	return nil
 }
 ```
 
 The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
-At this stage, we only initialised a client that will communicate to a peer, a CA and an orderer. We also made a new channel and connected this peer to this channel. See the comments in the code for more information.
+At this stage, we only initialized a client that will communicate to a peer, a CA and an orderer. We also made a new channel and connected this peer to this channel. See the comments in the code for more information.
 
 ### c. Test
 
-To make sure that the client managed to initialise all his components, we will make a simple test with the network launched. In order to do this, we need to build the go code. Since we we haven't any main file we have to add one:
+To make sure that the client managed to initialize all his components, we will make a simple test with the network launched. In order to do this, we need to build the go code. Since we we haven't any main file we have to add one:
 
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi main.go
 ```
 
-```
-
+```go
 package main
 
 import (
-        "fmt"
-        "os"
-        "github.com/chainHero/heroes-service/blockchain"
+	"fmt"
+	"github.com/chainHero/heroes-service/blockchain"
+	"os"
 )
 
 func main() {
-        // Definition of the Fabric SDK properties
-        fSetup := blockchain.FabricSetup{
-                // Channel parameters
-                ChannelID:              "chainhero",
-                ChannelConfig:          "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
+	// Definition of the Fabric SDK properties
+	fSetup := blockchain.FabricSetup{
+		// Channel parameters
+		ChannelID:     "chainhero",
+		ChannelConfig: "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
 
-                // Chaincode parameters
-                OrgAdmin:               "Admin",
-                OrgName:                "Org1",
-                ConfigFile:             "config.yaml",
-        }
+		// Chaincode parameters
+		ChainCodeID:     "heroes-service",
+		ChaincodeGoPath: os.Getenv("GOPATH"),
+		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
+		OrgAdmin:        "Admin",
+		OrgName:         "Org1",
+		ConfigFile:      "config.yaml",
+	}
 
-        // Initialization of the Fabric SDK from the previously set properties
-        err := fSetup.Initialize()
-        if err != nil {
-                fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
-        }
+	// Initialization of the Fabric SDK from the previously set properties
+	err := fSetup.Initialize()
+	if err != nil {
+		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
+	}
 }
-
 ```
 
 The file is available here: [`main.go`](main.go)
 
-The last thing to do before starting the compilation is to use a vendor directory. In our GOPATH we have Fabric, Fabric CA, Fabric SDK Go and maybe other projects. When we will try to compile our app, there may be some conflicts (like multiple definitions of BCCSP). We will handle this by using a tool like `dep` to flatten these dependencies. Just install it and import external dependencies inside the vendor directory like this:
+The last thing to do, before starting the compilation, is to use a vendor directory that will contain all our dependencies. In our GOPATH we have Fabric SDK Go and maybe other projects. When we will try to compile our app, Golang search dependencies in our GOPATH, but first it checks if there is a vendor folder in the project. If the dependency is satisfied, then Golang doesn't go looking in GOPATH or GOROOT. This is very useful when using several different versions of a dependency (some conflicts can happen, like multiple definitions of BCCSP in our case. We will handle this by using a tool like [`dep`](https://github.com/golang/dep) to flatten these dependencies in the `vendor` directory.
 
-Create a file called Gopkg.toml and copy this inside:
+When you installed the SDK dependencies, DEP was automatically installed. If this is not the case, you can install it by reading the instructions available here: [dep installation](https://github.com/golang/dep#installation)
 
+Create a file called `Gopkg.toml` and copy this inside:
+
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
+vi Gopkg.toml
 ```
+
+```toml
 [[constraint]]
   name = "github.com/hyperledger/fabric-sdk-go"
   revision = "614551a752802488988921a730b172dada7def1d"
 ```
 
-Save the file and then execute this command: (this command may take a while to proceed)
+This is a constraint for `dep` in order to specify that in our vendor we want the SDK Go to a specific version.
 
-```
+Save the file and then execute this command to synchronize the vendor directory with our project's dependencies (this may take a while to proceed):
+
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 dep ensure
 ```
 
-Now we can make compile:
+Now we can compile our application:
 
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 go build
 ```
 
 After some time, a new binary named `heroes-service` will appear at the root of the project. Try to start the binary like this:
 
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 ./heroes-service
 ```
 
 ![Screenshot app started but no network](docs/images/start-app-no-network.png)
 
-At this point, it won't work because there is no network deployed that the SDK can talk with. Start the network and launch the app again:
+At this point, it won't work because there is no network deployed that the SDK can talk with. We will first start the network and then launch the app again:
 
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures ; \
-docker-compose up -d ; \
-cd .. ; \
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && \
+docker-compose up -d && \
+cd .. && \
 ./heroes-service
 ```
 
 ![Screenshot app started and SDK initialised](docs/images/start-app-initialized.png)
-Note: You need to see "Success". If it's not the case then something went wrong.
 
-Alright ! So we just initialised the SDK with our local network. In the next step, we will interact with a chaincode.
+> **Note**: you need to see "Initialization Successful". If it's not the case then something went wrong.
+
+Alright! So we just initialised the SDK with our local network. In the next step, we will interact with a chaincode.
 
 ### d. Clean up and Makefile
 
-The Fabric SDK generates some files, like certificates and/or temporally files. Shutting down the network won't fully clean up your environment and when you will need to start it again, these files will be reused to avoid building process. For development you can keep them to test quickly but for a real test, you need to clean up all and start from the beginning.
+The Fabric SDK generates some files, like certificates, binaries and temporally files. Shutting down the network won't fully clean up your environment and when you will need to start it again, these files will be reused to avoid building process. For development you can keep them to test quickly but for a real test, you need to clean up all and start from the beginning.
 
 *How to clean up my environment ?*
 
 - Shut down your network: `cd $GOPATH/src/github.com/chainHero/heroes-service/fixtures && docker-compose down`
-- Remove MSP folder (defined in the [config](config.yaml) file, in the `fabricCA` section): `rm -rf /tmp/msp`
-- Remove enrolment files (defined when we initialise the SDK, in the [setup](blockchain/setup.go) file, when we get the client):  `rm -rf /tmp/enroll_user`
-- Remove some docker containers and docker images not generated by the `docker-compose` command: ```docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null``` and ```docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null```
+- Remove credential stores (defined in the [config](config.yaml) file, in `client.credentialStore` section): `rm -rf /tmp/heroes-service-*`
+- Remove some docker containers and docker images not generated by the `docker-compose` command:
+
+```bash
+docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null
+```
+
+and
+
+```bash
+docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null
+```
 
 *How to be more efficient ?*
 
-We can automatise all these tasks in one single step. Also the build and start process can be automated. To do so, we will create a Makefile. First, ensure that you have the tool:
+We can automatize all these tasks in one single step. Also the build and start process can be automated. To do so, we will create a Makefile. First, ensure that you have the tool:
 
-```
+```bash
 make --version
 ```
+
 If `make` is not installed do (Ubuntu):
 
-```
+```bash
 sudo apt install make
 ```
 
 Then create a file named `Makefile` at the root of the project with this content:
 
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
+vi Makefile
 ```
+
+```makefile
 .PHONY: all dev clean build env-up env-down run
 
 all: clean build env-up run
@@ -625,7 +653,7 @@ run:
 ##### CLEAN
 clean: env-down
 	@echo "Clean up ..."
-	@rm -rf /tmp/enroll_user /tmp/msp heroes-service
+	@rm -rf /tmp/heroes-service-* heroes-service
 	@docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null || true
 	@docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null || true
 	@echo "Clean up done"
@@ -642,8 +670,9 @@ Now with the task `all`:
 To use it, go in the root of the project and use the `make` command:
 
 - Task `all`: `make` or `make all`
-- Task `build`: `make build`
-- Task `env-up`: `make env-up`
+- Task `clean`: clean up everything and put down the network (`make clean`)
+- Task `build`: just build the application (`make build`)
+- Task `env-up`: just make the network up (`make env-up`)
 - ...
 
 ### e. Install & instanciate the chaincode

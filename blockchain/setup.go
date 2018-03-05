@@ -37,13 +37,12 @@ func (setup *FabricSetup) Initialize() error {
 		return fmt.Errorf("sdk already initialized")
 	}
 
-	//TODO
-	err := fmt.Errorf("")
-
-	setup.sdk, err = fabsdk.New(config.FromFile(setup.ConfigFile))
+	// Initialize the SDK with the configuration file
+	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
 	if err != nil {
 		return fmt.Errorf("failed to create sdk: %v", err)
 	}
+	setup.sdk = sdk
 
 	// Channel management client is responsible for managing channels (create/update channel)
 	// Supply user that has privileges to create channel (in this case orderer admin)
@@ -52,7 +51,8 @@ func (setup *FabricSetup) Initialize() error {
 		return fmt.Errorf("failed to add Admin user to sdk: %v", err)
 	}
 
-	// Org admin user is signing user for creating channel
+	// Org admin user is signing user for creating channel.
+	// The session method is the only way for now to get the user identity.
 	session, err := setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName)).Session()
 	if err != nil {
 		return fmt.Errorf("failed to get session for %s, %s: %s", setup.OrgName, setup.OrgAdmin, err)

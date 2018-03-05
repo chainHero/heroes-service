@@ -41,5 +41,4 @@ func main() {
 		Fabric: &fSetup,
 	}
 	web.Serve(app)
-
 }
