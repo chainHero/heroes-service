@@ -924,8 +924,8 @@ vi blockchain/query.go
 package blockchain
 
 import (
-	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
 
 // QueryHello query the chaincode to get the state of hello
@@ -950,6 +950,11 @@ The file is available here: [`blockchain/query.go`](blockchain/query.go)
 
 You can add the call to this new function in the [`main.go`](main.go):
 
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
+vi main.go
+```
+
 ```go
 func main() {
 
@@ -970,7 +975,7 @@ The file is available here: [`main.go`](main.go)
 Let's try:
 
 ```bash
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 make
 ```
 
@@ -982,42 +987,13 @@ The next thing to do in order to make a basic tour of the Fabric SDK Go, is to m
 
 First, we will add this ability in the chaincode. Edit the [`chaincode/main.go`](chaincode/main.go) file:
 
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
+vi chaincode/main.go
 ```
-package main
 
-import (
-	"fmt"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	pb "github.com/hyperledger/fabric/protos/peer"
-)
-
-// HeroesServiceChaincode implementation of Chaincode
-type HeroesServiceChaincode struct {
-}
-
-// Init of the chaincode
-// This function is called only one when the chaincode is instantiated.
-// So the goal is to prepare the ledger to handle future requests.
-func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	fmt.Println("########### HeroesServiceChaincode Init ###########")
-
-	// Get the function and arguments from the request
-	function, _ := stub.GetFunctionAndParameters()
-
-	// Check if the request is the init function
-	if function != "init" {
-		return shim.Error("Unknown function call")
-	}
-
-	// Put in the ledger the key/value hello/world
-	err := stub.PutState("hello", []byte("world"))
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// Return a successful message
-	return shim.Success(nil)
-}
+```go
+[...]
 
 // Invoke
 // All future requests named invoke will arrive here.
@@ -1052,33 +1028,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	return shim.Error("Unknown action, check the first argument")
 }
 
-// query
-// Every readonly functions in the ledger will be here
-func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	fmt.Println("########### HeroesServiceChaincode query ###########")
-
-	// Check whether the number of arguments is sufficient
-	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient.")
-	}
-
-	// Like the Invoke function, we manage multiple type of query requests with the second argument.
-	// We also have only one possible argument: hello
-	if args[1] == "hello" {
-
-		// Get the state of the value matching the key hello in the ledger
-		state, err := stub.GetState("hello")
-		if err != nil {
-			return shim.Error("Failed to get state of hello")
-		}
-
-		// Return this value in response
-		return shim.Success(state)
-	}
-
-	// If the arguments given don’t match any function, we return an error
-	return shim.Error("Unknown query action, check the second argument.")
-}
+[...]
 
 // invoke
 // Every functions that read and write in the ledger will be here
@@ -1112,31 +1062,25 @@ func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args [
 	return shim.Error("Unknown invoke action, check the second argument.")
 }
 
-func main() {
-	// Start the chaincode and make it ready for futures requests
-	err := shim.Start(new(HeroesServiceChaincode))
-	if err != nil {
-		fmt.Printf("Error starting Heroes Service chaincode: %s", err)
-	}
-}
+[...]
 ```
 
 The file is available here: [`chaincode/main.go`](chaincode/main.go)
 
-From the application side, we add a new interface to make the invocation of the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
+From the application side, we add a new function to make the invocation of the chaincode. Add a file named `invoke.go` in the `blockchain` folder:
 
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 vi blockchain/invoke.go
 ```
 
-```
+```go
 package blockchain
 
 import (
 	"fmt"
-	"time"
 	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
+	"time"
 )
 
 // InvokeHello
@@ -1163,7 +1107,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	}
 
 	// Create a request (proposal) and send it
-	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap:transientDataMap})
+	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap: transientDataMap})
 	if err != nil {
 		return "", fmt.Errorf("failed to move funds: %v", err)
 	}
@@ -1187,7 +1131,12 @@ The file is available here: [`blockchain/invoke.go`](blockchain/invoke.go)
 
 You can then add the call to this function in the [`main.go`](main.go):
 
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
+vi main.go
 ```
+
+```go
 func main() {
 
 [...]
@@ -1220,13 +1169,14 @@ func main() {
 
 Let's try:
 
-```
-cd $GOPATH/src/github.com/chainHero/heroes-service ; \
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
 make
 ```
 
-// TODO executer la fonction précedente et copié l'output
 ![Screenshot Invoke Hello](docs/images/invoke-hello.png)
+
+> **Note**: this error message may appear: `endorsement validation failed: Endorser Client Status Code: (3) ENDORSEMENT_MISMATCH. Description: ProposalResponsePayloads do not match`. Since we have two PEERs, the SDK sends its request to the two directly and if it receives a different answer (which is quite possible because it's an asynchronous system) then it returns this error. The best thing to do in these cases and start over again.
 
 ## 6. Make this in a web application
 
