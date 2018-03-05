@@ -2,26 +2,26 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"github.com/chainHero/heroes-service/blockchain"
-	"github.com/chainHero/heroes-service/web/controllers"
 	"github.com/chainHero/heroes-service/web"
+	"github.com/chainHero/heroes-service/web/controllers"
+	"os"
 )
 
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
 		// Channel parameters
-		ChannelID:        	"chainhero",
-		ChannelConfig:    	"" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
+		ChannelID:     "chainhero",
+		ChannelConfig: "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
 
 		// Chaincode parameters
-		ChainCodeID:      	"heroes-service",
-		ChaincodeGoPath:  	os.Getenv("GOPATH"),
-		ChaincodePath:    	"github.com/chainHero/heroes-service/chaincode/",
-		OrgAdmin:			"Admin",
-		OrgName:			"Org1",
-		ConfigFile:			"config.yaml",
+		ChainCodeID:     "heroes-service",
+		ChaincodeGoPath: os.Getenv("GOPATH"),
+		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
+		OrgAdmin:        "Admin",
+		OrgName:         "Org1",
+		ConfigFile:      "config.yaml",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties

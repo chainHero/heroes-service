@@ -2,8 +2,8 @@ package blockchain
 
 import (
 	"fmt"
-	"time"
 	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
+	"time"
 )
 
 // InvokeHello
@@ -30,7 +30,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	}
 
 	// Create a request (proposal) and send it
-	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap:transientDataMap})
+	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap: transientDataMap})
 	if err != nil {
 		return "", fmt.Errorf("failed to move funds: %v", err)
 	}

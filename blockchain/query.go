@@ -1,8 +1,8 @@
 package blockchain
 
 import (
-	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
 
 // QueryHello query the chaincode to get the state of hello
