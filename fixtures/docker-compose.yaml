@@ -78,6 +78,7 @@ services:
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_LOCALMSPID=org1.hf.chainhero.io
       - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/msp
+      - CORE_PEER_TLS_SERVERHOSTOVERRIDE=peer0.org1.hf.chainhero.io
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
@@ -118,6 +119,7 @@ services:
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_LOCALMSPID=org1.hf.chainhero.io
       - CORE_PEER_MSPCONFIGPATH=/var/hyperledger/msp
+      - CORE_PEER_TLS_SERVERHOSTOVERRIDE=peer1.org1.hf.chainhero.io
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
