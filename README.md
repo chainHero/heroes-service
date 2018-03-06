@@ -437,6 +437,7 @@ type FabricSetup struct {
 	ChaincodePath   string
 	OrgAdmin        string
 	OrgName         string
+	UserName		string
 	client          chclient.ChannelClient
 	admin           resmgmt.ResourceMgmtClient
 	sdk             *fabsdk.FabricSDK
@@ -472,8 +473,10 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	orgAdminUser := session
 
-	// Create channel
-	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
+	// Creation of the channel chainhero. A channel can be understood as a private network inside the main network between two or more specific network Organizations
+	// The channel is defined by its : Organizations, anchor peer (A peer node that all other peers can discover and communicate with. Every Organizations have one), the shared ledger, chaincode application(s) and the ordering service node(s)
+	// Each transaction on the network is executed on a channel.
+	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig, SigningIdentity: orgAdminUser}
 	if err = chMgmtClient.SaveChannel(req); err != nil {
 		return fmt.Errorf("failed to create channel: %v", err)
 	}
@@ -481,7 +484,8 @@ func (setup *FabricSetup) Initialize() error {
 	// Allow orderer to process channel creation
 	time.Sleep(time.Second * 5)
 
-	// Org resource management client
+	// The resource management client is a client API for managing system resources
+	// It will allow us to directly interact with the blockchain. It can be associated with the admin status
 	setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
 	if err != nil {
 		return fmt.Errorf("failed to create new resource management client: %v", err)
@@ -524,11 +528,18 @@ func main() {
 	fSetup := blockchain.FabricSetup{
 		// Channel parameters
 		ChannelID:     "chainhero",
-		ChannelConfig: "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
 
+		// Chaincode parameters
+		ChainCodeID:     "heroes-service",
+		ChaincodeGoPath: os.Getenv("GOPATH"),
+		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
 		OrgAdmin:        "Admin",
 		OrgName:         "Org1",
 		ConfigFile:      "config.yaml",
+
+		// User parameters
+		UserName:		 "User1",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
@@ -536,7 +547,6 @@ func main() {
 	if err != nil {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 	}
-}
 ```
 
 The file is available here: [`main.go`](main.go)
