@@ -263,7 +263,7 @@ client:
   logging:
     level: info
 
-# Global configuration for peer, event service and orderer timeouts
+  # Global configuration for peer, event service and orderer timeouts
   peer:
     timeout:
       connection: 3s
@@ -278,15 +278,20 @@ client:
       connection: 3s
       response: 5s
 
+  # Root of the MSP directories with keys and certs. The Membership Service Providers is component that aims to offer an abstraction of a membership operation architecture.
   cryptoconfig:
     path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
 
+  # Some SDKs support pluggable KV stores, the properties under "credentialStore" are implementation specific
   credentialStore:
     path: "/tmp/heroes-service-kvs"
+
+     # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations requiring a key store. PKCS#11 based implementations does not.
     cryptoStore:
       path: "/tmp/heroes-service-msp"
 
-   # BCCSP config for the client. Used by GO SDK.
+  # BCCSP config for the client. Used by GO SDK. It's the Blockchain Cryptographic Service Provider.
+  # It offers the implementation of cryptographic standards and algorithms.
   BCCSP:
     security:
      enabled: true
@@ -300,26 +305,38 @@ client:
   tlsCerts:
     systemCertPool: false
 
+# [Optional]. But most apps would have this section so that channel objects can be constructed based on the content below.
+# If one of your application is creating channels, you might not use this
 channels:
   chainhero:
     orderers:
       - orderer.hf.chainhero.io
+
+    # Network entity which maintains a ledger and runs chaincode containers in order to perform operations to the ledger. Peers are owned and maintained by members.
     peers:
       peer0.org1.hf.chainhero.io:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
         endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
         chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
         ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
         eventSource: true
+
       peer1.org1.hf.chainhero.io:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
 
-    chaincodes:
-      # the format follows the "canonical name" of chaincodes by fabric code
-
-# list of participating organizations in this network
+# List of participating organizations in this network
 organizations:
   Org1:
     mspid: org1.hf.chainhero.io
@@ -330,7 +347,8 @@ organizations:
     certificateAuthorities:
       - ca.org1.hf.chainhero.io
 
-# List of orderers to send transaction and channel create/update requests to. For the time being only one orderer is needed.
+# List of orderers to send transaction and channel create/update requests to.
+# The orderers consent on the order of transactions in a block to be committed to the ledger. For the time being only one orderer is needed.
 orderers:
   orderer.hf.chainhero.io:
     url: grpcs://localhost:7050
@@ -343,11 +361,15 @@ orderers:
 # List of peers to send various requests to, including endorsement, query and event listener registration.
 peers:
   peer0.org1.hf.chainhero.io:
+    # this URL is used to send endorsement and query requests
     url: grpcs://localhost:7051
+    # this URL is used to connect the EventHub and registering event listeners
     eventUrl: grpcs://localhost:7053
+    # These parameters should be set in coordination with the keepalive policy on the server
     grpcOptions:
       ssl-target-name-override: peer0.org1.hf.chainhero.io
       grpc.http2.keepalive_time: 15
+
     tlsCACerts:
       path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
 
@@ -358,11 +380,14 @@ peers:
       ssl-target-name-override: peer1.org1.hf.chainhero.io
       grpc.http2.keepalive_time: 15
     tlsCACerts:
+      # Certificate location absolute path
       path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
 
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows certificate management to be done via REST APIs.
 certificateAuthorities:
   ca.org1.hf.chainhero.io:
     url: https://localhost:7054
+    # the properties specified under this object are passed to the 'http' client verbatim when making the request to the Fabric-CA server
     httpOptions:
       verify: false
     registrar:
@@ -412,6 +437,7 @@ type FabricSetup struct {
 	ChaincodePath   string
 	OrgAdmin        string
 	OrgName         string
+	UserName		string
 	client          chclient.ChannelClient
 	admin           resmgmt.ResourceMgmtClient
 	sdk             *fabsdk.FabricSDK
@@ -447,8 +473,10 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	orgAdminUser := session
 
-	// Create channel
-	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
+	// Creation of the channel chainhero. A channel can be understood as a private network inside the main network between two or more specific network Organizations
+	// The channel is defined by its : Organizations, anchor peer (A peer node that all other peers can discover and communicate with. Every Organizations have one), the shared ledger, chaincode application(s) and the ordering service node(s)
+	// Each transaction on the network is executed on a channel.
+	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig, SigningIdentity: orgAdminUser}
 	if err = chMgmtClient.SaveChannel(req); err != nil {
 		return fmt.Errorf("failed to create channel: %v", err)
 	}
@@ -456,7 +484,8 @@ func (setup *FabricSetup) Initialize() error {
 	// Allow orderer to process channel creation
 	time.Sleep(time.Second * 5)
 
-	// Org resource management client
+	// The resource management client is a client API for managing system resources
+	// It will allow us to directly interact with the blockchain. It can be associated with the admin status
 	setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
 	if err != nil {
 		return fmt.Errorf("failed to create new resource management client: %v", err)
@@ -499,11 +528,18 @@ func main() {
 	fSetup := blockchain.FabricSetup{
 		// Channel parameters
 		ChannelID:     "chainhero",
-		ChannelConfig: "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
 
+		// Chaincode parameters
+		ChainCodeID:     "heroes-service",
+		ChaincodeGoPath: os.Getenv("GOPATH"),
+		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
 		OrgAdmin:        "Admin",
 		OrgName:         "Org1",
 		ConfigFile:      "config.yaml",
+
+		// User parameters
+		UserName:		 "User1",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
@@ -735,14 +771,13 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	if len(args) < 1 {
 		return shim.Error("The number of arguments is insufficient.")
 	}
-
+	
 	// In order to manage multiple type of request, we will check the first argument.
 	// Here we have one possible argument: query (every query request will read in the ledger without modification)
 	if args[0] == "query" {
 		return t.query(stub, args)
 	}
 
-	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown action, check the first argument")
 }
 
@@ -816,13 +851,14 @@ func (setup *FabricSetup) Initialize() error {
 
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
-	// Create chaincode package for our chaincode
+	// Create a new go lang chaincode package and initializing it with our chaincode
 	ccPkg, err := packager.NewCCPackage(setup.ChaincodePath, setup.ChaincodeGoPath)
 	if err != nil {
 		return fmt.Errorf("failed to create chaincode package: %v", err)
 	}
 
 	// Install our chaincode on org peers
+	// The resource management client send the chaincode to all peers in its channel in order for them to store it and interact with it later
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Package: ccPkg}
 	_, err = setup.admin.InstallCC(installCCReq)
 	if err != nil {
@@ -830,22 +866,23 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 
 	// Set up chaincode policy
+	// The chaincode policy is required if your transactions must follow some specific rules
+	// If you don't provide any policy every transaction will be endorsed, and it's probably not what you want
+	// In this case, we set the rule to : Endorse the transaction if the transaction have been signed by a member from the org "org1.hf.chainhero.io"
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
 
-	// Org resource manager will instantiate our chaincode on the channel
+	// Instantiate our chaincode on org peers
+	// The resource management client tells to all peers in its channel to instantiate the chaincode previously installed
 	err = setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
 	if err != nil {
 		return fmt.Errorf("failed to instantiate the chaincode: %v", err)
 	}
 
 	// Channel client is used to query and execute transactions
-	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser("User1")).Channel(setup.ChannelID)
+	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser(setup.UserName)).Channel(setup.ChannelID)
 	if err != nil {
 		return fmt.Errorf("failed to create new channel client: %v", err)
 	}
-
-	// Clean the client
-	defer setup.client.Close()
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
@@ -856,7 +893,7 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to update your chaincode, increment the version number set at the line 105 of this [`setup.go`](blockchain/setup.go) file. Otherwise the network will keep the same chaincode.
 
-We need now to modify our setup structure in the main file.
+We need now to our main file in order to call our new function
 
 ```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
@@ -865,29 +902,6 @@ vi main.go
 
 ```go
 [...]
-
-func main() {
-        // Definition of the Fabric SDK properties
-        fSetup := blockchain.FabricSetup{
-                // Channel parameters
-                ChannelID:     "chainhero",
-                ChannelConfig: "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
-
-                // Chaincode parameters
-                ChainCodeID:     "heroes-service",
-                ChaincodeGoPath: os.Getenv("GOPATH"),
-                ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
-                OrgAdmin:        "Admin",
-                OrgName:         "Org1",
-                ConfigFile:      "config.yaml",
-        }
-
-        // Initialization of the Fabric SDK from the previously set properties
-        err := fSetup.Initialize()
-        if err != nil {
-                fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
-        }
-
         // Install and instantiate the chaincode
         err = fSetup.InstallAndInstantiateCC()
         if err != nil {
