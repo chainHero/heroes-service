@@ -95,6 +95,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 
 	// Install our chaincode on org peers
+	// The resource management client send the chaincode to all peers in its channel in order for them to store it and interact with it later
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Package: ccPkg}
 	_, err = setup.admin.InstallCC(installCCReq)
 	if err != nil {
@@ -107,7 +108,8 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	// In this case, we set the rule to : Endorse the transaction if the transaction have been signed by a member from the org "org1.hf.chainhero.io"
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
 
-	// Org resource manager will instantiate our chaincode on the channel
+	// Instantiate our chaincode on org peers
+	// The resource management client tells to all peers in its channel to instantiate the chaincode previously installed
 	err = setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
 	if err != nil {
 		return fmt.Errorf("failed to instantiate the chaincode: %v", err)
