@@ -121,9 +121,12 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return fmt.Errorf("failed to create new channel client: %v", err)
 	}
 
-	// Clean the client
-	defer setup.client.Close()
-
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
+}
+
+func (setup *FabricSetup) CleanResources() {
+
+	// Close releases channel client resources
+	setup.client.Close()
 }

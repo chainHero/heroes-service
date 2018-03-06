@@ -41,4 +41,6 @@ func main() {
 		Fabric: &fSetup,
 	}
 	web.Serve(app)
+
+	defer fSetup.CleanResources()
 }
