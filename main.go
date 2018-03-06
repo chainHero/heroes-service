@@ -22,6 +22,9 @@ func main() {
 		OrgAdmin:        "Admin",
 		OrgName:         "Org1",
 		ConfigFile:      "config.yaml",
+
+		// User parameters
+		UserName:		 "User1",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties

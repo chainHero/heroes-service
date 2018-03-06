@@ -24,6 +24,7 @@ type FabricSetup struct {
 	ChaincodePath   string
 	OrgAdmin        string
 	OrgName         string
+	UserName		string
 	client          chclient.ChannelClient
 	admin           resmgmt.ResourceMgmtClient
 	sdk             *fabsdk.FabricSDK
@@ -116,7 +117,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 
 	// Channel client is used to query and execute transactions
-	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser("User1")).Channel(setup.ChannelID)
+	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser(setup.UserName)).Channel(setup.ChannelID)
 	if err != nil {
 		return fmt.Errorf("failed to create new channel client: %v", err)
 	}
