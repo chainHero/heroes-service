@@ -24,7 +24,7 @@ type FabricSetup struct {
 	ChaincodePath   string
 	OrgAdmin        string
 	OrgName         string
-	UserName		string
+	UserName        string
 	client          chclient.ChannelClient
 	admin           resmgmt.ResourceMgmtClient
 	sdk             *fabsdk.FabricSDK

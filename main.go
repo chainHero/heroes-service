@@ -24,7 +24,7 @@ func main() {
 		ConfigFile:      "config.yaml",
 
 		// User parameters
-		UserName:		 "User1",
+		UserName: "User1",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
@@ -44,6 +44,4 @@ func main() {
 		Fabric: &fSetup,
 	}
 	web.Serve(app)
-
-	defer fSetup.CleanResources()
 }
