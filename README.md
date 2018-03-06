@@ -417,7 +417,6 @@ package blockchain
 
 import (
 	"fmt"
-	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
 	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
 	"github.com/hyperledger/fabric-sdk-go/pkg/config"
@@ -428,17 +427,11 @@ import (
 // FabricSetup implementation
 type FabricSetup struct {
 	ConfigFile      string
-	OrgID           string
 	ChannelID       string
-	ChainCodeID     string
 	initialized     bool
 	ChannelConfig   string
-	ChaincodeGoPath string
-	ChaincodePath   string
 	OrgAdmin        string
 	OrgName         string
-	UserName		string
-	client          chclient.ChannelClient
 	admin           resmgmt.ResourceMgmtClient
 	sdk             *fabsdk.FabricSDK
 }
@@ -497,6 +490,7 @@ func (setup *FabricSetup) Initialize() error {
 	}
 
 	fmt.Println("Initialization Successful")
+	setup.initialized = true
 	return nil
 }
 ```
@@ -526,20 +520,14 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+	
+		OrgAdmin:        "Admin",
+     	OrgName:         "Org1", 
+     	ConfigFile:      "config.yaml",
+
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
-
-		// Chaincode parameters
-		ChainCodeID:     "heroes-service",
-		ChaincodeGoPath: os.Getenv("GOPATH"),
-		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
-		OrgAdmin:        "Admin",
-		OrgName:         "Org1",
-		ConfigFile:      "config.yaml",
-
-		// User parameters
-		UserName:		 "User1",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
