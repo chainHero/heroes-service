@@ -805,6 +805,8 @@ func main() {
 }
 ```
 
+The file is available here: [`chaincode/main.go`](chaincode/main.go)
+
 > **Note**: the chaincode isn't really related to the application, we can have one repository for the app and another for the chaincode. For your information, today the chaincode can also be written in other languages like Java.
 
 For now, the chaincode does nothing extraordinary, just put the key/value `hello`/`world` in the ledger at initialization. In addition, there is one function that we can call by an invoke: `query hello`. This function gets the state of the ledger, i.e. `hello` and give it in response. We will test this in the next step, after successfully install and instantiate the chaincode.
@@ -931,7 +933,7 @@ fSetup := blockchain.FabricSetup{
 }
 ```
 
-The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
+The file is available here: [`main.go`](main.go)
 
 We can test this, just with the `make` command setup in the previous step:
 
