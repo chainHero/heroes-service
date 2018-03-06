@@ -208,7 +208,7 @@ svn checkout https://github.com/chainHero/heroes-service/branches/v1.0.5/fixture
 rm -rf fixtures/.svn
 ```
 
-Alternatively, if you wanna know how to build this fixture folder and learn how to create the blockchain network, We are currently working on a dedicated tutorial on this topic.
+Alternatively, if you want to know how to build this fixture folder and learn how to create the blockchain network, We are currently working on a dedicated tutorial on this topic.
 
 ### b. Test
 
