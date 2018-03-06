@@ -547,6 +547,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 	}
+}
 ```
 
 The file is available here: [`main.go`](main.go)
