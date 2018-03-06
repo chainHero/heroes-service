@@ -417,6 +417,7 @@ package blockchain
 
 import (
 	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
 	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
 	"github.com/hyperledger/fabric-sdk-go/pkg/config"
@@ -490,7 +491,7 @@ func (setup *FabricSetup) Initialize() error {
 	}
 
 	fmt.Println("Initialization Successful")
-	setup.initialized = true
+	setup.initialized = true	
 	return nil
 }
 ```
@@ -829,7 +830,20 @@ import (
 
 // FabricSetup implementation
 type FabricSetup struct {
-[...]
+	ConfigFile      string
+	OrgID           string
+	ChannelID       string
+	ChainCodeID     string
+	initialized     bool
+	ChannelConfig   string
+	ChaincodeGoPath string
+	ChaincodePath   string
+	OrgAdmin        string
+	OrgName         string
+	UserName        string
+	client          chclient.ChannelClient
+	admin           resmgmt.ResourceMgmtClient
+	sdk             *fabsdk.FabricSDK
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
@@ -881,7 +895,7 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to update your chaincode, increment the version number set at the line 105 of this [`setup.go`](blockchain/setup.go) file. Otherwise the network will keep the same chaincode.
 
-What we need to do now is to modify our `main.go` file in order to call our new function
+We need now to our main file in order to call our new function
 
 ```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
@@ -889,7 +903,28 @@ vi main.go
 ```
 
 ```go
+
 [...]
+
+fSetup := blockchain.FabricSetup{
+		// Channel parameters
+		ChannelID:     "chainhero",
+		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
+
+		// Chaincode parameters
+		ChainCodeID:     "heroes-service",
+		ChaincodeGoPath: os.Getenv("GOPATH"),
+		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
+		OrgAdmin:        "Admin",
+		OrgName:         "Org1",
+		ConfigFile:      "config.yaml",
+
+		// User parameters
+		UserName: "User1",
+	}
+
+[...]
+
         // Install and instantiate the chaincode
         err = fSetup.InstallAndInstantiateCC()
         if err != nil {

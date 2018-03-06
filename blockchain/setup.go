@@ -84,6 +84,7 @@ func (setup *FabricSetup) Initialize() error {
 	}
 
 	fmt.Println("Initialization Successful")
+	setup.initialized = true
 	return nil
 }
 
@@ -123,6 +124,5 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
-	setup.initialized = true
 	return nil
 }
