@@ -59,7 +59,9 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	orgAdminUser := session
 
-	// Create channel
+	// Creation of the channel chainhero. A channel can be understood as a private network inside the main network between two or more specific network Organizations.
+	// The channel is defined by its : Organizations, anchor peer (A peer node that all other peers can discover and communicate with. Every Organizations have one), the shared ledger, chaincode application(s) and the ordering service node(s).
+	// Each transaction on the network is executed on a channel.
 	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
 	if err = chMgmtClient.SaveChannel(req); err != nil {
 		return fmt.Errorf("failed to create channel: %v", err)
