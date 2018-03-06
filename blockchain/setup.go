@@ -125,9 +125,3 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
 }
-
-func (setup *FabricSetup) CleanResources() {
-
-	// Close releases channel client resources
-	setup.client.Close()
-}

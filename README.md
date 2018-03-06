@@ -893,7 +893,7 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to update your chaincode, increment the version number set at the line 105 of this [`setup.go`](blockchain/setup.go) file. Otherwise the network will keep the same chaincode.
 
-We need now to our main file in order to call our new function
+What we need to do now is to modify our `main.go` file in order to call our new function
 
 ```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
