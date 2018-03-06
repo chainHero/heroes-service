@@ -137,6 +137,7 @@ peers:
 certificateAuthorities:
   ca.org1.hf.chainhero.io:
     url: https://localhost:7054
+    # the properties specified under this object are passed to the 'http' client verbatim when making the request to the Fabric-CA server
     httpOptions:
       verify: false
     registrar:
