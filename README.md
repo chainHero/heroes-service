@@ -263,7 +263,7 @@ client:
   logging:
     level: info
 
-# Global configuration for peer, event service and orderer timeouts
+  # Global configuration for peer, event service and orderer timeouts
   peer:
     timeout:
       connection: 3s
@@ -278,15 +278,20 @@ client:
       connection: 3s
       response: 5s
 
+  # Root of the MSP directories with keys and certs. The Membership Service Providers is component that aims to offer an abstraction of a membership operation architecture.
   cryptoconfig:
     path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
 
+  # Some SDKs support pluggable KV stores, the properties under "credentialStore" are implementation specific
   credentialStore:
     path: "/tmp/heroes-service-kvs"
+
+     # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations requiring a key store. PKCS#11 based implementations does not.
     cryptoStore:
       path: "/tmp/heroes-service-msp"
 
-   # BCCSP config for the client. Used by GO SDK.
+  # BCCSP config for the client. Used by GO SDK. It's the Blockchain Cryptographic Service Provider.
+  # It offers the implementation of cryptographic standards and algorithms.
   BCCSP:
     security:
      enabled: true
@@ -300,26 +305,38 @@ client:
   tlsCerts:
     systemCertPool: false
 
+# [Optional]. But most apps would have this section so that channel objects can be constructed based on the content below.
+# If one of your application is creating channels, you might not use this
 channels:
   chainhero:
     orderers:
       - orderer.hf.chainhero.io
+
+    # Network entity which maintains a ledger and runs chaincode containers in order to perform operations to the ledger. Peers are owned and maintained by members.
     peers:
       peer0.org1.hf.chainhero.io:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
         endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
         chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
         ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
         eventSource: true
+
       peer1.org1.hf.chainhero.io:
-        endorsingPeer: true
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: true
 
-    chaincodes:
-      # the format follows the "canonical name" of chaincodes by fabric code
-
-# list of participating organizations in this network
+# List of participating organizations in this network
 organizations:
   Org1:
     mspid: org1.hf.chainhero.io
@@ -330,7 +347,8 @@ organizations:
     certificateAuthorities:
       - ca.org1.hf.chainhero.io
 
-# List of orderers to send transaction and channel create/update requests to. For the time being only one orderer is needed.
+# List of orderers to send transaction and channel create/update requests to.
+# The orderers consent on the order of transactions in a block to be committed to the ledger. For the time being only one orderer is needed.
 orderers:
   orderer.hf.chainhero.io:
     url: grpcs://localhost:7050
@@ -343,11 +361,15 @@ orderers:
 # List of peers to send various requests to, including endorsement, query and event listener registration.
 peers:
   peer0.org1.hf.chainhero.io:
+    # this URL is used to send endorsement and query requests
     url: grpcs://localhost:7051
+    # this URL is used to connect the EventHub and registering event listeners
     eventUrl: grpcs://localhost:7053
+    # These parameters should be set in coordination with the keepalive policy on the server
     grpcOptions:
       ssl-target-name-override: peer0.org1.hf.chainhero.io
       grpc.http2.keepalive_time: 15
+
     tlsCACerts:
       path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
 
@@ -358,11 +380,14 @@ peers:
       ssl-target-name-override: peer1.org1.hf.chainhero.io
       grpc.http2.keepalive_time: 15
     tlsCACerts:
+      # Certificate location absolute path
       path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
 
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows certificate management to be done via REST APIs.
 certificateAuthorities:
   ca.org1.hf.chainhero.io:
     url: https://localhost:7054
+    # the properties specified under this object are passed to the 'http' client verbatim when making the request to the Fabric-CA server
     httpOptions:
       verify: false
     registrar:
