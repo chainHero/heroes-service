@@ -770,8 +770,42 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 	if len(args) < 1 {
 		return shim.Error("The number of arguments is insufficient.")
 	}
+	
+	// In order to manage multiple type of request, we will check the first argument.
+	// Here we have one possible argument: query (every query request will read in the ledger without modification)
+	if args[0] == "query" {
+		return t.query(stub, args)
+	}
 
 	return shim.Error("Unknown action, check the first argument")
+}
+
+// query
+// Every readonly functions in the ledger will be here
+func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	fmt.Println("########### HeroesServiceChaincode query ###########")
+
+	// Check whether the number of arguments is sufficient
+	if len(args) < 2 {
+		return shim.Error("The number of arguments is insufficient.")
+	}
+
+	// Like the Invoke function, we manage multiple type of query requests with the second argument.
+	// We also have only one possible argument: hello
+	if args[1] == "hello" {
+
+		// Get the state of the value matching the key hello in the ledger
+		state, err := stub.GetState("hello")
+		if err != nil {
+			return shim.Error("Failed to get state of hello")
+		}
+
+		// Return this value in response
+		return shim.Success(state)
+	}
+
+	// If the arguments given don’t match any function, we return an error
+	return shim.Error("Unknown query action, check the second argument.")
 }
 
 func main() {
