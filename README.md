@@ -1248,7 +1248,7 @@ cd $GOPATH/src/github.com/chainHero/heroes-service ; \
 make
 ```
 
-The `home` page make a query in in the blockchain to get the value of the `hello` key and display it.
+The `home` page make a query in the blockchain to get the value of the `hello` key and display it.
 
 ![Screenshot Web Home Hello World](docs/images/web-home-hello-world.png)
 
