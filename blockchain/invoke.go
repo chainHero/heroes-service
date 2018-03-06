@@ -1,9 +1,8 @@
 package blockchain
 
 import (
-	fcutil "github.com/hyperledger/fabric-sdk-go/pkg/util"
-	api "github.com/hyperledger/fabric-sdk-go/api"
 	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	"time"
 )
 
@@ -17,43 +16,35 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	args = append(args, "hello")
 	args = append(args, value)
 
+	eventID := "eventInvoke"
+
 	// Add data that will be visible in the proposal, like a description of the invoke request
 	transientDataMap := make(map[string][]byte)
 	transientDataMap["result"] = []byte("Transient data in hello invoke")
 
-	// Make a next transaction proposal and send it
-	transactionProposalResponse, txID, err := fcutil.CreateAndSendTransactionProposal(
-		setup.Channel,
-		setup.ChaincodeId,
-		setup.ChannelId,
-		args,
-		[]api.Peer{setup.Channel.GetPrimaryPeer()},
-		transientDataMap,
-	)
+	// Register a notification handler on the client
+	notifier := make(chan *chclient.CCEvent)
+	rce, err := setup.client.RegisterChaincodeEvent(notifier, setup.ChainCodeID, eventID)
 	if err != nil {
-		return "", fmt.Errorf("Create and send transaction proposal in the invoke hello return error: %v", err)
+		return "", fmt.Errorf("failed to register chaincode evet: %v", err)
 	}
 
-	// Register the Fabric SDK to listen to the event that will come back when the transaction will be send
-	done, fail := fcutil.RegisterTxEvent(txID, setup.EventHub)
-
-	// Send the final transaction signed by endorser
-	if _, err := fcutil.CreateAndSendTransaction(setup.Channel, transactionProposalResponse); err != nil {
-		return "", fmt.Errorf("Create and send transaction in the invoke hello return error: %v", err)
+	// Create a request (proposal) and send it
+	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap: transientDataMap})
+	if err != nil {
+		return "", fmt.Errorf("failed to move funds: %v", err)
 	}
 
 	// Wait for the result of the submission
 	select {
-	// Transaction Ok
-	case <-done:
-		return txID, nil
-
-	// Transaction failed
-	case <-fail:
-		return "", fmt.Errorf("Error received from eventhub for txid(%s) error(%v)", txID, fail)
-
-	// Transaction timeout
-	case <-time.After(time.Second * 30):
-		return "", fmt.Errorf("Didn't receive block event for txid(%s)", txID)
+	case ccEvent := <-notifier:
+		fmt.Printf("Received CC event: %s\n", ccEvent)
+	case <-time.After(time.Second * 20):
+		return "", fmt.Errorf("did NOT receive CC event for eventId(%s)", eventID)
 	}
+
+	// Unregister the notification handler previously created on the client
+	err = setup.client.UnregisterChaincodeEvent(rce)
+
+	return response.TransactionID.ID, nil
 }

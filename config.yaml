@@ -1,51 +1,146 @@
+name: "chainHero-network"
+
+# Describe what the target network is/does.
+description: "The network which will host my first blockchain"
+
+# Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
+version: 2
+
+# The client section used by GO SDK.
 client:
- peers:
-  # peer0
-  - host: "localhost"
-    port: 7051
-    eventHost: "localhost"
-    eventPort: 7053
-    primary: true
-    tls:
+  # Which organization does this application instance belong to? The value must be the name of an org
+  organization: Org1
+  logging:
+    level: info
+
+  # Global configuration for peer, event service and orderer timeouts
+  peer:
+    timeout:
+      connection: 3s
+      queryResponse: 45s
+      executeTxResponse: 30s
+  eventService:
+    timeout:
+      connection: 3s
+      registrationResponse: 3s
+  orderer:
+    timeout:
+      connection: 3s
+      response: 5s
+
+  # Root of the MSP directories with keys and certs. The Membership Service Providers is component that aims to offer an abstraction of a membership operation architecture.
+  cryptoconfig:
+    path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
+
+  # Some SDKs support pluggable KV stores, the properties under "credentialStore" are implementation specific
+  credentialStore:
+    path: "/tmp/heroes-service-kvs"
+
+     # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations requiring a key store. PKCS#11 based implementations does not.
+    cryptoStore:
+      path: "/tmp/heroes-service-msp"
+
+  # BCCSP config for the client. Used by GO SDK. It's the Blockchain Cryptographic Service Provider.
+  # It offers the implementation of cryptographic standards and algorithms.
+  BCCSP:
+    security:
+     enabled: true
+     default:
+      provider: "SW"
+     hashAlgorithm: "SHA2"
+     softVerify: true
+     ephemeral: false
+     level: 256
+
+  tlsCerts:
+    systemCertPool: false
+
+# [Optional]. But most apps would have this section so that channel objects can be constructed based on the content below.
+# If one of your application is creating channels, you might not use this
+channels:
+  chainhero:
+    orderers:
+      - orderer.hf.chainhero.io
+
+    # Network entity which maintains a ledger and runs chaincode containers in order to perform operations to the ledger. Peers are owned and maintained by members.
+    peers:
+      peer0.org1.hf.chainhero.io:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
+        endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
+        chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
+        ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
+        eventSource: true
+
+      peer1.org1.hf.chainhero.io:
+
+# List of participating organizations in this network
+organizations:
+  Org1:
+    mspid: org1.hf.chainhero.io
+    cryptoPath: "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
+    peers:
+      - peer0.org1.hf.chainhero.io
+      - peer1.org1.hf.chainhero.io
+    certificateAuthorities:
+      - ca.org1.hf.chainhero.io
+
+# List of orderers to send transaction and channel create/update requests to.
+# The orderers consent on the order of transactions in a block to be committed to the ledger. For the time being only one orderer is needed.
+orderers:
+  orderer.hf.chainhero.io:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.hf.chainhero.io
+      grpc-max-send-message-length: 15
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/ordererOrganizations/hf.chainhero.io/tlsca/tlsca.hf.chainhero.io-cert.pem"
+
+# List of peers to send various requests to, including endorsement, query and event listener registration.
+peers:
+  peer0.org1.hf.chainhero.io:
+    # this URL is used to send endorsement and query requests
+    url: grpcs://localhost:7051
+    # this URL is used to connect the EventHub and registering event listeners
+    eventUrl: grpcs://localhost:7053
+    # These parameters should be set in coordination with the keepalive policy on the server
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.hf.chainhero.io
+      grpc.http2.keepalive_time: 15
+
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
+
+  peer1.org1.hf.chainhero.io:
+    url: grpcs://localhost:8051
+    eventUrl: grpcs://localhost:8053
+    grpcOptions:
+      ssl-target-name-override: peer1.org1.hf.chainhero.io
+      grpc.http2.keepalive_time: 15
+    tlsCACerts:
       # Certificate location absolute path
-      certificate: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/cacerts/org1.example.com-cert.pem"
-      serverHostOverride: "peer0.org1.example.com"
+      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
 
- tls:
-  enabled: true
-
- security:
-  enabled: true
-  hashAlgorithm: "SHA2"
-  level: 256
-
- tcert:
-  batch:
-    size: 200
-
- orderer:
-  host: "localhost"
-  port: 7050
-  tls:
-    # Certificate location absolute path
-    certificate: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/cacerts/example.com-cert.pem"
-    serverHostOverride: "orderer.example.com"
-
- logging:
-  level: info
-
- fabricCA:
-  tlsEnabled: true
-  id: "Org1MSP"
-  name: "ca-org1"
-  homeDir: "/tmp/"
-  mspDir: "msp"
-  serverURL: "https://localhost:7054"
-  certfiles :
-    - "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/ca/ca_root.pem"
-  client:
-   keyfile: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/client/client_client1-key.pem"
-   certfile: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/tls/fabricca/client/client_client1.pem"
-
- cryptoconfig:
-  path: "$GOPATH/src/github.com/chainhero/heroes-service/fixtures/channel/crypto-config"
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows certificate management to be done via REST APIs.
+certificateAuthorities:
+  ca.org1.hf.chainhero.io:
+    url: https://localhost:7054
+    # the properties specified under this object are passed to the 'http' client verbatim when making the request to the Fabric-CA server
+    httpOptions:
+      verify: false
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+    caName: ca.org1.hf.chainhero.io

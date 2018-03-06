@@ -7,7 +7,7 @@ dev: build run
 ##### BUILD
 build:
 	@echo "Build ..."
-	@govendor sync
+	@dep ensure
 	@go build
 	@echo "Build done"
 
@@ -32,7 +32,7 @@ run:
 ##### CLEAN
 clean: env-down
 	@echo "Clean up ..."
-	@rm -rf /tmp/enroll_user /tmp/msp heroes-service
+	@rm -rf /tmp/heroes-service-* heroes-service
 	@docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null || true
 	@docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null || true
 	@echo "Clean up done"

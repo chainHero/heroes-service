@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"path/filepath"
-	"os"
 	"fmt"
-	"net/http"
+	"github.com/chainHero/heroes-service/blockchain"
 	"html/template"
-	"github.com/chainhero/heroes-service/blockchain"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type Application struct {
