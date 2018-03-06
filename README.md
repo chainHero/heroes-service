@@ -520,14 +520,13 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+		OrgAdmin:        "Admin", 
+		OrgName:         "Org1", 
+		ConfigFile:      "config.yaml",
 		
-        OrgAdmin:        "Admin", 
-        OrgName:         "Org1", 
-        ConfigFile:      "config.yaml",
-
-        // Channel parameters
-        ChannelID:       "chainhero",
-        ChannelConfig:   os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
+		// Channel parameters 
+		ChannelID:       "chainhero",
+		ChannelConfig:   os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
