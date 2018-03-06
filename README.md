@@ -526,8 +526,8 @@ func main() {
      	ConfigFile:      "config.yaml",
 
 		// Channel parameters
-		ChannelID:     "chainhero",
-		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
+		ChannelID:       "chainhero",
+		ChannelConfig:   os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
@@ -894,7 +894,7 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to update your chaincode, increment the version number set at the line 105 of this [`setup.go`](blockchain/setup.go) file. Otherwise the network will keep the same chaincode.
 
-We need now to our main file in order to call our new function
+We need now to modify our `main.go` file in order to call our new function
 
 ```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
@@ -907,8 +907,8 @@ vi main.go
 
 fSetup := blockchain.FabricSetup{
 		// Channel parameters
-		ChannelID:     "chainhero",
-		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
+		ChannelID:       "chainhero",
+		ChannelConfig:   os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
 
 		// Chaincode parameters
 		ChainCodeID:     "heroes-service",
