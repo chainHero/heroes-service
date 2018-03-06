@@ -59,8 +59,8 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	orgAdminUser := session
 
-	// Creation of the channel chainhero. A channel can be understood as a private network inside the main network between two or more specific network Organizations.
-	// The channel is defined by its : Organizations, anchor peer (A peer node that all other peers can discover and communicate with. Every Organizations have one), the shared ledger, chaincode application(s) and the ordering service node(s).
+	// Creation of the channel chainhero. A channel can be understood as a private network inside the main network between two or more specific network Organizations
+	// The channel is defined by its : Organizations, anchor peer (A peer node that all other peers can discover and communicate with. Every Organizations have one), the shared ledger, chaincode application(s) and the ordering service node(s)
 	// Each transaction on the network is executed on a channel.
 	req := chmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfig: setup.ChannelConfig + "chainhero.channel.tx", SigningIdentity: orgAdminUser}
 	if err = chMgmtClient.SaveChannel(req); err != nil {
@@ -71,7 +71,7 @@ func (setup *FabricSetup) Initialize() error {
 	time.Sleep(time.Second * 5)
 
 	// The resource management client is a client API for managing system resources
-	// It will allow us to directly interact with the blockchain. It can be associated with the admin status.
+	// It will allow us to directly interact with the blockchain. It can be associated with the admin status
 	setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
 	if err != nil {
 		return fmt.Errorf("failed to create new resource management client: %v", err)
@@ -88,7 +88,7 @@ func (setup *FabricSetup) Initialize() error {
 
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
-	// Create chaincode package for our chaincode
+	// Create a new go lang chaincode package and initializing it with our chaincode
 	ccPkg, err := packager.NewCCPackage(setup.ChaincodePath, setup.ChaincodeGoPath)
 	if err != nil {
 		return fmt.Errorf("failed to create chaincode package: %v", err)
