@@ -771,42 +771,7 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 		return shim.Error("The number of arguments is insufficient.")
 	}
 
-	// In order to manage multiple type of request, we will check the first argument.
-	// Here we have one possible argument: query (every query request will read in the ledger without modification)
-	if args[0] == "query" {
-		return t.query(stub, args)
-	}
-
-	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown action, check the first argument")
-}
-
-// query
-// Every readonly functions in the ledger will be here
-func (t *HeroesServiceChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	fmt.Println("########### HeroesServiceChaincode query ###########")
-
-	// Check whether the number of arguments is sufficient
-	if len(args) < 2 {
-		return shim.Error("The number of arguments is insufficient.")
-	}
-
-	// Like the Invoke function, we manage multiple type of query requests with the second argument.
-	// We also have only one possible argument: hello
-	if args[1] == "hello" {
-
-		// Get the state of the value matching the key hello in the ledger
-		state, err := stub.GetState("hello")
-		if err != nil {
-			return shim.Error("Failed to get state of hello")
-		}
-
-		// Return this value in response
-		return shim.Success(state)
-	}
-
-	// If the arguments given don’t match any function, we return an error
-	return shim.Error("Unknown query action, check the second argument.")
 }
 
 func main() {
@@ -851,13 +816,14 @@ func (setup *FabricSetup) Initialize() error {
 
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
-	// Create chaincode package for our chaincode
+	// Create a new go lang chaincode package and initializing it with our chaincode
 	ccPkg, err := packager.NewCCPackage(setup.ChaincodePath, setup.ChaincodeGoPath)
 	if err != nil {
 		return fmt.Errorf("failed to create chaincode package: %v", err)
 	}
 
 	// Install our chaincode on org peers
+	// The resource management client send the chaincode to all peers in its channel in order for them to store it and interact with it later
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Package: ccPkg}
 	_, err = setup.admin.InstallCC(installCCReq)
 	if err != nil {
@@ -865,22 +831,23 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 
 	// Set up chaincode policy
+	// The chaincode policy is required if your transactions must follow some specific rules
+	// If you don't provide any policy every transaction will be endorsed, and it's probably not what you want
+	// In this case, we set the rule to : Endorse the transaction if the transaction have been signed by a member from the org "org1.hf.chainhero.io"
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
 
-	// Org resource manager will instantiate our chaincode on the channel
+	// Instantiate our chaincode on org peers
+	// The resource management client tells to all peers in its channel to instantiate the chaincode previously installed
 	err = setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
 	if err != nil {
 		return fmt.Errorf("failed to instantiate the chaincode: %v", err)
 	}
 
 	// Channel client is used to query and execute transactions
-	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser("User1")).Channel(setup.ChannelID)
+	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser(setup.UserName)).Channel(setup.ChannelID)
 	if err != nil {
 		return fmt.Errorf("failed to create new channel client: %v", err)
 	}
-
-	// Clean the client
-	defer setup.client.Close()
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
@@ -891,7 +858,7 @@ The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
 
 > **Tips**: take care of the chaincode version, if you want to update your chaincode, increment the version number set at the line 105 of this [`setup.go`](blockchain/setup.go) file. Otherwise the network will keep the same chaincode.
 
-We need now to modify our setup structure in the main file.
+We need now to our main file in order to call our new function
 
 ```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
@@ -900,29 +867,6 @@ vi main.go
 
 ```go
 [...]
-
-func main() {
-        // Definition of the Fabric SDK properties
-        fSetup := blockchain.FabricSetup{
-                // Channel parameters
-                ChannelID:     "chainhero",
-                ChannelConfig: "" + os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/",
-
-                // Chaincode parameters
-                ChainCodeID:     "heroes-service",
-                ChaincodeGoPath: os.Getenv("GOPATH"),
-                ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
-                OrgAdmin:        "Admin",
-                OrgName:         "Org1",
-                ConfigFile:      "config.yaml",
-        }
-
-        // Initialization of the Fabric SDK from the previously set properties
-        err := fSetup.Initialize()
-        if err != nil {
-                fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
-        }
-
         // Install and instantiate the chaincode
         err = fSetup.InstallAndInstantiateCC()
         if err != nil {
