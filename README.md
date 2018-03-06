@@ -437,7 +437,7 @@ type FabricSetup struct {
 	ChaincodePath   string
 	OrgAdmin        string
 	OrgName         string
-	UserName		string
+	UserName	string
 	client          chclient.ChannelClient
 	admin           resmgmt.ResourceMgmtClient
 	sdk             *fabsdk.FabricSDK
@@ -539,7 +539,7 @@ func main() {
 		ConfigFile:      "config.yaml",
 
 		// User parameters
-		UserName:		 "User1",
+		UserName:        "User1",
 	}
 
 	// Initialization of the Fabric SDK from the previously set properties
