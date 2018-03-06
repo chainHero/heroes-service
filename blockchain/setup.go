@@ -68,7 +68,8 @@ func (setup *FabricSetup) Initialize() error {
 	// Allow orderer to process channel creation
 	time.Sleep(time.Second * 5)
 
-	// Org resource management client
+	// The resource management client is a client API for managing system resources
+	// It will allow us to directly interact with the blockchain. It can be associated with the admin status.
 	setup.admin, err = setup.sdk.NewClient(fabsdk.WithUser(setup.OrgAdmin)).ResourceMgmt()
 	if err != nil {
 		return fmt.Errorf("failed to create new resource management client: %v", err)
