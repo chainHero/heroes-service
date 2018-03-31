@@ -651,16 +651,16 @@ build:
 
 ##### ENV
 env-up:
-	@echo "Start environnement ..."
+	@echo "Start environment ..."
 	@cd fixtures && docker-compose up --force-recreate -d
 	@echo "Sleep 15 seconds in order to let the environment setup correctly"
 	@sleep 15
-	@echo "Environnement up"
+	@echo "environment up"
 
 env-down:
-	@echo "Stop environnement ..."
+	@echo "Stop environment ..."
 	@cd fixtures && docker-compose down
-	@echo "Environnement down"
+	@echo "environment down"
 
 ##### RUN
 run:
