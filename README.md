@@ -206,7 +206,7 @@ svn checkout https://github.com/chainHero/heroes-service/branches/v1.0.5/fixture
 rm -rf fixtures/.svn
 ```
 
-Alternatively, if you want to know how to build this fixture folder and learn how to create the blockchain network, We are currently working on a dedicated tutorial on this topic.
+Alternatively, if you want to know how to build this fixture folder and learn how to create the blockchain network, follow this quick tutorial on [how to build your first network](https://chainhero.io/2018/04/tutorial-hyperledger-fabric-how-to-build-your-first-network/).
 
 ### b. Test
 
@@ -227,7 +227,7 @@ docker ps
 
 ![Docker compose up screenshot](docs/images/docker-ps.png)
 
-You will see : two peers, the orderer and one CA containers. You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deeper, check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
+You will see : two peers, the orderer and one CA containers. You have successfully made a new network ready to use with the SDK. To stop the network go back to the previous terminal, press `Ctrl+C` and wait that all containers are stopped. If you want to explore more deeper, follow our tutorial dedicated to the network part [here](https://chainhero.io/2018/04/tutorial-hyperledger-fabric-how-to-build-your-first-network/) or  check out the official documentation about this: [Building Your First Network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 
 > **Tips**: when the network is stopped, all containers used remain accessible. This is very useful to check logs for example. You can see stopped containers with `docker ps -a`. In order to clean up these containers, you need to delete them with `docker rm $(docker ps -aq)` or if you have used a `docker-compose` file, go where this file is and run `docker-compose down`.
 
