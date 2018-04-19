@@ -550,6 +550,11 @@ vi Gopkg.toml
 
 ```toml
 [[constraint]]
+  # v1.0.5
+  name = "github.com/hyperledger/fabric"
+  revision = "014d6befcf67f3787bb3d67ff34e1a98dc6aec5f"
+
+[[constraint]]
   name = "github.com/hyperledger/fabric-sdk-go"
   revision = "614551a752802488988921a730b172dada7def1d"
 ```
