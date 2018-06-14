@@ -1,14 +1,20 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
+
 	"github.com/chainHero/heroes-service/blockchain"
 	"github.com/chainHero/heroes-service/web"
 	"github.com/chainHero/heroes-service/web/controllers"
-	"os"
 )
 
+var installCC = flag.Bool("install-cc", true, "prepare to install chaincode.")
+
 func main() {
+	flag.Parse()
+
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
 		// Channel parameters
@@ -27,16 +33,20 @@ func main() {
 		UserName: "User1",
 	}
 
-	// Initialization of the Fabric SDK from the previously set properties
-	err := fSetup.Initialize()
-	if err != nil {
-		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
-	}
+	if *installCC {
+		// Initialization of the Fabric SDK from the previously set properties
+		err := fSetup.Initialize()
+		if err != nil {
+			fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
+		}
 
-	// Install and instantiate the chaincode
-	err = fSetup.InstallAndInstantiateCC()
-	if err != nil {
-		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+		// Install and instantiate the chaincode
+		err = fSetup.InstallAndInstantiateCC()
+		if err != nil {
+			fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+		}
+	} else {
+		fSetup.SetClient()
 	}
 
 	// Launch the web application listening
