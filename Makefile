@@ -26,8 +26,13 @@ env-down:
 
 ##### RUN
 run:
-	@echo "Start app ..."
+	@echo "Install chaincode and start app ..."
 	@./heroes-service
+
+##### RERUN
+rerun:
+	@echo "Only start app ..."
+	@./heroes-service -install-cc=false
 
 ##### CLEAN
 clean: env-down

@@ -2,6 +2,8 @@ package blockchain
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 	chmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/chmgmtclient"
 	resmgmt "github.com/hyperledger/fabric-sdk-go/api/apitxn/resmgmtclient"
@@ -9,7 +11,6 @@ import (
 	packager "github.com/hyperledger/fabric-sdk-go/pkg/fabric-client/ccpackager/gopackager"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
-	"time"
 )
 
 // FabricSetup implementation
@@ -124,5 +125,24 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	}
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
+	return nil
+}
+
+// SetClient sets the channel client.
+func (setup *FabricSetup) SetClient() error {
+
+	// Initialize the SDK with the configuration file
+	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
+	if err != nil {
+		return fmt.Errorf("failed to create sdk: %v", err)
+	}
+	setup.sdk = sdk
+
+	// Channel client is used to query and execute transactions
+	setup.client, err = setup.sdk.NewClient(fabsdk.WithUser(setup.UserName)).Channel(setup.ChannelID)
+	if err != nil {
+		return fmt.Errorf("failed to create new channel client: %v", err)
+	}
+
 	return nil
 }
