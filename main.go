@@ -20,7 +20,7 @@ func main() {
 		ChaincodeGoPath: os.Getenv("GOPATH"),
 		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
 		OrgAdmin:        "Admin",
-		OrgName:         "Org1",
+		OrgName:         "org1",
 		ConfigFile:      "config.yaml",
 
 		// User parameters

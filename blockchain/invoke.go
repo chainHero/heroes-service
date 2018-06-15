@@ -2,7 +2,7 @@ package blockchain
 
 import (
 	"fmt"
-	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
+	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"time"
 )
 
@@ -22,15 +22,14 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	transientDataMap := make(map[string][]byte)
 	transientDataMap["result"] = []byte("Transient data in hello invoke")
 
-	// Register a notification handler on the client
-	notifier := make(chan *chclient.CCEvent)
-	rce, err := setup.client.RegisterChaincodeEvent(notifier, setup.ChainCodeID, eventID)
+	reg, notifier, err := setup.event.RegisterChaincodeEvent(setup.ChainCodeID, eventID)
 	if err != nil {
-		return "", fmt.Errorf("failed to register chaincode evet: %v", err)
+		return "", err
 	}
+	defer setup.event.Unregister(reg)
 
 	// Create a request (proposal) and send it
-	response, err := setup.client.Execute(chclient.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap: transientDataMap})
+	response, err := setup.client.Execute(channel.Request{ChaincodeID: setup.ChainCodeID, Fcn: args[0], Args: [][]byte{[]byte(args[1]), []byte(args[2]), []byte(args[3])}, TransientMap: transientDataMap})
 	if err != nil {
 		return "", fmt.Errorf("failed to move funds: %v", err)
 	}
@@ -43,8 +42,5 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 		return "", fmt.Errorf("did NOT receive CC event for eventId(%s)", eventID)
 	}
 
-	// Unregister the notification handler previously created on the client
-	err = setup.client.UnregisterChaincodeEvent(rce)
-
-	return response.TransactionID.ID, nil
+	return string(response.TransactionID), nil
 }

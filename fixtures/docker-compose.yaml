@@ -6,7 +6,7 @@ networks:
 services:
 
   orderer.hf.chainhero.io:
-    image: hyperledger/fabric-orderer:x86_64-1.1
+    image: hyperledger/fabric-orderer:x86_64-1.1.0
     container_name: orderer.hf.chainhero.io
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
@@ -36,7 +36,7 @@ services:
           - orderer.hf.chainhero.io
 
   ca.org1.hf.chainhero.io:
-    image: hyperledger/fabric-ca:x86_64-1.1
+    image: hyperledger/fabric-ca:x86_64-1.1.0
     container_name: ca.org1.hf.chainhero.io
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
@@ -57,7 +57,7 @@ services:
           - ca.org1.hf.chainhero.io
 
   peer0.org1.hf.chainhero.io:
-    image: hyperledger/fabric-peer:x86_64-1.1
+    image: hyperledger/fabric-peer:x86_64-1.1.0
     container_name: peer0.org1.hf.chainhero.io
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
@@ -98,7 +98,7 @@ services:
           - peer0.org1.hf.chainhero.io
 
   peer1.org1.hf.chainhero.io:
-    image: hyperledger/fabric-peer:x86_64-1.1
+    image: hyperledger/fabric-peer:x86_64-1.1.0
     container_name: peer1.org1.hf.chainhero.io
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
