@@ -9,7 +9,7 @@
 # knowledge that must be acquired from out-of-band sources. This file provides such a source.
 #
 
-name: "heroes-service network"
+name: "heroes-service-network"
 #
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
 #
@@ -143,6 +143,25 @@ channels:
 
       peer1.org1.hf.chainhero.io:
 
+    policies:
+      #[Optional] options for retrieving channel configuration blocks
+      queryChannelConfig:
+        #[Optional] min number of success responses (from targets/peers)
+        minResponses: 1
+        #[Optional] channel config will be retrieved for these number of random targets
+        maxTargets: 1
+        #[Optional] retry options for query config block
+        retryOpts:
+          #[Optional] number of retry attempts
+          attempts: 5
+          #[Optional] the back off interval for the first retry attempt
+          initialBackoff: 500ms
+          #[Optional] the maximum back off interval for any retry attempt
+          maxBackoff: 5s
+          #[Optional] he factor by which the initial back off period is exponentially incremented
+          backoffFactor: 2.0
+
+
 #
 # list of participating organizations in this network
 #
@@ -217,9 +236,9 @@ peers:
 
   peer1.org1.hf.chainhero.io:
     # this URL is used to send endorsement and query requests
-    url: localhost:7151
+    url: localhost:8051
     # eventUrl is only needed when using eventhub (default is delivery service)
-    eventUrl: localhost:7153
+    eventUrl: localhost:8053
 
     grpcOptions:
       ssl-target-name-override: peer1.org1.hf.chainhero.io
@@ -267,8 +286,8 @@ entityMatchers:
       mappedHost: peer0.org1.hf.chainhero.io
 
     - pattern: (\w*)peer1.org1.hf.chainhero.io(\w*)
-      urlSubstitutionExp: localhost:7151
-      eventUrlSubstitutionExp: localhost:7153
+      urlSubstitutionExp: localhost:8051
+      eventUrlSubstitutionExp: localhost:8053
       sslTargetOverrideUrlSubstitutionExp: peer1.org1.hf.chainhero.io
       mappedHost: peer1.org1.hf.chainhero.io
 

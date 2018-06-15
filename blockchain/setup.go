@@ -11,6 +11,8 @@ import (
 	packager "github.com/hyperledger/fabric-sdk-go/pkg/fab/ccpackager/gopackager"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
+	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
+	"github.com/pkg/errors"
 )
 
 // FabricSetup implementation
@@ -48,6 +50,7 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.sdk = sdk
 	defer sdk.Close()
+	fmt.Println("SDK created")
 	///
 
 	// The resource management client is responsible for managing channels (create/update channel)
@@ -59,6 +62,7 @@ func (setup *FabricSetup) Initialize() error {
 	if err != nil {
 		return fmt.Errorf("failed to create channel management client: %s", err)
 	}
+	fmt.Println("Ressource management client created")
 	///
 
 	// Let's create the channel
@@ -71,10 +75,11 @@ func (setup *FabricSetup) Initialize() error {
 		return err
 	}
 	req := resmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfigPath: setup.ChannelConfig, SigningIdentities: []msp.SigningIdentity{adminIdentity}}
-	txID, err := resMgmtClient.SaveChannel(req)
+	txID, err := resMgmtClient.SaveChannel(req, resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io"))
 	if err != nil || txID.TransactionID == "" {
-
+		return fmt.Errorf("failed to save channel: %s", err)
 	}
+	fmt.Println("Channel created")
 	///
 
 	// Create org resource management client
@@ -83,12 +88,14 @@ func (setup *FabricSetup) Initialize() error {
 		return err
 	}
 	setup.admin = orgResMgmt
+	fmt.Println("Org ressource management client created")
 	///
 
 	// Org peers join channel
-	if err = orgResMgmt.JoinChannel(setup.ChannelID); err != nil {
+	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io")); err != nil {
 		return err
 	}
+	fmt.Println("Channel joined")
 	///
 
 	fmt.Println("Initialization Successful")
@@ -102,13 +109,15 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("ccPkg created")
 
 	// Install example cc to org peers
-	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "1.0", Package: ccPkg}
-	_, err = setup.admin.InstallCC(installCCReq)
+	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
+	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io"))
 	if err != nil {
-		return err
+		return errors.WithMessage(err, 	"failed to send chaincode install request")
 	}
+	fmt.Println("CC installed")
 
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
