@@ -44,4 +44,7 @@ func main() {
 		Fabric: &fSetup,
 	}
 	web.Serve(app)
+
+	// Close SDK
+	fSetup.CloseSDK()
 }
