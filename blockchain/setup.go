@@ -6,12 +6,12 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/event"
 	mspclient "github.com/hyperledger/fabric-sdk-go/pkg/client/msp"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
+	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/msp"
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	packager "github.com/hyperledger/fabric-sdk-go/pkg/fab/ccpackager/gopackager"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
-	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
 	"github.com/pkg/errors"
 )
 
@@ -49,7 +49,7 @@ func (setup *FabricSetup) Initialize() error {
 		return fmt.Errorf("failed to create sdk: %v", err)
 	}
 	setup.sdk = sdk
-	defer sdk.Close()
+	//defer sdk.Close()
 	fmt.Println("SDK created")
 	///
 
@@ -115,16 +115,16 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
 	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io"))
 	if err != nil {
-		return errors.WithMessage(err, 	"failed to send chaincode install request")
+		return errors.WithMessage(err, "failed to send chaincode install request")
 	}
 	fmt.Println("CC installed")
 
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
 
-	resp, err := setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodeGoPath, Version: "1.0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
+	resp, err := setup.admin.InstantiateCC(setup.ChannelID, resmgmt.InstantiateCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodeGoPath, Version: "0", Args: [][]byte{[]byte("init")}, Policy: ccPolicy})
 	if err != nil || resp.TransactionID == "" {
-
+		return err
 	}
 
 	// Channel client is used to query and execute transactions
