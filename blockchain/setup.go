@@ -49,7 +49,6 @@ func (setup *FabricSetup) Initialize() error {
 		return fmt.Errorf("failed to create sdk: %v", err)
 	}
 	setup.sdk = sdk
-	//defer sdk.Close()
 	fmt.Println("SDK created")
 	///
 
@@ -105,11 +104,13 @@ func (setup *FabricSetup) Initialize() error {
 
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
+	// Create the chaincode package that will be sent to the peers
 	ccPkg, err := packager.NewCCPackage(setup.ChaincodePath, setup.ChaincodeGoPath)
 	if err != nil {
 		return err
 	}
 	fmt.Println("ccPkg created")
+	//
 
 	// Install example cc to org peers
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
@@ -117,7 +118,8 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil {
 		return errors.WithMessage(err, "failed to send chaincode install request")
 	}
-	fmt.Println("CC installed")
+	fmt.Println("Chaincode installed")
+	//
 
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
@@ -126,20 +128,30 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	if err != nil || resp.TransactionID == "" {
 		return err
 	}
+	fmt.Println("Chaincode Instantiated")
+	//
 
 	// Channel client is used to query and execute transactions
 	clientContext := setup.sdk.ChannelContext(setup.ChannelID, fabsdk.WithUser(setup.UserName))
-
 	setup.client, err = channel.New(clientContext)
 	if err != nil {
 		return fmt.Errorf("failed to create new channel client: %v", err)
 	}
+	fmt.Println("Channel client created")
+	//
 
+	// Creation of the client which will enables access to our channel events
 	setup.event, err = event.New(clientContext)
 	if err != nil {
 		return err
 	}
+	fmt.Println("Event client created")
+	//
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
+}
+
+func (setup *FabricSetup) CloseSDK() {
+	setup.sdk.Close()
 }
