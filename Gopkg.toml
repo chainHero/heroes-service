@@ -1,3 +1,4 @@
 [[constraint]]
+  # Release v1.0.0-alpha4
   name = "github.com/hyperledger/fabric-sdk-go"
   revision = "a906355f73d060d7bf95874a9e90dc17589edbb3"
