@@ -596,10 +596,8 @@ type FabricSetup struct {
 	OrgAdmin        string
 	OrgName         string
 	UserName        string
-	client          *channel.Client
 	admin           *resmgmt.Client
 	sdk             *fabsdk.FabricSDK
-	event           *event.Client
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
