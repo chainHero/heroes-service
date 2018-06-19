@@ -19,6 +19,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
+	OrdererID       string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -75,7 +76,7 @@ func (setup *FabricSetup) Initialize() error {
 		return errors.WithMessage(err, "failed to get admin signing identity")
 	}
 	req := resmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfigPath: setup.ChannelConfig, SigningIdentities: []msp.SigningIdentity{adminIdentity}}
-	txID, err := setup.admin.SaveChannel(req, resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io"))
+	txID, err := setup.admin.SaveChannel(req, resmgmt.WithOrdererEndpoint(setup.OrdererID))
 	if err != nil || txID.TransactionID == "" {
 		return errors.WithMessage(err, "failed to save channel")
 	}
@@ -83,7 +84,7 @@ func (setup *FabricSetup) Initialize() error {
 	///
 
 	// Make admin user join the previously created channel
-	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io")); err != nil {
+	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID)); err != nil {
 		return errors.WithMessage(err, "failed to make admin join channel")
 	}
 	fmt.Println("Channel joined")
@@ -106,7 +107,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
 	// Install example cc to org peers
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
-	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint("orderer.hf.chainhero.io"))
+	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID))
 	if err != nil {
 		return errors.WithMessage(err, "failed to install chaincode")
 	}

@@ -113,9 +113,8 @@ channels:
     # operational decisions to share loads from applications among the orderers.  The values must
     # be "names" of orgs defined under "organizations/peers"
     # deprecated: not recommended, to override any orderer configuration items, entity matchers should be used.
-#    orderers:
-#      - orderer.example.com
-
+    # orderers:
+    #  - orderer.example.com
     orderer:
       - orderer.hf.chainhero.io
 

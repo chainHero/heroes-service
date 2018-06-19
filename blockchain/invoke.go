@@ -37,7 +37,7 @@ func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 	// Wait for the result of the submission
 	select {
 	case ccEvent := <-notifier:
-		fmt.Printf("Received CC event: %s\n", ccEvent)
+		fmt.Printf("Received CC event: %v\n", ccEvent)
 	case <-time.After(time.Second * 20):
 		return "", fmt.Errorf("did NOT receive CC event for eventId(%s)", eventID)
 	}
