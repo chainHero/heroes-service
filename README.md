@@ -142,48 +142,6 @@ go version
 
 See instructions from the Golang website: [golang.org/install](https://golang.org/doc/install)
 
-### d. Fabric SDK Go
-
-Last but not least, the Hyperledger Fabric SDK Go will allow us to easily communicate with the Fabric's components. You don't need to install the Fabric or Fabric CA framework because the SDK automatically handles it locally. To avoid version issues, we are going to checkout to a specific commit which works with the following tutorial.
-
-```bash
-go get -u github.com/hyperledger/fabric-sdk-go && \
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && \
-git checkout a906355f73d060d7bf95874a9e90dc17589edbb3
-```
-
-Let's make sure that you have the requested dependencies:
-
-```bash
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go && \
-make depend-install
-```
-
-Finally, we can launch the various tests of the SDK to check its proper functioning before going further:
-
-```bash
-cd $GOPATH/src/github.com/hyperledger/fabric-sdk-go ; \
-make
-```
-
-If you get the following error:
-
-```
-../fabric-sdk-go/vendor/github.com/miekg/pkcs11/pkcs11.go:29:18: fatal error: ltdl.h: No such file or directory
-```
-
-You need to install the package `libltdl-dev` and re-execute previous command (`make`):
-
-```bash
-sudo apt install libltdl-dev
-```
-
-The process take a while (depending on your network connection). During this process, a virtual network has been built and some tests have been made in order to check if your system is ready. Now we can work with our first application.
-
-![End of the Fabric SDK Go installation](docs/images/finish-fabric-sdk-go-install.png)
-
-> **Note**: there is more output but it's irrelevant to put it here. The only things you need to care about is the line `fabsdkgo_integration-tests_1 exited with code 0`. If you have `fabsdkgo_integration-tests_1 exited with code 1` then you have a problem. Scroll up in the messages above to find the error.
-
 ## 4. Make your first blockchain network
 
 ### a. Prepare environment
