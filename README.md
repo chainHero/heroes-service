@@ -1376,7 +1376,7 @@ make
 
 ![Screenshot Invoke Hello](docs/images/invoke-hello.png)
 
-> **Note**: this error message may appear: `endorsement validation failed: Endorser Client Status Code: (3) ENDORSEMENT_MISMATCH. Description: ProposalResponsePayloads do not match`. Since we have two PEERs, the SDK sends its request to the two directly and if it receives a different answer (which is quite possible because it's an asynchronous system) then it returns this error. The best thing to do in these cases and start over again.
+> **Note**: this error message may appear: `endorsement validation failed: Endorser Client Status Code: (3) ENDORSEMENT_MISMATCH. Description: ProposalResponsePayloads do not match`. Since we have two PEERs, the SDK sends its request to the two directly and if it receives a different answer (which is quite possible because it's an asynchronous system) then it returns this error. The best thing to do in these cases is to start over again.
 
 ## 6. Make this in a web application
 
