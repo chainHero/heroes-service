@@ -572,8 +572,6 @@ package blockchain
 
 import (
 	"fmt"
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/event"
 	mspclient "github.com/hyperledger/fabric-sdk-go/pkg/client/msp"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
@@ -587,6 +585,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
+	OrdererID	string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -664,7 +663,6 @@ func (setup *FabricSetup) CloseSDK() {
 	setup.sdk.Close()
 }
 
-
 ```
 
 The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
@@ -692,6 +690,9 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+		// Network parameter
+		OrdererID: "orderer.hf.chainhero.io",
+
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
@@ -717,7 +718,6 @@ func main() {
 	// Close SDK
 	fSetup.CloseSDK()
 }
-
 ```
 
 The file is available here: [`main.go`](main.go)
