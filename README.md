@@ -690,7 +690,7 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
-		// Network parameter
+		// Network parameters
 		OrdererID: "orderer.hf.chainhero.io",
 
 		// Channel parameters
@@ -1020,6 +1020,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
+	OrdererID       string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -1035,10 +1036,7 @@ type FabricSetup struct {
 	event           *event.Client
 }
 
-// Initialize reads the configuration file and sets up the client, chain and event hub
-func (setup *FabricSetup) Initialize() error {
 [...]
-}
 
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
@@ -1089,11 +1087,7 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
 }
-
-func (setup *FabricSetup) CloseSDK() {
-	setup.sdk.Close()
-}
-
+[...]
 ```
 
 The file is available here: [`blockchain/setup.go`](blockchain/setup.go)
@@ -1119,6 +1113,9 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+		// Network parameters
+		OrdererID: "orderer.hf.chainhero.io",
+
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
@@ -1141,8 +1138,7 @@ func main() {
 		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 		return
 	}
-	// Close SDK
-	fSetup.CloseSDK()
+[...]
 }
 
 ```
