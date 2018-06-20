@@ -95,8 +95,7 @@ We are currently unable to manage easily multiple containers at once. To solve t
 The installation is pretty fast:
 
 ```bash
-sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
-sudo chmod +x /usr/local/bin/docker-compose
+sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 ```
 
 Apply these changes by logout/login and then check its version with:
