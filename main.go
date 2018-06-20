@@ -11,6 +11,9 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+		// Network parameters
+		OrdererID: "orderer.hf.chainhero.io",
+
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",

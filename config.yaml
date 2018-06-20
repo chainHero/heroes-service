@@ -104,8 +104,6 @@ channels:
     # deprecated: not recommended, to override any orderer configuration items, entity matchers should be used.
     # orderers:
     #  - orderer.example.com
-    orderers:
-      - orderer.hf.chainhero.io
 
     # Required. list of peers from participating orgs
     peers:

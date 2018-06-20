@@ -309,8 +309,6 @@ channels:
     # deprecated: not recommended, to override any orderer configuration items, entity matchers should be used.
     # orderers:
     #  - orderer.example.com
-    orderers:
-      - orderer.hf.chainhero.io
 
     # Required. list of peers from participating orgs
     peers:
@@ -530,6 +528,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
+	OrdererID		string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -539,10 +538,8 @@ type FabricSetup struct {
 	OrgAdmin        string
 	OrgName         string
 	UserName        string
-	client          *channel.Client
 	admin           *resmgmt.Client
 	sdk             *fabsdk.FabricSDK
-	event           *event.Client
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
@@ -583,14 +580,14 @@ func (setup *FabricSetup) Initialize() error {
 		return errors.WithMessage(err, "failed to get admin signing identity")
 	}
 	req := resmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfigPath: setup.ChannelConfig, SigningIdentities: []msp.SigningIdentity{adminIdentity}}
-	txID, err := setup.admin.SaveChannel(req)
+	txID, err := setup.admin.SaveChannel(req, resmgmt.WithOrdererEndpoint(setup.OrdererID))
 	if err != nil || txID.TransactionID == "" {
 		return errors.WithMessage(err, "failed to save channel")
 	}
 	fmt.Println("Channel created")
 
 	// Make admin user join the previously created channel
-	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts)); err != nil {
+	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID)); err != nil {
 		return errors.WithMessage(err, "failed to make admin join channel")
 	}
 	fmt.Println("Channel joined")
@@ -631,6 +628,9 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+		// Network parameters 
+		OrdererID: "orderer.hf.chainhero.io",
+
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
@@ -962,6 +962,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
+	OrdererID		string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -1048,6 +1049,9 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
+		// Network parameters
+      	OrdererID: "orderer.hf.chainhero.io",
+      	
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
