@@ -204,17 +204,6 @@ vi config.yaml
 ```
 
 ```yaml
-#
-# Copyright SecureKey Technologies Inc. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
-#
-# The network connection profile provides client applications the information about the target
-# blockchain network that are necessary for the applications to interact with it. These are all
-# knowledge that must be acquired from out-of-band sources. This file provides such a source.
-#
-
 name: "heroes-service-network"
 #
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
@@ -319,10 +308,9 @@ channels:
     # operational decisions to share loads from applications among the orderers.  The values must
     # be "names" of orgs defined under "organizations/peers"
     # deprecated: not recommended, to override any orderer configuration items, entity matchers should be used.
-#    orderers:
-#      - orderer.example.com
-
-    orderer:
+    # orderers:
+    #  - orderer.example.com
+    orderers:
       - orderer.hf.chainhero.io
 
     # Required. list of peers from participating orgs
@@ -543,7 +531,6 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
-	OrdererID	string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -553,8 +540,10 @@ type FabricSetup struct {
 	OrgAdmin        string
 	OrgName         string
 	UserName        string
+	client          *channel.Client
 	admin           *resmgmt.Client
 	sdk             *fabsdk.FabricSDK
+	event           *event.Client
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
@@ -564,7 +553,6 @@ func (setup *FabricSetup) Initialize() error {
 	if setup.initialized {
 		return errors.New("sdk already initialized")
 	}
-	///
 
 	// Initialize the SDK with the configuration file
 	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
@@ -573,7 +561,6 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.sdk = sdk
 	fmt.Println("SDK created")
-	///
 
 	// The resource management client is responsible for managing channels (create/update channel)
 	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser("Admin"), fabsdk.WithOrg(setup.OrgName))
@@ -586,7 +573,6 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.admin = resMgmtClient
 	fmt.Println("Ressource management client created")
-	///
 
 	// The MSP client allow us to retrieve user information from their identity, like its signing identity which we will need to save the channel
 	mspClient, err := mspclient.New(sdk.Context(), mspclient.WithOrg(setup.OrgName))
@@ -598,19 +584,17 @@ func (setup *FabricSetup) Initialize() error {
 		return errors.WithMessage(err, "failed to get admin signing identity")
 	}
 	req := resmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfigPath: setup.ChannelConfig, SigningIdentities: []msp.SigningIdentity{adminIdentity}}
-	txID, err := setup.admin.SaveChannel(req, resmgmt.WithOrdererEndpoint(setup.OrdererID))
+	txID, err := setup.admin.SaveChannel(req)
 	if err != nil || txID.TransactionID == "" {
 		return errors.WithMessage(err, "failed to save channel")
 	}
 	fmt.Println("Channel created")
-	///
 
 	// Make admin user join the previously created channel
-	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID)); err != nil {
+	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts)); err != nil {
 		return errors.WithMessage(err, "failed to make admin join channel")
 	}
 	fmt.Println("Channel joined")
-	///
 
 	fmt.Println("Initialization Successful")
 	setup.initialized = true
@@ -648,9 +632,6 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
-		// Network parameters
-		OrdererID: "orderer.hf.chainhero.io",
-
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",
@@ -692,6 +673,8 @@ vi Gopkg.toml
 ```
 
 ```toml
+ignored = ["github.com/chainHero/heroes-service/chaincode"]
+
 [[constraint]]
   # Release v1.0.0-alpha4
   name = "github.com/hyperledger/fabric-sdk-go"
@@ -978,7 +961,6 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
-	OrdererID       string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -993,7 +975,6 @@ type FabricSetup struct {
 	sdk             *fabsdk.FabricSDK
 	event           *event.Client
 }
-
 [...]
 
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
@@ -1004,16 +985,14 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create chaincode package")
 	}
 	fmt.Println("ccPkg created")
-	//
 
 	// Install example cc to org peers
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
-	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID))
+	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
 	if err != nil {
 		return errors.WithMessage(err, "failed to install chaincode")
 	}
 	fmt.Println("Chaincode installed")
-	//
 
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
@@ -1023,7 +1002,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to instantiate the chaincode")
 	}
 	fmt.Println("Chaincode instantiated")
-	//
 
 	// Channel client is used to query and execute transactions
 	clientContext := setup.sdk.ChannelContext(setup.ChannelID, fabsdk.WithUser(setup.UserName))
@@ -1032,7 +1010,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create new channel client")
 	}
 	fmt.Println("Channel client created")
-	//
 
 	// Creation of the client which will enables access to our channel events
 	setup.event, err = event.New(clientContext)
@@ -1040,7 +1017,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create new event client")
 	}
 	fmt.Println("Event client created")
-	//
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil
@@ -1071,9 +1047,6 @@ import (
 func main() {
 	// Definition of the Fabric SDK properties
 	fSetup := blockchain.FabricSetup{
-		// Network parameters
-		OrdererID: "orderer.hf.chainhero.io",
-
 		// Channel parameters
 		ChannelID:     "chainhero",
 		ChannelConfig: os.Getenv("GOPATH") + "/src/github.com/chainHero/heroes-service/fixtures/artifacts/chainhero.channel.tx",

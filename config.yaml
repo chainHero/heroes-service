@@ -1,14 +1,3 @@
-#
-# Copyright SecureKey Technologies Inc. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
-#
-# The network connection profile provides client applications the information about the target
-# blockchain network that are necessary for the applications to interact with it. These are all
-# knowledge that must be acquired from out-of-band sources. This file provides such a source.
-#
-
 name: "heroes-service-network"
 #
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
@@ -115,7 +104,7 @@ channels:
     # deprecated: not recommended, to override any orderer configuration items, entity matchers should be used.
     # orderers:
     #  - orderer.example.com
-    orderer:
+    orderers:
       - orderer.hf.chainhero.io
 
     # Required. list of peers from participating orgs

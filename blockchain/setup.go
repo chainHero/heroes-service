@@ -19,7 +19,6 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
-	OrdererID       string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -42,7 +41,6 @@ func (setup *FabricSetup) Initialize() error {
 	if setup.initialized {
 		return errors.New("sdk already initialized")
 	}
-	///
 
 	// Initialize the SDK with the configuration file
 	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
@@ -51,7 +49,6 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.sdk = sdk
 	fmt.Println("SDK created")
-	///
 
 	// The resource management client is responsible for managing channels (create/update channel)
 	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser("Admin"), fabsdk.WithOrg(setup.OrgName))
@@ -64,7 +61,6 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.admin = resMgmtClient
 	fmt.Println("Ressource management client created")
-	///
 
 	// The MSP client allow us to retrieve user information from their identity, like its signing identity which we will need to save the channel
 	mspClient, err := mspclient.New(sdk.Context(), mspclient.WithOrg(setup.OrgName))
@@ -76,19 +72,17 @@ func (setup *FabricSetup) Initialize() error {
 		return errors.WithMessage(err, "failed to get admin signing identity")
 	}
 	req := resmgmt.SaveChannelRequest{ChannelID: setup.ChannelID, ChannelConfigPath: setup.ChannelConfig, SigningIdentities: []msp.SigningIdentity{adminIdentity}}
-	txID, err := setup.admin.SaveChannel(req, resmgmt.WithOrdererEndpoint(setup.OrdererID))
+	txID, err := setup.admin.SaveChannel(req)
 	if err != nil || txID.TransactionID == "" {
 		return errors.WithMessage(err, "failed to save channel")
 	}
 	fmt.Println("Channel created")
-	///
 
 	// Make admin user join the previously created channel
-	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID)); err != nil {
+	if err = setup.admin.JoinChannel(setup.ChannelID, resmgmt.WithRetry(retry.DefaultResMgmtOpts)); err != nil {
 		return errors.WithMessage(err, "failed to make admin join channel")
 	}
 	fmt.Println("Channel joined")
-	///
 
 	fmt.Println("Initialization Successful")
 	setup.initialized = true
@@ -103,16 +97,14 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create chaincode package")
 	}
 	fmt.Println("ccPkg created")
-	//
 
 	// Install example cc to org peers
 	installCCReq := resmgmt.InstallCCRequest{Name: setup.ChainCodeID, Path: setup.ChaincodePath, Version: "0", Package: ccPkg}
-	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts), resmgmt.WithOrdererEndpoint(setup.OrdererID))
+	_, err = setup.admin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
 	if err != nil {
 		return errors.WithMessage(err, "failed to install chaincode")
 	}
 	fmt.Println("Chaincode installed")
-	//
 
 	// Set up chaincode policy
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{"org1.hf.chainhero.io"})
@@ -122,7 +114,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to instantiate the chaincode")
 	}
 	fmt.Println("Chaincode instantiated")
-	//
 
 	// Channel client is used to query and execute transactions
 	clientContext := setup.sdk.ChannelContext(setup.ChannelID, fabsdk.WithUser(setup.UserName))
@@ -131,7 +122,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create new channel client")
 	}
 	fmt.Println("Channel client created")
-	//
 
 	// Creation of the client which will enables access to our channel events
 	setup.event, err = event.New(clientContext)
@@ -139,7 +129,6 @@ func (setup *FabricSetup) InstallAndInstantiateCC() error {
 		return errors.WithMessage(err, "failed to create new event client")
 	}
 	fmt.Println("Event client created")
-	//
 
 	fmt.Println("Chaincode Installation & Instantiation Successful")
 	return nil

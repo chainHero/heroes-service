@@ -7,7 +7,7 @@ dev: build run
 ##### BUILD
 build:
 	@echo "Build ..."
-	#dep ensure
+	@dep ensure
 	@go build
 	@echo "Build done"
 
