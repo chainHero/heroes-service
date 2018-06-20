@@ -528,7 +528,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
-	OrdererID		string
+	OrdererID	string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
@@ -960,7 +960,7 @@ import (
 type FabricSetup struct {
 	ConfigFile      string
 	OrgID           string
-	OrdererID		string
+	OrdererID	string
 	ChannelID       string
 	ChainCodeID     string
 	initialized     bool
