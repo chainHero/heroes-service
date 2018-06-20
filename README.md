@@ -720,6 +720,8 @@ cd .. && \
 
 > **Note**: you need to see "Initialization Successful". If it's not the case then something went wrong.
 
+> **Note 2**: If you see some warnings about Deprecated Network config files, it's normal and don't mind it. We will fix this as soon as we have more information about this warning.
+
 Alright! So we just initialised the SDK with our local network. In the next step, we will interact with a chaincode.
 
 ### d. Clean up and Makefile
