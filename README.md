@@ -654,7 +654,7 @@ func main() {
 		return
 	}
 	// Close SDK
-	fSetup.CloseSDK()
+	defer fSetup.CloseSDK()	
 }
 ```
 
@@ -1072,7 +1072,6 @@ func main() {
 		fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
 		return
 	}
-[...]
 }
 
 ```

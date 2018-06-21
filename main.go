@@ -36,6 +36,8 @@ func main() {
 		fmt.Printf("Unable to initialize the Fabric SDK: %v\n", err)
 		return
 	}
+	// Close SDK
+	defer fSetup.CloseSDK()
 
 	// Install and instantiate the chaincode
 	err = fSetup.InstallAndInstantiateCC()
@@ -49,7 +51,4 @@ func main() {
 		Fabric: &fSetup,
 	}
 	web.Serve(app)
-
-	// Close SDK
-	fSetup.CloseSDK()
 }
