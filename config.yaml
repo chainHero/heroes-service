@@ -63,12 +63,12 @@ client:
   # Some SDKs support pluggable KV stores, the properties under "credentialStore"
   # are implementation specific
   credentialStore:
-    path: /tmp/state-store
+    path: /tmp/heroes-service-store
 
     # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations
     # requiring a key store. PKCS#11 based implementations does not.
     cryptoStore:
-      path: /tmp/msp
+      path: /tmp/heroes-service-msp
 
    # BCCSP config for the client. Used by GO SDK.
   BCCSP:
