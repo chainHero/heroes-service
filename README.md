@@ -559,7 +559,7 @@ func (setup *FabricSetup) Initialize() error {
 	fmt.Println("SDK created")
 
 	// The resource management client is responsible for managing channels (create/update channel)
-	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser("Admin"), fabsdk.WithOrg(setup.OrgName))
+	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName))
 	if err != nil {
 		return errors.WithMessage(err, "failed to load Admin identity")
 	}
@@ -639,7 +639,7 @@ func main() {
 		ChainCodeID:     "heroes-service",
 		ChaincodeGoPath: os.Getenv("GOPATH"),
 		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
-		OrgAdmin:        "Admin",
+		OrgAdmin:        setup.OrgAdmin,
 		OrgName:         "org1",
 		ConfigFile:      "config.yaml",
 
@@ -1058,7 +1058,7 @@ func main() {
 		ChainCodeID:     "heroes-service",
 		ChaincodeGoPath: os.Getenv("GOPATH"),
 		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
-		OrgAdmin:        "Admin",
+		OrgAdmin:        setup.OrgAdmin,
 		OrgName:         "org1",
 		ConfigFile:      "config.yaml",
 
