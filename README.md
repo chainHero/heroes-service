@@ -1,6 +1,6 @@
 # Tutorial Hyperledger Fabric SDK Go: How to build your first app?
 
-Source: [chainhero.io/2018/03/tutorial-build-blockchain-app-2](https://chainhero.io/2018/03/tutorial-build-blockchain-app-2/)
+Source: [chainhero.io/2018/06/tutorial-build-blockchain-app-v1-1-0](https://chainhero.io/2018/06/tutorial-build-blockchain-app-v1-1-0/)
 
 This tutorial will introduce you to the Hyperledger Fabric Go SDK and allows you to build a simple application using the blockchain principle.
 
