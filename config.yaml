@@ -1,47 +1,76 @@
-name: "chainHero-network"
-
-# Describe what the target network is/does.
-description: "The network which will host my first blockchain"
-
+name: "heroes-service-network"
+#
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
-version: 2
+#
+version: 1.0.0
 
+#
 # The client section used by GO SDK.
+#
 client:
+
   # Which organization does this application instance belong to? The value must be the name of an org
-  organization: Org1
+  # defined under "organizations"
+  organization: org1
+
   logging:
     level: info
 
   # Global configuration for peer, event service and orderer timeouts
-  peer:
-    timeout:
-      connection: 3s
-      queryResponse: 45s
-      executeTxResponse: 30s
-  eventService:
-    timeout:
-      connection: 3s
-      registrationResponse: 3s
-  orderer:
-    timeout:
-      connection: 3s
-      response: 5s
+  # if this this section is omitted, then default values will be used (same values as below)
+#  peer:
+#    timeout:
+#      connection: 10s
+#      response: 180s
+#      discovery:
+#        # Expiry period for discovery service greylist filter
+#        # The channel client will greylist peers that are found to be offline
+#        # to prevent re-selecting them in subsequent retries.
+#        # This interval will define how long a peer is greylisted
+#        greylistExpiry: 10s
+#  eventService:
+#    # Event service type (optional). If not specified then the type is automatically
+#    # determined from channel capabilities.
+#    type: (deliver|eventhub)
+    # the below timeouts are commented out to use the default values that are found in
+    # "pkg/fab/endpointconfig.go"
+    # the client is free to override the default values by uncommenting and resetting
+    # the values as they see fit in their config file
+#    timeout:
+#      connection: 15s
+#      registrationResponse: 15s
+#  orderer:
+#    timeout:
+#      connection: 15s
+#      response: 15s
+#  global:
+#    timeout:
+#      query: 180s
+#      execute: 180s
+#      resmgmt: 180s
+#    cache:
+#      connectionIdle: 30s
+#      eventServiceIdle: 2m
+#      channelConfig: 30m
+#      channelMembership: 30s
+#      discovery: 10s
+#      selection: 10m
 
-  # Root of the MSP directories with keys and certs. The Membership Service Providers is component that aims to offer an abstraction of a membership operation architecture.
+  # Root of the MSP directories with keys and certs.
   cryptoconfig:
-    path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config"
+    path: ${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config
 
-  # Some SDKs support pluggable KV stores, the properties under "credentialStore" are implementation specific
+  # Some SDKs support pluggable KV stores, the properties under "credentialStore"
+  # are implementation specific
   credentialStore:
-    path: "/tmp/heroes-service-kvs"
+    path: /tmp/heroes-service-store
 
-     # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations requiring a key store. PKCS#11 based implementations does not.
+    # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations
+    # requiring a key store. PKCS#11 based implementations does not.
     cryptoStore:
-      path: "/tmp/heroes-service-msp"
+      path: /tmp/heroes-service-msp
 
-  # BCCSP config for the client. Used by GO SDK. It's the Blockchain Cryptographic Service Provider.
-  # It offers the implementation of cryptographic standards and algorithms.
+   # BCCSP config for the client. Used by GO SDK.
   BCCSP:
     security:
      enabled: true
@@ -49,20 +78,34 @@ client:
       provider: "SW"
      hashAlgorithm: "SHA2"
      softVerify: true
-     ephemeral: false
      level: 256
 
   tlsCerts:
+    # [Optional]. Use system certificate pool when connecting to peers, orderers (for negotiating TLS) Default: false
     systemCertPool: false
 
-# [Optional]. But most apps would have this section so that channel objects can be constructed based on the content below.
-# If one of your application is creating channels, you might not use this
-channels:
-  chainhero:
-    orderers:
-      - orderer.hf.chainhero.io
+    # [Optional]. Client key and cert for TLS handshake with peers and orderers
+    client:
+      keyfile:
+      certfile:
 
-    # Network entity which maintains a ledger and runs chaincode containers in order to perform operations to the ledger. Peers are owned and maintained by members.
+#
+# [Optional]. But most apps would have this section so that channel objects can be constructed
+# based on the content below. If an app is creating channels, then it likely will not need this
+# section.
+#
+channels:
+  # name of the channel
+  chainhero:
+    # Required. list of orderers designated by the application to use for transactions on this
+    # channel. This list can be a result of access control ("org1" can only access "ordererA"), or
+    # operational decisions to share loads from applications among the orderers.  The values must
+    # be "names" of orgs defined under "organizations/peers"
+    # deprecated: not recommended, to override any orderer configuration items, entity matchers should be used.
+    # orderers:
+    #  - orderer.example.com
+
+    # Required. list of peers from participating orgs
     peers:
       peer0.org1.hf.chainhero.io:
         # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
@@ -86,61 +129,161 @@ channels:
 
       peer1.org1.hf.chainhero.io:
 
-# List of participating organizations in this network
+    policies:
+      #[Optional] options for retrieving channel configuration blocks
+      queryChannelConfig:
+        #[Optional] min number of success responses (from targets/peers)
+        minResponses: 1
+        #[Optional] channel config will be retrieved for these number of random targets
+        maxTargets: 1
+        #[Optional] retry options for query config block
+        retryOpts:
+          #[Optional] number of retry attempts
+          attempts: 5
+          #[Optional] the back off interval for the first retry attempt
+          initialBackoff: 500ms
+          #[Optional] the maximum back off interval for any retry attempt
+          maxBackoff: 5s
+          #[Optional] he factor by which the initial back off period is exponentially incremented
+          backoffFactor: 2.0
+
+
+#
+# list of participating organizations in this network
+#
 organizations:
-  Org1:
+  org1:
     mspid: org1.hf.chainhero.io
-    cryptoPath: "peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp"
+    cryptoPath: peerOrganizations/org1.hf.chainhero.io/users/{userName}@org1.hf.chainhero.io/msp
     peers:
       - peer0.org1.hf.chainhero.io
       - peer1.org1.hf.chainhero.io
+
+    # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
+    # network. Typically certificates provisioning is done in a separate process outside of the
+    # runtime network. Fabric-CA is a special certificate authority that provides a REST APIs for
+    # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
+    # Fabric-CA servers.
     certificateAuthorities:
       - ca.org1.hf.chainhero.io
 
-# List of orderers to send transaction and channel create/update requests to.
-# The orderers consent on the order of transactions in a block to be committed to the ledger. For the time being only one orderer is needed.
+#
+# List of orderers to send transaction and channel create/update requests to. For the time
+# being only one orderer is needed. If more than one is defined, which one get used by the
+# SDK is implementation specific. Consult each SDK's documentation for its handling of orderers.
+#
 orderers:
   orderer.hf.chainhero.io:
-    url: grpcs://localhost:7050
+    url: localhost:7050
+
+    # these are standard properties defined by the gRPC library
+    # they will be passed in as-is to gRPC client constructor
     grpcOptions:
       ssl-target-name-override: orderer.hf.chainhero.io
-      grpc-max-send-message-length: 15
-    tlsCACerts:
-      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/ordererOrganizations/hf.chainhero.io/tlsca/tlsca.hf.chainhero.io-cert.pem"
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
 
-# List of peers to send various requests to, including endorsement, query and event listener registration.
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/ordererOrganizations/hf.chainhero.io/tlsca/tlsca.hf.chainhero.io-cert.pem
+#
+# List of peers to send various requests to, including endorsement, query
+# and event listener registration.
+#
 peers:
   peer0.org1.hf.chainhero.io:
     # this URL is used to send endorsement and query requests
-    url: grpcs://localhost:7051
-    # this URL is used to connect the EventHub and registering event listeners
-    eventUrl: grpcs://localhost:7053
-    # These parameters should be set in coordination with the keepalive policy on the server
+    url: localhost:7051
+    # eventUrl is only needed when using eventhub (default is delivery service)
+    eventUrl: localhost:7053
+
     grpcOptions:
       ssl-target-name-override: peer0.org1.hf.chainhero.io
-      grpc.http2.keepalive_time: 15
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
 
-    tlsCACerts:
-      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
-
-  peer1.org1.hf.chainhero.io:
-    url: grpcs://localhost:8051
-    eventUrl: grpcs://localhost:8053
-    grpcOptions:
-      ssl-target-name-override: peer1.org1.hf.chainhero.io
-      grpc.http2.keepalive_time: 15
     tlsCACerts:
       # Certificate location absolute path
-      path: "${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem"
+      path: ${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem
 
-# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows certificate management to be done via REST APIs.
+  peer1.org1.hf.chainhero.io:
+    # this URL is used to send endorsement and query requests
+    url: localhost:8051
+    # eventUrl is only needed when using eventhub (default is delivery service)
+    eventUrl: localhost:8053
+
+    grpcOptions:
+      ssl-target-name-override: peer1.org1.hf.chainhero.io
+      # These parameters should be set in coordination with the keepalive policy on the server,
+      # as incompatible settings can result in closing of connection.
+      # When duration of the 'keep-alive-time' is set to 0 or less the keep alive client parameters are disabled
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      # allow-insecure will be taken into consideration if address has no protocol defined, if true then grpc or else grpcs
+      allow-insecure: false
+
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/tlsca/tlsca.org1.hf.chainhero.io-cert.pem
+
+#
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
+# certificate management to be done via REST APIs. Application may choose to use a standard
+# Certificate Authority instead of Fabric-CA, in which case this section would not be specified.
+#
 certificateAuthorities:
   ca.org1.hf.chainhero.io:
-    url: https://localhost:7054
-    # the properties specified under this object are passed to the 'http' client verbatim when making the request to the Fabric-CA server
+    url: http://localhost:7054
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
     httpOptions:
       verify: false
     registrar:
       enrollId: admin
       enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
     caName: ca.org1.hf.chainhero.io
+    tlsCACerts:
+      # Certificate location absolute path
+      path: ${GOPATH}/src/github.com/chainHero/heroes-service/fixtures/crypto-config/peerOrganizations/org1.hf.chainhero.io/ca/ca.org1.hf.chainhero.io-cert.pem
+
+entityMatchers:
+  peer:
+    - pattern: (\w*)peer0.org1.hf.chainhero.io(\w*)
+      urlSubstitutionExp: localhost:7051
+      eventUrlSubstitutionExp: localhost:7053
+      sslTargetOverrideUrlSubstitutionExp: peer0.org1.hf.chainhero.io
+      mappedHost: peer0.org1.hf.chainhero.io
+
+    - pattern: (\w*)peer1.org1.hf.chainhero.io(\w*)
+      urlSubstitutionExp: localhost:8051
+      eventUrlSubstitutionExp: localhost:8053
+      sslTargetOverrideUrlSubstitutionExp: peer1.org1.hf.chainhero.io
+      mappedHost: peer1.org1.hf.chainhero.io
+
+  orderer:
+    - pattern: (\w*)orderer.hf.chainhero.io(\w*)
+      urlSubstitutionExp: localhost:7050
+      sslTargetOverrideUrlSubstitutionExp: orderer.hf.chainhero.io
+      mappedHost: orderer.hf.chainhero.io
+
+  certificateAuthorities:
+    - pattern: (\w*)ca.org1.hf.chainhero.io(\w*)
+      urlSubstitutionExp: http://localhost:7054
+      mappedHost: ca.org1.hf.chainhero.io
