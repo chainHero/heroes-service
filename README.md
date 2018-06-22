@@ -799,7 +799,7 @@ clean: env-down
 	@rm -rf /tmp/heroes-service-* heroes-service
 	@docker rm -f -v `docker ps -a --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null || true
 	@docker rmi `docker images --no-trunc | grep "heroes-service" | cut -d ' ' -f 1` 2>/dev/null || true
-@echo "Clean up done"
+	@echo "Clean up done"
 ```
 
 The file is available here: [`Makefile`](Makefile)
