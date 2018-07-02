@@ -698,7 +698,7 @@ cd $GOPATH/src/github.com/chainHero/heroes-service && \
 go build
 ```
 
-After some time, a new binary named `heroes-service` will appear at the root of the project. Try to start the binary like this:
+After some time, a new binary named `main` will appear at the root of the project. Try to start the binary like this:
 
 ```bash
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
