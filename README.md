@@ -640,7 +640,7 @@ func main() {
 		ChainCodeID:     "heroes-service",
 		ChaincodeGoPath: os.Getenv("GOPATH"),
 		ChaincodePath:   "github.com/chainHero/heroes-service/chaincode/",
-		OrgAdmin:        setup.OrgAdmin,
+		OrgAdmin:        "Admin",
 		OrgName:         "org1",
 		ConfigFile:      "config.yaml",
 
