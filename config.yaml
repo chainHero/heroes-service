@@ -4,7 +4,7 @@ name: "chainHero-network"
 description: "The network which will host my first blockchain"
 
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
-version: 2
+version: 1.0.0
 
 # The client section used by GO SDK.
 client:
