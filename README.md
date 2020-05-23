@@ -155,16 +155,16 @@ mkdir -p $GOPATH/src/github.com/chainHero/heroes-service && \
 cd $GOPATH/src/github.com/chainHero/heroes-service
 ```
 
-To get the `fixtures` folder, you can either follow this command line, which will install and use subversion to get the folder from this repository. Or download the [zip file from Github REQUIRED](REQUIRED) and extract only the `fixtures` folder.
+To get the `fixtures` folder, you can either follow this command line, which will install and use subversion to get the folder from this repository. Or download the [zip file from Github](https://github.com/chainHero/heroes-service/archive/v2.1.0.zip) and extract only the `fixtures` folder.
 
 ```bash
 sudo apt install -y subversion && \
 cd $GOPATH/src/github.com/chainHero/heroes-service && \
-svn checkout https://github.com/chainHero/heroes-service/branches/REQUIRED/fixtures &&
+svn checkout https://github.com/chainHero/heroes-service/branches/2.1.0/fixtures &&
 rm -rf fixtures/.svn
 ```
 
-Alternatively, if you want to know how to build this fixture folder and learn how to create the blockchain network, follow this quick tutorial on [how to build your first network REQUIRED](REQUIRED).
+Alternatively, if you want to know how to build this fixture folder and learn how to create the blockchain network, follow this quick tutorial on [how to build your first network](https://chainhero.io/2018/04/tutorial-hyperledger-fabric-how-to-build-your-first-network/).
 
 ### b. Test
 
