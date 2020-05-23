@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/chainHero/heroes-service/blockchain"
-	"github.com/chainHero/heroes-service/web"
-	"github.com/chainHero/heroes-service/web/controllers"
+	"heroes-service/blockchain"
+	"heroes-service/web"
+	"heroes-service/web/controllers"
 	"os"
 )
 

@@ -7,7 +7,7 @@ dev: build run
 ##### BUILD
 build:
 	@echo "Build ..."
-	@dep ensure
+	@cd chaincode && GO111MODULE=on go mod vendor
 	@go build
 	@echo "Build done"
 
