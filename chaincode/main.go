@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	pb "github.com/hyperledger/fabric/protos/peer"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	pb "github.com/hyperledger/fabric-protos-go/peer"
 )
 
 // HeroesServiceChaincode implementation of Chaincode
 type HeroesServiceChaincode struct {
+	shim.Chaincode
 }
 
 // Init of the chaincode

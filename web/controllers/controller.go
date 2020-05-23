@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/chainHero/heroes-service/blockchain"
+	"heroes-service/blockchain"
 	"html/template"
 	"net/http"
 	"os"
