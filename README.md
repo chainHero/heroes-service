@@ -626,8 +626,6 @@ package main
 import (
 	"fmt"
 	"heroes-service/blockchain"
-	"heroes-service/web"
-	"heroes-service/web/controllers"
 	"os"
 )
 
@@ -676,7 +674,12 @@ cd $GOPATH/src/github.com/chainHero/heroes-service && \
 go mod init heroes-service
 ```
 
-Now change the content of go.mod to:
+Now change the content of go.mod:
+```bash
+cd $GOPATH/src/github.com/chainHero/heroes-service && \
+vi go.mod
+```
+
 ```go
 module heroes-service
 
@@ -1148,7 +1151,7 @@ cd $GOPATH/src/github.com/chainHero/heroes-service/chaincode && \
 go mod init chaincode
 ```
 
-Now edit go.mod file:
+Now edit the go.mod file in the chaincode folder:
 
 ```
 module chaincode
